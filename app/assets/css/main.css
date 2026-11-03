@@ -1,0 +1,267 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+@theme static {
+  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-display: 'Outfit', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
+
+  /* Ink: the class neutral ramp. Hue 211, measured off the Instagram badge. */
+  --color-ink-50: #f4f7fb;
+  --color-ink-100: #e6ecf4;
+  --color-ink-200: #d1dbe8;
+  --color-ink-300: #aebdd0;
+  --color-ink-400: #8a9bb3;
+  --color-ink-500: #62748b;
+  --color-ink-600: #4b5b70;
+  --color-ink-700: #364356;
+  --color-ink-800: #1b2534;
+  --color-ink-900: #05080c;
+  --color-ink-950: #02040a;
+
+  /* Azure: the single action ink. Same hue as ink, so accent and ground read as one print run. */
+  --color-azure-50: #eff5fd;
+  --color-azure-100: #dae9fc;
+  --color-azure-200: #b6d2f7;
+  --color-azure-300: #85b5f1;
+  --color-azure-400: #5b9ae8;
+  --color-azure-500: #2f6bc9;
+  --color-azure-600: #27589f;
+  --color-azure-700: #22487f;
+  --color-azure-800: #203d68;
+  --color-azure-900: #1e3455;
+  --color-azure-950: #142138;
+}
+
+/* Surfaces and text. Declared outside @layer so they beat the module defaults
+   without outranking Tailwind utilities: these are custom properties only. */
+:root {
+  color-scheme: light;
+
+  --ui-bg: #fbfcfe;
+  --ui-bg-muted: #eef2f8;
+  --ui-bg-elevated: #ffffff;
+  --ui-bg-accented: #e6ecf4;
+  --ui-border: #dbe3ee;
+  --ui-border-muted: #e6ecf4;
+  --ui-border-accented: #c3cfdf;
+  --ui-text: #1b2433;
+  --ui-text-muted: #5b6b80;
+  --ui-text-dimmed: #667587;
+  --ui-text-toned: #455468;
+  --ui-text-highlighted: #05080c;
+  --ui-text-inverted: #ffffff;
+
+  /* Nuxt UI's semantic 500s are Tailwind's 500s: legible as a fill, not as 10px
+     type on paper. Step them down so a coloured label still clears AA. */
+  --ui-color-error-500: #b42318;
+  --ui-color-warning-500: #a16207;
+  --ui-color-success-500: #15803d;
+  --ui-color-info-500: #1d4ed8;
+
+  --plate-bg: #eef2f8;
+  --plate-dot: #d0dbe9;
+  --halftone-dot: #cfd9e6;
+  --card-shadow: rgba(11, 17, 26, 0.5);
+}
+
+.dark {
+  color-scheme: dark;
+
+  --ui-bg: #05080c;
+  --ui-bg-muted: #0b111a;
+  --ui-bg-elevated: #101823;
+  --ui-bg-accented: #1a2432;
+  --ui-border: #1c2634;
+  --ui-border-muted: #151d29;
+  --ui-border-accented: #2a3646;
+  --ui-text: #dfe6ef;
+  --ui-text-muted: #93a4b9;
+  --ui-text-dimmed: #7d8fa6;
+  --ui-text-toned: #aebdd0;
+  --ui-text-highlighted: #ffffff;
+  --ui-text-inverted: #05080c;
+
+  --plate-bg: #0b111a;
+  --plate-dot: #1d2836;
+  --halftone-dot: #26364a;
+  --card-shadow: rgba(0, 0, 0, 0.7);
+}
+
+/* The crest, tinted with currentColor so one asset serves ink and paper. */
+.crest {
+  display: inline-block;
+  height: var(--crest-size, 2rem);
+  width: auto;
+  aspect-ratio: 552 / 512;
+  background-color: currentColor;
+  -webkit-mask-image: var(--crest-url);
+  mask-image: var(--crest-url);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+/* Hero ground: the badge, unfolded. */
+.hero-plate {
+  position: relative;
+  isolation: isolate;
+  background-color: var(--ui-bg);
+}
+
+.hero-plate::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-image: radial-gradient(var(--halftone-dot) 1.15px, transparent 1.25px);
+  background-size: 9px 9px;
+  -webkit-mask-image: radial-gradient(76% 70% at 74% 32%, #000 0%, transparent 72%);
+  mask-image: radial-gradient(76% 70% at 74% 32%, #000 0%, transparent 72%);
+  animation: halftone-drift 24s linear infinite;
+}
+
+.hero-plate::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: radial-gradient(110% 90% at 78% 16%, rgba(47, 107, 201, 0.34), transparent 64%);
+}
+
+/* Stand-in for a photo we do not have yet: printed paper, not a gradient. */
+.plate {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--plate-bg);
+  background-image: radial-gradient(var(--plate-dot) 1.1px, transparent 1.2px);
+  background-size: 8px 8px;
+}
+
+/* A data colour (course, assignment type, role) carried by a chip. The raw hue is
+   never used as type: the tint marks it, the mixed ink keeps it legible on both
+   paper and ink, which no single fixed hex can do. */
+.accent {
+  --accent: var(--ui-primary);
+  background-color: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: color-mix(in oklab, var(--accent) 62%, var(--ui-text));
+}
+
+/* Same mixed ink, no tint: for marks that sit on plain ground. */
+.accent-plain {
+  color: color-mix(in oklab, var(--accent, var(--ui-primary)) 62%, var(--ui-text));
+}
+
+/* Text-only accent for inline badges: mixed ink, no background. */
+.accent-text {
+  color: color-mix(in oklab, var(--accent, var(--ui-primary)) 62%, var(--ui-text));
+}
+
+/* Card hover: a real shadow with offset and blur, not a halo. */
+.card-hover {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px -18px var(--card-shadow);
+}
+
+@keyframes halftone-drift {
+  from { background-position: 0 0; }
+  to { background-position: 4.5px 4.5px; }
+}
+
+@keyframes hero-enter {
+  from { opacity: 0; filter: blur(6px); transform: translateY(16px); }
+  to { opacity: 1; filter: blur(0); transform: none; }
+}
+
+.hero-enter {
+  animation: hero-enter 900ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-plate::before,
+  .hero-enter {
+    animation: none;
+  }
+}
+
+/* The header is a printed rule, not a pane of glass. */
+header[data-slot="root"] {
+  backdrop-filter: none;
+}
+
+/* Browser surfaces nobody designs but everybody sees. */
+::selection {
+  background-color: var(--color-azure-200);
+  color: var(--color-ink-950);
+}
+
+input,
+textarea {
+  caret-color: var(--ui-primary);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-ink-300);
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-ink-400);
+  background-clip: content-box;
+}
+
+/* Smooth page transitions */
+.page-enter-active,
+.page-leave-active {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+/* Layout transitions */
+.layout-enter-active,
+.layout-leave-active {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.layout-enter-from,
+.layout-leave-to {
+  opacity: 0;
+}
+
+/* Lightbox overlay */
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 4, 10, 0.92);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
