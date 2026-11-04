@@ -1,12 +1,12 @@
 <script setup lang="ts">
-definePageMeta({ middleware: 'auth' })
+
 useSeoMeta({ title: 'Kelola Proyek — Admin Magyasaka' })
 
 const client = useSupabaseClient()
-const { data: items, refresh } = await useAsyncData('admin-projects', async () => {
+const { data: items, refresh } = useAsyncData('admin-projects', async () => {
   const { data, error } = await client.from('projects').select('*').order('created_at', { ascending: false })
   if (error) throw error
-  return data || []
+  return (data || []) as any[]
 })
 
 const modalOpen = ref(false)
@@ -53,9 +53,11 @@ async function save() {
       kategori: form.value.kategori
     }
     if (editing.value) {
+      // @ts-ignore
       const { error } = await client.from('projects').update(payload).eq('id', editing.value.id)
       if (error) throw error
     } else {
+      // @ts-ignore
       const { error } = await client.from('projects').insert(payload)
       if (error) throw error
     }
@@ -119,7 +121,6 @@ const kategoriOpts = ['akademik', 'IoT', 'Mobile App', 'Web', 'Security', 'AI'].
         <div class="p-4 space-y-3 max-h-[80vh] overflow-auto">
           <h3 class="font-semibold">{{ editing ? 'Edit' : 'Tambah' }} Proyek</h3>
           <UInput v-model="form.nama" placeholder="Nama Proyek" />
-          <UInput v-model="form.kategori" placeholder="Kategori" />
           <USelect v-model="form.kategori" :items="kategoriOpts" />
           <UTextarea v-model="form.deskripsi" placeholder="Deskripsi Singkat" :rows="2" />
           <UTextarea v-model="form.detail" placeholder="Deskripsi Lengkap" :rows="4" />

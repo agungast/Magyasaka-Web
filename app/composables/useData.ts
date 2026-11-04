@@ -1,8 +1,6 @@
 // Composable untuk mengambil data dari Supabase
 // Jika Supabase belum terkonfigurasi, menggunakan mock data
 
-import type { Database } from '~/types/database'
-
 // Mock data untuk development tanpa Supabase
 const mockAnnouncements = [
   {
@@ -46,23 +44,23 @@ const mockSchedules = [
 ]
 
 const mockAssignments = [
-  { id: '1', judul: 'Tugas Sorting Algorithm', deskripsi: 'Implementasikan 3 algoritma sorting (Bubble, Merge, Quick) dalam bahasa Python', mata_kuliah: 'Algoritma & Pemrograman', tipe: 'tugas', deadline: new Date(Date.now() + 7 * 86400000).toISOString(), is_completed: false },
-  { id: '2', judul: 'Laporan Praktikum Jaringan', deskripsi: 'Buat laporan konfigurasi jaringan LAN sederhana', mata_kuliah: 'Jaringan Komputer', tipe: 'praktikum', deadline: new Date(Date.now() + 5 * 86400000).toISOString(), is_completed: false },
-  { id: '3', judul: 'UTS Matematika Diskrit', deskripsi: 'Ujian Tengah Semester Matematika Diskrit', mata_kuliah: 'Matematika Diskrit', tipe: 'uts', tanggal_ujian: new Date(Date.now() + 14 * 86400000).toISOString(), ruangan_ujian: 'R.301', is_completed: false },
-  { id: '4', judul: 'Project Website Personal', deskripsi: 'Buat website portfolio personal menggunakan HTML, CSS, dan JavaScript', mata_kuliah: 'Pemrograman Web', tipe: 'tugas', deadline: new Date(Date.now() + 21 * 86400000).toISOString(), is_completed: false }
+  { id: '1', judul: 'Tugas Sorting Algorithm', deskripsi: 'Implementasikan 3 algoritma sorting (Bubble, Merge, Quick) dalam bahasa Python', mata_kuliah: 'Algoritma & Pemrograman', tipe: 'tugas', deadline: new Date(Date.now() + 7 * 86400000).toISOString(), is_completed: false, created_at: null, updated_at: null },
+  { id: '2', judul: 'Laporan Praktikum Jaringan', deskripsi: 'Buat laporan konfigurasi jaringan LAN sederhana', mata_kuliah: 'Jaringan Komputer', tipe: 'praktikum', deadline: new Date(Date.now() + 5 * 86400000).toISOString(), is_completed: false, created_at: null, updated_at: null },
+  { id: '3', judul: 'UTS Matematika Diskrit', deskripsi: 'Ujian Tengah Semester Matematika Diskrit', mata_kuliah: 'Matematika Diskrit', tipe: 'uts', tanggal_ujian: new Date(Date.now() + 14 * 86400000).toISOString(), ruangan_ujian: 'R.301', is_completed: false, created_at: null, updated_at: null },
+  { id: '4', judul: 'Project Website Personal', deskripsi: 'Buat website portfolio personal menggunakan HTML, CSS, dan JavaScript', mata_kuliah: 'Pemrograman Web', tipe: 'tugas', deadline: new Date(Date.now() + 21 * 86400000).toISOString(), is_completed: false, tanggal_ujian: null, ruangan_ujian: null, created_at: null, updated_at: null }
 ]
 
 const mockMembers = [
-  { id: '1', nim: '2023001', nama: 'Ahmad Rizki Pratama', email: 'ahmad.rizki@student.ac.id', jurusan: 'Teknik Rekayasa Komputer', angkatan: 2023, status: 'aktif' },
-  { id: '2', nim: '2023002', nama: 'Siti Nurhaliza', email: 'siti.nur@student.ac.id', jurusan: 'Teknik Rekayasa Komputer', angkatan: 2023, status: 'aktif' },
-  { id: '3', nim: '2023003', nama: 'Budi Setiawan', email: 'budi.setiawan@student.ac.id', jurusan: 'Teknik Rekayasa Komputer', angkatan: 2023, status: 'aktif' },
-  { id: '4', nim: '2023004', nama: 'Dewi Lestari', email: 'dewi.lestari@student.ac.id', jurusan: 'Teknik Rekayasa Komputer', angkatan: 2023, status: 'aktif' },
-  { id: '5', nim: '2023005', nama: 'Eko Prasetyo', email: 'eko.prasetyo@student.ac.id', jurusan: 'Teknik Rekayasa Komputer', angkatan: 2023, status: 'aktif' },
-  { id: '6', nim: '2023006', nama: 'Fitri Handayani', email: 'fitri.handa@student.ac.id', jurusan: 'Teknik Rekayasa Komputer', angkatan: 2023, status: 'aktif' },
-  { id: '7', nim: '2023007', nama: 'Galih Ramadhan', email: 'galih.ramadhan@student.ac.id', jurusan: 'Teknik Rekayasa Komputer', angkatan: 2023, status: 'aktif' },
-  { id: '8', nim: '2023008', nama: 'Hana Pertiwi', email: 'hana.pertiwi@student.ac.id', jurusan: 'Teknik Rekayasa Komputer', angkatan: 2023, status: 'aktif' },
-  { id: '9', nim: '2023009', nama: 'Irfan Maulana', email: 'irfan.maulana@student.ac.id', jurusan: 'Teknik Rekayasa Komputer', angkatan: 2023, status: 'aktif' },
-  { id: '10', nim: '2023010', nama: 'Jasmine Putri', email: 'jasmine.putri@student.ac.id', jurusan: 'Teknik Rekayasa Komputer', angkatan: 2023, status: 'aktif' }
+  { id: '1', nim: '2023001', nama: 'Ahmad Rizki Pratama', email: 'ahmad.rizki@student.ac.id', jurusan: 'Teknik Rekayasa Komputer', angkatan: 2023, status: 'aktif', foto_url: null, no_telepon: null, created_at: null, updated_at: null },
+  { id: '2', nim: '2023002', nama: 'Siti Nurhaliza', email: 'siti.nur@student.ac.id', jurusan: 'Teknik Rekayasa Komputer', angkatan: 2023, status: 'aktif', foto_url: null, no_telepon: null, created_at: null, updated_at: null },
+  { id: '3', nim: '2023003', nama: 'Budi Setiawan', email: 'budi.setiawan@student.ac.id', jurusan: 'Teknik Rekayasa Komputer', angkatan: 2023, status: 'aktif', foto_url: null, no_telepon: null, created_at: null, updated_at: null },
+  { id: '4', nim: '2023004', nama: 'Dewi Lestari', email: 'dewi.lestari@student.ac.id', jurusan: 'Teknik Rekayasa Komputer', angkatan: 2023, status: 'aktif', foto_url: null, no_telepon: null, created_at: null, updated_at: null },
+  { id: '5', nim: '2023005', nama: 'Eko Prasetyo', email: 'eko.prasetyo@student.ac.id', jurusan: 'Teknik Rekayasa Komputer', angkatan: 2023, status: 'aktif', foto_url: null, no_telepon: null, created_at: null, updated_at: null },
+  { id: '6', nim: '2023006', nama: 'Fitri Handayani', email: 'fitri.handa@student.ac.id', jurusan: 'Teknik Rekayasa Komputer', angkatan: 2023, status: 'aktif', foto_url: null, no_telepon: null, created_at: null, updated_at: null },
+  { id: '7', nim: '2023007', nama: 'Galih Ramadhan', email: 'galih.ramadhan@student.ac.id', jurusan: 'Teknik Rekayasa Komputer', angkatan: 2023, status: 'aktif', foto_url: null, no_telepon: null, created_at: null, updated_at: null },
+  { id: '8', nim: '2023008', nama: 'Hana Pertiwi', email: 'hana.pertiwi@student.ac.id', jurusan: 'Teknik Rekayasa Komputer', angkatan: 2023, status: 'aktif', foto_url: null, no_telepon: null, created_at: null, updated_at: null },
+  { id: '9', nim: '2023009', nama: 'Irfan Maulana', email: 'irfan.maulana@student.ac.id', jurusan: 'Teknik Rekayasa Komputer', angkatan: 2023, status: 'aktif', foto_url: null, no_telepon: null, created_at: null, updated_at: null },
+  { id: '10', nim: '2023010', nama: 'Jasmine Putri', email: 'jasmine.putri@student.ac.id', jurusan: 'Teknik Rekayasa Komputer', angkatan: 2023, status: 'aktif', foto_url: null, no_telepon: null, created_at: null, updated_at: null }
 ]
 
 const mockOfficers = [
@@ -73,23 +71,11 @@ const mockOfficers = [
   { id: '5', jabatan: 'Koordinator Akademik', urutan: 5, member: mockMembers[4] }
 ]
 
-const mockAlbums = [
-  { id: '1', nama: 'Ospek Magyasaka', deskripsi: 'Dokumentasi kegiatan Orientasi Studi dan Pengenalan Kampus angkatan 2023', tanggal_kegiatan: '2023-08-15', is_featured: true, cover_url: null, photos: [{ id: '1', url: '', caption: 'Foto 1' }] },
-  { id: '2', nama: 'Study Tour Bandung', deskripsi: 'Kunjungan industri dan wisata edukasi ke Bandung', tanggal_kegiatan: '2024-03-20', is_featured: true, cover_url: null, photos: [{ id: '2', url: '', caption: 'Foto 1' }] },
-  { id: '3', nama: 'Gathering Semester 1', deskripsi: 'Acara kebersamaan kelas di akhir semester pertama', tanggal_kegiatan: '2024-01-10', is_featured: false, cover_url: null, photos: [] }
-]
-
-const mockProjects = [
-  { id: '1', nama: 'SmartCampus IoT', deskripsi: 'Sistem monitoring ruang kelas berbasis IoT untuk efisiensi energi kampus', detail: 'Proyek ini mengimplementasikan sensor suhu, kelembaban, dan cahaya di ruang kelas untuk mengoptimalkan penggunaan AC dan lampu secara otomatis.', teknologi: ['Arduino', 'MQTT', 'Node.js', 'React'], anggota: ['Ahmad Rizki', 'Budi Setiawan', 'Eko Prasetyo'], is_highlighted: true, kategori: 'IoT' },
-  { id: '2', nama: 'EduTrack App', deskripsi: 'Aplikasi tracking progress belajar mahasiswa dengan gamifikasi', detail: 'Platform web dan mobile yang memungkinkan mahasiswa melacak progres belajar mereka, mendapatkan badge pencapaian, dan berkolaborasi dalam study group.', teknologi: ['Flutter', 'Firebase', 'Dart'], anggota: ['Siti Nurhaliza', 'Dewi Lestari', 'Hana Pertiwi'], is_highlighted: true, kategori: 'Mobile App' },
-  { id: '3', nama: 'NetSecure Scanner', deskripsi: 'Tool scanning keamanan jaringan untuk audit keamanan dasar', detail: 'CLI tool berbasis Python yang melakukan port scanning, vulnerability assessment dasar, dan menghasilkan laporan keamanan jaringan.', teknologi: ['Python', 'Nmap', 'Scapy'], anggota: ['Galih Ramadhan', 'Irfan Maulana'], is_highlighted: false, kategori: 'Security' }
-]
-
 function isSupabaseConfigured() {
   try {
-    const client = useSupabaseClient()
     const config = useRuntimeConfig()
-    return config.public?.supabase?.url && !config.public.supabase.url.includes('your-project')
+    const url = config.public?.supabase?.url
+    return !!url && typeof url === 'string' && !url.includes('your-project') && !url.includes('example')
   } catch {
     return false
   }
@@ -108,7 +94,7 @@ export function useAnnouncements() {
       return data
     }
     return mockAnnouncements
-  })
+  }, { lazy: true })
 }
 
 export function useSchedules() {
@@ -124,7 +110,7 @@ export function useSchedules() {
       return data
     }
     return mockSchedules
-  })
+  }, { lazy: true })
 }
 
 export function useAssignments() {
@@ -139,7 +125,7 @@ export function useAssignments() {
       return data
     }
     return mockAssignments
-  })
+  }, { lazy: true })
 }
 
 export function useMembers() {
@@ -154,7 +140,7 @@ export function useMembers() {
       return data
     }
     return mockMembers
-  })
+  }, { lazy: true })
 }
 
 export function useOfficers() {
@@ -169,7 +155,7 @@ export function useOfficers() {
       return data
     }
     return mockOfficers
-  })
+  }, { lazy: true })
 }
 
 export function useAlbums() {
@@ -183,8 +169,8 @@ export function useAlbums() {
       if (error) throw error
       return data
     }
-    return mockAlbums
-  })
+    return []
+  }, { lazy: true })
 }
 
 export function useAlbum(id: string) {
@@ -199,8 +185,8 @@ export function useAlbum(id: string) {
       if (error) throw error
       return data
     }
-    return mockAlbums.find(a => a.id === id) || mockAlbums[0]
-  })
+    return null
+  }, { lazy: true })
 }
 
 export function useProjects() {
@@ -215,8 +201,8 @@ export function useProjects() {
       if (error) throw error
       return data
     }
-    return mockProjects
-  })
+    return []
+  }, { lazy: true })
 }
 
 export function useProject(id: string) {
@@ -229,8 +215,8 @@ export function useProject(id: string) {
         .eq('id', id)
         .single()
       if (error) throw error
-      return data
+      return data as any
     }
-    return mockProjects.find(p => p.id === id) || mockProjects[0]
-  })
+    return null
+  }, { lazy: true })
 }

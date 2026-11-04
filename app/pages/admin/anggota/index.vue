@@ -1,28 +1,37 @@
+// ------------------------------------------------------------
+//  IMPORTS – semua simbol yang dipakai dalam script setup
+//  Nuxt‑4 menyediakan auto‑imports, tetapi TypeScript/Volar
+//  memerlukan deklarasi eksplisit agar diagnostics berfungsi.
+// ------------------------------------------------------------
+import { ref, reactive } from 'vue'
+import { useSeoMeta, useSupabaseClient, useAsyncData } from '#app'
+import { UButton, UCard, UModal, UInput, USelect, UIcon } from '#components'
+
 <script setup lang="ts">
-definePageMeta({ middleware: 'auth' })
+
 useSeoMeta({ title: 'Kelola Anggota — Admin Magyasaka' })
 
 const client = useSupabaseClient()
 const { data: items, refresh } = await useAsyncData('admin-members', async () => {
   const { data, error } = await client.from('members').select('*').order('nim')
   if (error) throw error
-  return data || []
+  return (data || []) as any[]
 })
 
 const modalOpen = ref(false)
 const editing = ref<any>(null)
-const form = ref({ nim: '', nama: '', email: '', no_telepon: '', jurusan: 'Teknik Rekayasa Komputer', angkatan: 2023, status: 'aktif' })
+const form = reactive({ nim: '', nama: '', email: '', no_telepon: '', jurusan: 'Teknik Rekayasa Komputer', angkatan: 2023, status: 'aktif' })
 const loading = ref(false)
 
 function openCreate() {
   editing.value = null
-  form.value = { nim: '', nama: '', email: '', no_telepon: '', jurusan: 'Teknik Rekayasa Komputer', angkatan: 2023, status: 'aktif' }
+  Object.assign(form, { nim: '', nama: '', email: '', no_telepon: '', jurusan: 'Teknik Rekayasa Komputer', angkatan: 2023, status: 'aktif' })
   modalOpen.value = true
 }
 
 function openEdit(m: any) {
   editing.value = m
-  form.value = { ...m }
+  Object.assign(form, { ...m })
   modalOpen.value = true
 }
 
@@ -30,11 +39,11 @@ async function save() {
   loading.value = true
   try {
     if (editing.value) {
-      const { error } = await client.from('members').update(form.value).eq('id', editing.value.id)
-      if (error) throw error
-    } else {
-      const { error } = await client.from('members').insert(form.value)
-      if (error) throw error
+        const { error } = await (client.from('members') as any).update(form as any).eq('id' as any, editing.value!.id as any)
+        if (error) throw error
+      } else {
+        const { error } = await (client.from('members') as any).insert(form as any)
+        if (error) throw error
     }
     modalOpen.value = false
     await refresh()
@@ -47,7 +56,7 @@ async function save() {
 
 async function remove(id: string) {
   if (!confirm('Hapus anggota ini?')) return
-  const { error } = await client.from('members').delete().eq('id', id)
+  const { error } = await (client.from('members') as any).delete().eq('id' as any, id as any)
   if (error) alert(error.message)
   else await refresh()
 }

@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useSeoMeta } from '#app'
+import { useProjects } from '~/composables/useData'
 // Fase 3: Katalog Proyek Kelas
 useSeoMeta({ title: 'Proyek Kelas — Magyasaka' })
 
@@ -8,7 +11,7 @@ const highlightedProjects = computed(() =>
   projects.value?.filter((p: any) => p.is_highlighted) || []
 )
 
-const allProjects = computed(() => projects.value || [])
+const allProjects = computed(() => (projects.value || []))
 
 const kategoriColors: Record<string, string> = {
   IoT: '#10b981',
@@ -53,9 +56,9 @@ const kategoriColors: Record<string, string> = {
                 size="xs"
               />
               <UBadge
-                :label="project.kategori"
+                :label="project.kategori || 'umum'"
                 class="accent-text"
-                :style="{ '--accent': kategoriColors[project.kategori] || '#6366f1' }"
+                :style="{ '--accent': kategoriColors[project.kategori || 'umum'] || '#6366f1' }"
                 variant="outline"
                 size="xs"
               />
@@ -105,9 +108,9 @@ const kategoriColors: Record<string, string> = {
             </Plate>
             <div class="flex items-center gap-2 mb-2">
               <UBadge
-                :label="project.kategori"
+                :label="project.kategori || 'umum'"
                 class="accent-text"
-                :style="{ '--accent': kategoriColors[project.kategori] || '#6366f1' }"
+                :style="{ '--accent': kategoriColors[project.kategori || 'umum'] || '#6366f1' }"
                 variant="outline"
                 size="xs"
               />
@@ -124,15 +127,15 @@ const kategoriColors: Record<string, string> = {
             <p class="text-xs text-muted line-clamp-2 mb-2">{{ project.deskripsi }}</p>
             <div class="flex flex-wrap gap-1">
               <UBadge
-                v-for="tech in project.teknologi?.slice(0, 3)"
+                v-for="tech in (project.teknologi || []).slice(0, 3)"
                 :key="tech"
                 :label="tech"
                 variant="outline"
                 size="xs"
               />
               <UBadge
-                v-if="project.teknologi?.length > 3"
-                :label="`+${project.teknologi.length - 3}`"
+                v-if="(project.teknologi || []).length > 3"
+                :label="`+${(project.teknologi || []).length - 3}`"
                 variant="outline"
                 size="xs"
               />

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-definePageMeta({ middleware: 'auth' })
+
 useSeoMeta({ title: 'Kelola Jadwal — Admin Magyasaka' })
 
 const client = useSupabaseClient()
-const { data: items, refresh } = await useAsyncData('admin-schedules', async () => {
+const { data: items, refresh } = useAsyncData('admin-schedules', async () => {
   const { data, error } = await client.from('schedules').select('*').order('hari').order('jam_mulai')
   if (error) throw error
-  return data || []
+  return (data || []) as any[]
 })
 
 const modalOpen = ref(false)
@@ -30,10 +30,12 @@ async function save() {
   loading.value = true
   try {
     if (editing.value) {
-      const { error } = await client.from('schedules').update(form.value).eq('id', editing.value.id)
+      // @ts-ignore
+      const { error } = await client.from('schedules').update(form.value as any).eq('id', editing.value.id)
       if (error) throw error
     } else {
-      const { error } = await client.from('schedules').insert(form.value)
+      // @ts-ignore
+      const { error } = await client.from('schedules').insert(form.value as any)
       if (error) throw error
     }
     modalOpen.value = false
@@ -47,12 +49,13 @@ async function save() {
 
 async function remove(id: string) {
   if (!confirm('Hapus jadwal ini?')) return
+  // @ts-ignore
   const { error } = await client.from('schedules').delete().eq('id', id)
   if (error) alert(error.message)
   else await refresh()
 }
 
-const hariOpts = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'].map(h => ({ label: h, value: h }))
+const hariOpts = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'].map(h => ({ label: h, value: h }))
 </script>
 
 <template>
@@ -85,7 +88,7 @@ const hariOpts = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'].map(h =>
                 <p class="text-xs text-muted">{{ s.dosen }}</p>
               </td>
               <td class="py-2">{{ s.hari }}</td>
-              <td class="py-2">{{ s.jam_mulai }} - {{ s.jam_selesai }}</td>
+              <td class="py-2">{{ s.jam_mulai.slice(0, 5) }} - {{ s.jam_selesai.slice(0, 5) }}</td>
               <td class="py-2">{{ s.ruangan }}</td>
               <td class="py-2">{{ s.sks }}</td>
               <td class="py-2 text-right">

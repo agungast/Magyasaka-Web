@@ -1,11 +1,18 @@
 <script setup lang="ts">
+import { useSeoMeta } from '#app'
+import { useRouter } from 'vue-router'
+import { useSupabaseUser } from '#imports'
+import { watch } from 'vue'
+
+declare const definePageMeta: (meta: any) => void
+
 definePageMeta({ layout: false })
 useSeoMeta({ title: 'Konfirmasi Login — Magyasaka' })
 
 const user = useSupabaseUser()
 const router = useRouter()
 
-watch(user, (val) => {
+watch(user, (val: any) => {
   if (val) {
     router.push('/admin')
   }

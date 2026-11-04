@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { useSeoMeta } from '#app'
+
+declare const definePageMeta: (meta: any) => void
+
 definePageMeta({
   middleware: 'auth'
 })

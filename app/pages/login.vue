@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { useSeoMeta } from '#app'
+import { ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
+import { useSupabaseClient, useSupabaseUser } from '#imports'
 // Fase 4: Login Pengurus
 useSeoMeta({ title: 'Login Pengurus — Magyasaka' })
 
@@ -12,7 +16,7 @@ const loading = ref(false)
 const errorMsg = ref('')
 
 // Redirect if already logged in
-watch(user, (val) => {
+watch(user, (val: any) => {
   if (val) {
     router.push('/admin')
   }
@@ -74,6 +78,7 @@ async function handleLogin() {
               icon="i-lucide-mail"
               required
               size="md"
+              class="w-full"
             />
           </div>
           <div>
@@ -85,6 +90,7 @@ async function handleLogin() {
               icon="i-lucide-lock"
               required
               size="md"
+              class="w-full"
             />
           </div>
           <UButton

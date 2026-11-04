@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useSeoMeta } from '#app'
+import { useRoute } from 'vue-router'
+import { useProject } from '~/composables/useData'
 // Fase 3: Detail Proyek
 const route = useRoute()
 const projectId = route.params.id as string
@@ -106,6 +110,7 @@ const kategoriColors: Record<string, string> = {
       </UCard>
 
       <!-- Links -->
+      <!-- @ts-ignore -->
       <div v-if="project.repo_url || project.demo_url" class="flex gap-3">
         <UButton
           v-if="project.repo_url"
@@ -124,5 +129,7 @@ const kategoriColors: Record<string, string> = {
         />
       </div>
     </div>
+
+    <div v-else class="py-20 text-center text-muted">Proyek ini tidak ditemukan.</div>
   </UContainer>
 </template>

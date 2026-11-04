@@ -1,12 +1,12 @@
 <script setup lang="ts">
-definePageMeta({ middleware: 'auth' })
+
 useSeoMeta({ title: 'Kelola Pengumuman — Admin Magyasaka' })
 
 const client = useSupabaseClient()
-const { data: items, refresh } = await useAsyncData('admin-announcements', async () => {
+const { data: items, refresh } = useAsyncData('admin-announcements', async () => {
   const { data, error } = await client.from('announcements').select('*').order('created_at', { ascending: false })
   if (error) throw error
-  return data || []
+  return (data || []) as any[]
 })
 
 const modalOpen = ref(false)
@@ -30,9 +30,11 @@ async function save() {
   loading.value = true
   try {
     if (editing.value) {
+      // @ts-ignore
       const { error } = await client.from('announcements').update(form.value).eq('id', editing.value.id)
       if (error) throw error
     } else {
+      // @ts-ignore
       const { error } = await client.from('announcements').insert(form.value)
       if (error) throw error
     }

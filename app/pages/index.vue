@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useAnnouncements, useAssignments, useSchedules } from '~/composables/useData'
 // Fase 1: Beranda Angkatan
 const { data: announcements } = useAnnouncements()
 const { data: assignments } = useAssignments()
@@ -14,12 +16,12 @@ const latestAnnouncements = computed(() =>
 
 const upcomingAssignments = computed(() => {
   return assignments.value
-    ?.filter((a: any) => !a.is_completed && a.deadline && new Date(a.deadline) > new Date())
+    ?.filter((a: any) => !a.is_completed && (a.deadline || a.tanggal_ujian) && new Date(a.deadline || a.tanggal_ujian) > new Date())
     .slice(0, 3) || []
 })
 
 const todaySchedule = computed(() => {
-  const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
+  const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', ]
   const today = days[new Date().getDay()]
   return schedules.value?.filter((s: any) => s.hari === today) || []
 })
@@ -111,7 +113,7 @@ const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = 
           <UIcon name="i-lucide-pin" class="text-primary text-lg" />
           <h2 class="font-display text-xl md:text-2xl font-bold tracking-[-0.02em]">Sorotan Angkatan</h2>
         </div>
-        <div class="divide-y divide-default border-y border-default">
+        <div class="divide-y divide-default">
           <article
             v-for="announcement in pinnedAnnouncements"
             :key="announcement.id"
@@ -121,8 +123,8 @@ const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = 
             <div class="min-w-0 flex-1">
               <div class="flex flex-wrap items-center gap-2 mb-1.5">
                 <UBadge
-                  :label="announcement.kategori"
-                  :color="kategoriColor[announcement.kategori] || 'neutral'"
+                  :label="announcement.kategori || 'umum'"
+                  :color="kategoriColor[announcement.kategori || 'umum'] || 'neutral'"
                   variant="outline"
                   size="sm"
                 />
@@ -142,7 +144,7 @@ const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = 
           <UIcon name="i-lucide-zap" class="text-primary text-lg" />
           <h2 class="font-display text-xl md:text-2xl font-bold tracking-[-0.02em]">Pintasan Menu</h2>
         </div>
-        <div class="grid sm:grid-cols-2 gap-x-12 divide-y divide-default border-y border-default">
+        <div class="grid sm:grid-cols-2 gap-x-12 divide-y divide-default">
           <NuxtLink
             v-for="link in quickLinks"
             :key="link.to"
@@ -177,21 +179,21 @@ const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = 
             <UIcon name="i-lucide-party-popper" class="text-3xl text-muted mb-2" />
             <p class="text-muted text-sm">Tidak ada kuliah hari ini.</p>
           </div>
-          <div v-else class="divide-y divide-default border-y border-default">
+          <div v-else class="divide-y divide-default">
             <div
               v-for="schedule in todaySchedule"
               :key="schedule.id"
               class="py-3.5 flex items-center gap-4"
             >
               <div
-                :style="{ '--accent': schedule.warna }"
+                :style="{ '--accent': schedule.warna || '#6366f1' }"
                 class="accent w-10 h-10 rounded-md flex items-center justify-center shrink-0"
               >
                 <UIcon name="i-lucide-book-open" class="text-lg" />
               </div>
               <div class="flex-1 min-w-0">
                 <p class="font-semibold text-sm truncate">{{ schedule.mata_kuliah }}</p>
-                <p class="text-xs text-muted font-mono tabular-nums">{{ schedule.jam_mulai }} - {{ schedule.jam_selesai }} • {{ schedule.ruangan }}</p>
+                <p class="text-xs text-muted font-mono tabular-nums">{{ schedule.jam_mulai.slice(0, 5) }} - {{ schedule.jam_selesai.slice(0, 5) }} • {{ schedule.ruangan }}</p>
               </div>
             </div>
           </div>
@@ -210,7 +212,7 @@ const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = 
             <UIcon name="i-lucide-check-circle-2" class="text-3xl text-muted mb-2" />
             <p class="text-muted text-sm">Semua tugas sudah selesai.</p>
           </div>
-          <div v-else class="divide-y divide-default border-y border-default">
+          <div v-else class="divide-y divide-default">
             <div
               v-for="task in upcomingAssignments"
               :key="task.id"
@@ -235,7 +237,7 @@ const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = 
           <UIcon name="i-lucide-megaphone" class="text-primary text-lg" />
           <h2 class="font-display text-xl md:text-2xl font-bold tracking-[-0.02em]">Pengumuman Terbaru</h2>
         </div>
-        <div class="divide-y divide-default border-y border-default">
+        <div class="divide-y divide-default">
           <article
             v-for="announcement in latestAnnouncements"
             :key="announcement.id"
@@ -255,8 +257,8 @@ const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = 
               <p class="text-sm text-muted line-clamp-2">{{ announcement.konten }}</p>
               <div class="flex flex-wrap items-center gap-3 mt-2">
                 <UBadge
-                  :label="announcement.kategori"
-                  :color="kategoriColor[announcement.kategori] || 'neutral'"
+                  :label="announcement.kategori || 'umum'"
+                  :color="kategoriColor[announcement.kategori || 'umum'] || 'neutral'"
                   variant="outline"
                   size="sm"
                 />

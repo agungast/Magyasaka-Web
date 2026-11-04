@@ -137,12 +137,12 @@ Yang perlu disiapkan: jadwal **semester yang sedang berjalan**. Saat ini label d
 ### 4.4 Tugas & Ujian — tabel `assignments` (P0)
 
 - `judul`, `mata_kuliah`, `deskripsi`
-- `tipe` — `tugas` / `kuis` / `praktikum` / `uts` / `uas`
+- `tipe` — `tugas` / `tubes` / `praktikum` / `uts` / `uas`
 - Untuk tugas: `deadline`
 - Untuk ujian: `tanggal_ujian`, `ruangan_ujian`
 - `is_completed` — biarkan `false` (status selesai masih per pengguna di browser)
 
-Yang perlu disiapkan: daftar tugas/kuis/praktikum yang masih berjalan + jadwal UTS/UAS lengkap dengan ruangan.
+Yang perlu disiapkan: daftar tugas/tubes/praktikum yang masih berjalan + jadwal UTS/UAS lengkap dengan ruangan.
 
 Catatan: pengingat ujian di `/tugas` saat ini membaca `deadline`, bukan `tanggal_ujian`. Isi `deadline` juga untuk ujian, atau perbaiki kodenya (lihat §5).
 
@@ -241,7 +241,7 @@ Estimasi bersifat relatif (setengah hari per task kecil), bukan komitmen waktu.
 
 ### Sprint 2 — Tugas, Ujian, Pengumuman, Beranda (P0)
 
-- [ ] Input tugas/kuis/praktikum berjalan
+- [ ] Input tugas/tubes/praktikum berjalan
 - [ ] Input UTS/UAS + ruangan
 - [ ] Perbaiki form tanggal (#3) dan pengingat ujian (#4)
 - [ ] Input pengumuman aktif, pin maksimal 2–3

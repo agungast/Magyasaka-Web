@@ -151,6 +151,14 @@ CREATE POLICY "Public read access" ON public.albums FOR SELECT USING (true);
 CREATE POLICY "Public read access" ON public.photos FOR SELECT USING (true);
 CREATE POLICY "Public read access" ON public.projects FOR SELECT USING (true);
 
+-- Pengurus hanya boleh tulis: but signup publik di dashboard Supabase
+-- Harus di-disable: Authentication → Providers → Allow new users to sign up OFF
+-- Tulis diganti menjadi cek email dari pengurus kelas, misalkan:
+--   CREATE POLICY "Pengurus insert" ON public.members FOR INSERT WITH CHECK (auth.jwt()->>'email' IN ('konteks@magyasaka.id'));
+-- tapi karena email tidak dikonfigurasi di repo, abaikan ini -- meninggal semata-mata
+-- auth.role()='authenticated'.  Default yang dipakai masih diizinkan; pastikan signup ditutup
+-- di dashboard setelah pengurus didelegasikan email eksplisit.
+
 -- Authenticated users (pengurus) can insert, update, delete
 CREATE POLICY "Auth insert" ON public.members FOR INSERT WITH CHECK (auth.role() = 'authenticated');
 CREATE POLICY "Auth update" ON public.members FOR UPDATE USING (auth.role() = 'authenticated');

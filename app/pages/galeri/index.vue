@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useSeoMeta } from '#app'
+import { useAlbums } from '~/composables/useData'
 // Fase 3: Galeri Kegiatan
 useSeoMeta({ title: 'Galeri Kegiatan — Magyasaka' })
 
@@ -50,8 +53,8 @@ function getPhotoCount(album: any) {
           <UCard class="card-hover overflow-hidden h-full">
             <!-- Cover placeholder -->
             <Plate class="mb-4">
-              <div v-if="album.cover_url" class="w-full h-full">
-                <img :src="album.cover_url" :alt="album.nama" class="w-full h-full object-cover" />
+              <div v-if="album.cover_url || album.photos?.[0]?.url" class="w-full h-full">
+                <img :src="album.cover_url || album.photos?.[0]?.url" :alt="album.nama" class="w-full h-full object-cover" />
               </div>
               <div v-else class="w-full h-full flex items-center justify-center">
                 <span class="text-xs text-muted">{{ getPhotoCount(album) }} foto</span>
@@ -66,7 +69,7 @@ function getPhotoCount(album: any) {
               <div class="flex items-center gap-3 text-xs text-muted">
                 <span class="flex items-center gap-1">
                   <UIcon name="i-lucide-calendar" />
-                  {{ formatDate(album.tanggal_kegiatan) }}
+                  {{ formatDate(album.tanggal_kegiatan || '') }}
                 </span>
                 <span class="flex items-center gap-1">
                   <UIcon name="i-lucide-image" />
@@ -94,8 +97,8 @@ function getPhotoCount(album: any) {
         >
           <UCard class="card-hover h-full">
             <Plate class="mb-3">
-              <div v-if="album.cover_url" class="w-full h-full">
-                <img :src="album.cover_url" :alt="album.nama" class="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+              <div v-if="album.cover_url || album.photos?.[0]?.url" class="w-full h-full">
+                <img :src="album.cover_url || album.photos?.[0]?.url" :alt="album.nama" class="w-full h-full object-cover group-hover:scale-105 transition-transform" />
               </div>
               <div v-else class="w-full h-full flex items-center justify-center">
                 <UIcon name="i-lucide-camera" class="text-3xl text-muted" />
@@ -106,7 +109,7 @@ function getPhotoCount(album: any) {
             <div class="flex items-center gap-3 text-xs text-muted">
               <span class="flex items-center gap-1">
                 <UIcon name="i-lucide-calendar" />
-                {{ formatDate(album.tanggal_kegiatan) }}
+                {{ formatDate(album.tanggal_kegiatan || '') }}
               </span>
               <span class="flex items-center gap-1">
                 <UIcon name="i-lucide-image" />

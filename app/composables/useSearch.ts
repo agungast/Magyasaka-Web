@@ -1,5 +1,7 @@
 // Composable untuk pencarian global menggunakan Fuse.js
 import Fuse from 'fuse.js'
+import { computed, ref, watch } from 'vue'
+import { useAnnouncements, useSchedules, useAssignments, useMembers, useProjects } from './useData'
 
 interface SearchItem {
   title: string
@@ -90,13 +92,13 @@ export function useSearch() {
     })
   })
 
-  watch(searchQuery, (query) => {
+  watch(searchQuery, (query: string) => {
     if (!query || query.length < 2) {
       searchResults.value = []
       return
     }
     const results = fuse.value.search(query)
-    searchResults.value = results.map(r => r.item).slice(0, 10)
+    searchResults.value = results.map((r: any) => r.item).slice(0, 10)
   })
 
   function openSearch() {

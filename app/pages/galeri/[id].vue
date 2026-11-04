@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import { computed, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import { useEventListener } from '@vueuse/core'
+import { useSeoMeta } from '#app'
+import { useAlbum } from '~/composables/useData'
 // Fase 3: Detail Album + Lightbox
 const route = useRoute()
 const albumId = route.params.id as string
@@ -70,7 +75,7 @@ if (import.meta.client) {
       <div class="flex items-center gap-4 mt-3 text-sm text-muted">
         <span class="flex items-center gap-1">
           <UIcon name="i-lucide-calendar" />
-          {{ formatDate(album.tanggal_kegiatan) }}
+          {{ formatDate(album.tanggal_kegiatan || '') }}
         </span>
         <span class="flex items-center gap-1">
           <UIcon name="i-lucide-image" />
@@ -78,6 +83,8 @@ if (import.meta.client) {
         </span>
       </div>
     </div>
+
+    <div v-else class="py-20 text-center text-muted">Album ini tidak ditemukan.</div>
 
     <!-- Photo Grid -->
     <div v-if="album?.photos?.length" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -138,10 +145,10 @@ if (import.meta.client) {
         </button>
 
         <div class="max-w-4xl max-h-[80vh] flex items-center justify-center p-4">
-          <div v-if="album.photos[lightboxIndex]?.url">
+          <div v-if="album && album.photos && album.photos[lightboxIndex]?.url">
             <img
-              :src="album.photos[lightboxIndex].url"
-              :alt="album.photos[lightboxIndex].caption || ''"
+              :src="album?.photos?.[lightboxIndex]?.url"
+              :alt="album?.photos?.[lightboxIndex]?.caption || ''"
               class="max-w-full max-h-[80vh] object-contain rounded-lg"
             />
           </div>
@@ -151,8 +158,8 @@ if (import.meta.client) {
         </div>
 
         <div class="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/70 text-sm">
-          {{ lightboxIndex + 1 }} / {{ album.photos.length }}
-          <span v-if="album.photos[lightboxIndex]?.caption" class="ml-2">— {{ album.photos[lightboxIndex].caption }}</span>
+          {{ lightboxIndex + 1 }} / {{ album?.photos?.length || 0 }}
+          <span v-if="album && album.photos && album.photos[lightboxIndex]?.caption" class="ml-2">— {{ album?.photos?.[lightboxIndex]?.caption }}</span>
         </div>
       </div>
     </Teleport>

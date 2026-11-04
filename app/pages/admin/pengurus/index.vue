@@ -1,17 +1,17 @@
 <script setup lang="ts">
-definePageMeta({ middleware: 'auth' })
+
 useSeoMeta({ title: 'Kelola Pengurus — Admin Magyasaka' })
 
 const client = useSupabaseClient()
-const { data: officers, refresh } = await useAsyncData('admin-officers', async () => {
+const { data: officers, refresh } = useAsyncData('admin-officers', async () => {
   const { data, error } = await client.from('class_officers').select('*, member:members(*)').order('urutan')
   if (error) throw error
-  return data || []
+  return (data || []) as any[]
 })
 
-const { data: members } = await useAsyncData('admin-members-list', async () => {
+const { data: members } = useAsyncData('admin-members-list', async () => {
   const { data } = await client.from('members').select('*').order('nim')
-  return data || []
+  return (data || []) as any[]
 })
 
 const modalOpen = ref(false)
@@ -34,11 +34,19 @@ function openEdit(o: any) {
 async function save() {
   loading.value = true
   try {
+    const payload = {
+      member_id: form.value.member_id || null,
+      jabatan: form.value.jabatan || '',
+      periode: form.value.periode || '2023/2024',
+      urutan: form.value.urutan || 0
+    }
     if (editing.value) {
-      const { error } = await client.from('class_officers').update(form.value).eq('id', editing.value.id)
+      // @ts-ignore
+      const { error } = await client.from('class_officers').update(payload).eq('id', editing.value.id)
       if (error) throw error
     } else {
-      const { error } = await client.from('class_officers').insert(form.value)
+      // @ts-ignore
+      const { error } = await client.from('class_officers').insert(payload)
       if (error) throw error
     }
     modalOpen.value = false

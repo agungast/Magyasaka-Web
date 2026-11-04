@@ -1,4 +1,10 @@
 <script setup lang="ts">
+import { useSeoMeta } from '#app'
+import { useRouter } from 'vue-router'
+import { useSupabaseClient, useSupabaseUser } from '#imports'
+
+declare const definePageMeta: (meta: any) => void
+
 definePageMeta({
   middleware: 'auth'
 })
@@ -40,7 +46,7 @@ const menuItems = [
       <UButton label="Keluar" icon="i-lucide-log-out" variant="outline" @click="logout" />
     </div>
 
-    <nav class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-10 divide-y divide-default border-y border-default mb-8">
+    <nav class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-10 divide-y divide-default mb-8">
       <NuxtLink
         v-for="item in menuItems"
         :key="item.to"

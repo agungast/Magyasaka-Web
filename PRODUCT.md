@@ -31,7 +31,7 @@ Mekanisme pembeda yang tidak bisa disalin apa adanya oleh produk lain: satu pane
 ## Operating Context
 
 - **Pemakaian harian:** mahasiswa mengecek jadwal dan tenggat dengan cepat, sering di antara kelas, lewat perangkat kecil. Pola yang berulang: "hari ini ada apa", "tugas saya mana", "ada pengumuman baru".
-- **Deadline sebagai fitur utama, bukan pelengkap:** tugas/ujian tampil dengan hitung mundur ("Hari ini!", "Besok", "3 hari lagi", "Terlewat") dan filter tipe (tugas/uts/uas/kuis/praktikum). Badge "Selesai ✓" menandai tugas yang sudah dikerjakan.
+- **Deadline sebagai fitur utama, bukan pelengkap:** tugas/ujian tampil dengan hitung mundur ("Hari ini!", "Besok", "3 hari lagi", "Terlewat") dan filter tipe (tugas/uts/uas/tubes/praktikum). Badge "Selesai ✓" menandai tugas yang sudah dikerjakan.
 - **Pencarian global lintas kategori:** satu modal (Ctrl+K / ⌘+K) mencari pengumuman, jadwal, tugas, anggota, dan proyek sekaligus, minimal 2 karakter, 10 hasil teratas, dikelompokkan per kategori.
 - **Ritual penerbitan pengurus:** buka `/admin` → pilih menu → isi formulir modal → simpan → `refresh()`. Penghapusan memakai dialog konfirmasi browser. Tidak ada draft, tidak ada riwayat revisi, tidak ada jejak audit.
 - **Alur unggah foto tidak langsung:** panel galeri hanya meminta **URL foto**, dengan instruksi untuk mengunggah file lebih dulu secara manual ke Supabase Storage bucket `gallery`, lalu menempelkan URL-nya. Ini alur kerja nyata yang sudah berjalan, bukan placeholder yang belum jadi.
@@ -61,7 +61,7 @@ Mekanisme pembeda yang tidak bisa disalin apa adanya oleh produk lain: satu pane
 
 **Istilah domain (nilai literal di database, tidak boleh diterjemahkan bebas)**
 
-`hari` Senin–Sabtu · `jabatan` Ketua Kelas/Wakil Ketua/Sekretaris/Bendahara/Koordinator Akademik · `kategori` pengumuman umum/akademik/kegiatan/penting · `tipe` tugas tugas/uts/uas/kuis/praktikum · `status` anggota aktif/tidak aktif/cuti.
+`hari` Senin–Sabtu · `jabatan` Ketua Kelas/Wakil Ketua/Sekretaris/Bendahara/Koordinator Akademik · `kategori` pengumuman umum/akademik/kegiatan/penting · `tipe` tugas tugas/uts/uas/tubes/praktikum · `status` anggota aktif/tidak aktif/cuti.
 
 **Keputusan produk yang masih terbuka**
 

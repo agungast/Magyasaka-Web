@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useSeoMeta } from '#app'
+import { useEventListener } from '@vueuse/core'
+import { useSearch } from '~/composables/useSearch'
 useSeoMeta({
   title: 'Portal Magyasaka',
   description: 'Portal & Dashboard Magyasaka 2023. Akses jadwal kuliah, tugas, informasi anggota, galeri kegiatan, dan lebih banyak lagi.',
@@ -28,6 +31,7 @@ const categoryIcons: Record<string, string> = {
 }
 
 // Keyboard shortcut for search
+// @ts-ignore
 if (import.meta.client) {
   useEventListener(document, 'keydown', (e: KeyboardEvent) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') {

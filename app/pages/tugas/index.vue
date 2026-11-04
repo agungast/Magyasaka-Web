@@ -1,11 +1,15 @@
 <script setup lang="ts">
+import { computed, ref } from 'vue'
+import { useSeoMeta } from '#app'
+import { useState } from '#imports'
+import { useAssignments } from '~/composables/useData'
 // Fase 2: Daftar Tugas & Ujian
 useSeoMeta({ title: 'Tugas & Ujian — Magyasaka' })
 
 const { data: assignments } = useAssignments()
 
 const filterType = ref('semua')
-const filterTypes = ['semua', 'tugas', 'uts', 'uas', 'kuis', 'praktikum']
+const filterTypes = ['semua', 'tugas', 'uts', 'uas', 'tubes', 'praktikum']
 
 // Local completion tracking (stored in browser)
 const completedTasks = useState<Set<string>>('completedTasks', () => new Set())
@@ -31,7 +35,7 @@ function toggleComplete(id: string) {
 }
 
 const filteredAssignments = computed(() => {
-  let items = assignments.value || []
+  let items = (assignments.value || []) as any[]
   if (filterType.value !== 'semua') {
     items = items.filter((a: any) => a.tipe === filterType.value)
   }
@@ -39,7 +43,7 @@ const filteredAssignments = computed(() => {
 })
 
 const upcomingExams = computed(() =>
-  assignments.value?.filter((a: any) => ['uts', 'uas'].includes(a.tipe) && a.deadline && new Date(a.deadline) > new Date()) || []
+  assignments.value?.filter((a: any) => ['uts', 'uas'].includes(a.tipe) && (a.deadline || a.tanggal_ujian) && new Date(a.deadline || a.tanggal_ujian) > new Date()) || []
 )
 
 function formatDate(dateStr: string) {
@@ -81,7 +85,7 @@ const tipeIcon: Record<string, string> = {
   tugas: 'i-lucide-file-text',
   uts: 'i-lucide-file-warning',
   uas: 'i-lucide-file-warning',
-  kuis: 'i-lucide-help-circle',
+  tubes: 'i-lucide-help-circle',
   praktikum: 'i-lucide-flask-conical'
 }
 
@@ -89,7 +93,7 @@ const tipeColor: Record<string, string> = {
   tugas: '#6366f1',
   uts: '#f43f5e',
   uas: '#ef4444',
-  kuis: '#f59e0b',
+  tubes: '#f59e0b',
   praktikum: '#10b981'
 }
 </script>
@@ -122,15 +126,15 @@ const tipeColor: Record<string, string> = {
           class="card-hover"
         >
           <div class="flex items-center gap-3">
-            <div class="w-12 h-12 rounded-xl bg-error/10 flex items-center justify-center flex-shrink-0">
+            <div class="w-12 h-12 rounded-xl bg-error/10 flex items-center justify-center shrink-0">
               <UIcon name="i-lucide-file-warning" class="text-2xl text-error" />
             </div>
             <div class="flex-1">
               <p class="font-bold text-sm">{{ exam.judul }}</p>
               <p class="text-xs text-muted">{{ exam.mata_kuliah }}</p>
               <div class="flex items-center gap-2 mt-1">
-                <UBadge :label="daysUntil(exam.deadline || exam.tanggal_ujian)" :color="deadlineColor(exam.deadline || exam.tanggal_ujian)" variant="subtle" size="xs" />
-                <span class="text-xs text-muted">{{ formatDate(exam.deadline || exam.tanggal_ujian) }}</span>
+                <UBadge :label="daysUntil((exam.deadline || exam.tanggal_ujian) ?? '')" :color="deadlineColor((exam.deadline || exam.tanggal_ujian) ?? '')" variant="subtle" size="xs" />
+                <span class="text-xs text-muted">{{ formatDate((exam.deadline || exam.tanggal_ujian) ?? '') }}</span>
               </div>
             </div>
           </div>
@@ -162,7 +166,7 @@ const tipeColor: Record<string, string> = {
           <!-- Checkbox -->
           <button
             :class="[
-              'w-6 h-6 rounded-md border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all',
+              'w-6 h-6 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all',
               completedTasks.has(task.id)
                 ? 'bg-success border-success text-inverted'
                 : 'border-default hover:border-primary'
@@ -174,10 +178,10 @@ const tipeColor: Record<string, string> = {
 
           <!-- Icon -->
           <div
-            class="accent w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-            :style="{ '--accent': tipeColor[task.tipe] || '#6366f1' }"
+            class="accent w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
+            :style="{ '--accent': tipeColor[task.tipe || 'tugas'] || '#6366f1' }"
           >
-            <UIcon :name="tipeIcon[task.tipe] || 'i-lucide-file-text'" class="text-lg" />
+            <UIcon :name="tipeIcon[task.tipe || 'tugas'] || 'i-lucide-file-text'" class="text-lg" />
           </div>
 
           <!-- Content -->
@@ -188,7 +192,7 @@ const tipeColor: Record<string, string> = {
             <p class="text-xs text-muted mt-0.5">{{ task.mata_kuliah }}</p>
             <p v-if="task.deskripsi" class="text-xs text-muted mt-1 line-clamp-2">{{ task.deskripsi }}</p>
             <div class="flex items-center gap-2 mt-2">
-              <UBadge :label="task.tipe" variant="subtle" size="xs" />
+              <UBadge :label="task.tipe || 'Tugas'" variant="subtle" size="xs" />
               <span v-if="task.deadline" class="text-xs text-muted flex items-center gap-1">
                 <UIcon name="i-lucide-clock" />
                 {{ formatDate(task.deadline) }}
@@ -203,7 +207,7 @@ const tipeColor: Record<string, string> = {
             :color="deadlineColor(task.deadline)"
             variant="subtle"
             size="xs"
-            class="flex-shrink-0"
+            class="shrink-0"
           />
           <UBadge
             v-else-if="completedTasks.has(task.id)"
@@ -211,7 +215,7 @@ const tipeColor: Record<string, string> = {
             color="success"
             variant="subtle"
             size="xs"
-            class="flex-shrink-0"
+            class="shrink-0"
           />
         </div>
       </UCard>

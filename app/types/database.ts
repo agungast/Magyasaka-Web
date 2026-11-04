@@ -22,6 +22,7 @@ export interface Database {
         }
         Insert: Partial<Database['public']['Tables']['announcements']['Row']> & { judul: string; konten: string }
         Update: Partial<Database['public']['Tables']['announcements']['Row']>
+        Relationships: []
       }
       schedules: {
         Row: {
@@ -40,6 +41,7 @@ export interface Database {
         }
         Insert: Partial<Database['public']['Tables']['schedules']['Row']> & { mata_kuliah: string }
         Update: Partial<Database['public']['Tables']['schedules']['Row']>
+        Relationships: []
       }
       assignments: {
         Row: {
@@ -57,6 +59,7 @@ export interface Database {
         }
         Insert: Partial<Database['public']['Tables']['assignments']['Row']> & { judul: string; mata_kuliah: string; tipe: string }
         Update: Partial<Database['public']['Tables']['assignments']['Row']>
+        Relationships: []
       }
       members: {
         Row: {
@@ -73,6 +76,7 @@ export interface Database {
         }
         Insert: Partial<Database['public']['Tables']['members']['Row']> & { nim: string; nama: string }
         Update: Partial<Database['public']['Tables']['members']['Row']>
+        Relationships: []
       }
       class_officers: {
         Row: {
@@ -87,6 +91,7 @@ export interface Database {
         }
         Insert: Partial<Database['public']['Tables']['class_officers']['Row']> & { member_id: string; jabatan: string; periode: string; urutan: number }
         Update: Partial<Database['public']['Tables']['class_officers']['Row']>
+        Relationships: []
       }
       albums: {
         Row: {
@@ -102,6 +107,7 @@ export interface Database {
         }
         Insert: Partial<Database['public']['Tables']['albums']['Row']> & { nama: string; tanggal_kegiatan: string }
         Update: Partial<Database['public']['Tables']['albums']['Row']>
+        Relationships: []
       }
       photos: {
         Row: {
@@ -113,6 +119,15 @@ export interface Database {
         }
         Insert: Partial<Database['public']['Tables']['photos']['Row']> & { album_id: string; url: string }
         Update: Partial<Database['public']['Tables']['photos']['Row']>
+        Relationships: [
+          {
+            foreignKeyName: 'photos_album_id_fkey'
+            columns: ['album_id']
+            isOneToOne: false
+            referencedRelation: 'albums'
+            referencedColumns: ['id']
+          }
+        ]
       }
       projects: {
         Row: {
@@ -132,11 +147,12 @@ export interface Database {
         }
         Insert: Partial<Database['public']['Tables']['projects']['Row']> & { nama: string; deskripsi: string; detail: string }
         Update: Partial<Database['public']['Tables']['projects']['Row']>
+        Relationships: []
       }
     }
-    Views: Record<string, never>
-    Functions: Record<string, never>
-    Enums: Record<string, never>
-    CompositeTypes: Record<string, never>
+    Views: { [_ in never]: never }
+    Functions: { [_ in never]: never }
+    Enums: { [_ in never]: never }
+    CompositeTypes: { [_ in never]: never }
   }
 }

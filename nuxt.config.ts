@@ -1,4 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+/// <reference types="nuxt" />
 export default defineNuxtConfig({
   modules: [
     '@nuxt/eslint',
@@ -21,24 +22,22 @@ export default defineNuxtConfig({
     ]
   },
 
-  routeRules: {
-    '/': { prerender: true },
-    '/admin/**': { ssr: false },
-    '/login': { ssr: false },
-    '/confirm': { ssr: false }
-  },
+  routeRules: {},
 
   supabase: {
     redirect: false,
-    redirectOptions: {
-      login: '/login',
-      callback: '/confirm'
-    }
+    clientOptions: {
+      auth: {
+        persistSession: true,
+        detectSessionInUrl: true
+      }
+    },
+    types: '~/types/database.ts'
   },
 
   app: {
     head: {
-      title: 'Portal TRK 2023 — Magyasaka',
+      title: 'Portal Magyasaka',
       meta: [
         { name: 'description', content: 'Portal & Dashboard resmi Kelas Teknik Rekayasa Komputer Angkatan 2023' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -53,6 +52,10 @@ export default defineNuxtConfig({
         lang: 'id'
       }
     }
+  },
+
+  experimental: {
+    typescriptPlugin: true
   },
 
   compatibilityDate: '2026-06-30',

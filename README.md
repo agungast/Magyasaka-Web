@@ -1,64 +1,42 @@
-# Nuxt Starter Template
+# Portal Magyasaka — Angkatan 2023
 
-[![Nuxt UI](https://img.shields.io/badge/Made%20with-Nuxt%20UI-00DC82?logo=nuxt&labelColor=020420)](https://ui.nuxt.com)
+Portal akademik kelas: pengumuman, jadwal, tugas/ujian, pengurus, galeri, dan proyek.
 
-Use this template to get started with [Nuxt UI](https://ui.nuxt.com) quickly.
-
-- [Live demo](https://starter-template.nuxt.dev/)
-- [Documentation](https://ui.nuxt.com/docs/getting-started/installation/nuxt)
-
-<a href="https://starter-template.nuxt.dev/" target="_blank">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://ui.nuxt.com/assets/templates/nuxt/starter-dark.png">
-    <source media="(prefers-color-scheme: light)" srcset="https://ui.nuxt.com/assets/templates/nuxt/starter-light.png">
-    <img alt="Nuxt Starter Template" src="https://ui.nuxt.com/assets/templates/nuxt/starter-light.png" width="830" height="466">
-  </picture>
-</a>
-
-> The starter template for Vue is on https://github.com/nuxt-ui-templates/starter-vue.
-
-## Quick Start
-
-```bash [Terminal]
-npm create nuxt@latest -- -t ui
-```
-
-## Deploy your own
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-name=starter&repository-url=https%3A%2F%2Fgithub.com%2Fnuxt-ui-templates%2Fstarter&demo-image=https%3A%2F%2Fui.nuxt.com%2Fassets%2Ftemplates%2Fnuxt%2Fstarter-dark.png&demo-url=https%3A%2F%2Fstarter-template.nuxt.dev%2F&demo-title=Nuxt%20Starter%20Template&demo-description=A%20minimal%20template%20to%20get%20started%20with%20Nuxt%20UI.)
+## Prasyarat
+- Node.js 20+
+- Akun Supabase (project `vwfwnsrplkfolmgehxbb` atau ganti `.env`)
 
 ## Setup
-
-Make sure to install the dependencies:
-
 ```bash
-pnpm install
+npm install
 ```
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-pnpm dev
+Isi `.env` (salin dari `.env.example` jika ada; sudah berisi `SUPABASE_URL` dan `SUPABASE_KEY` default):
+```
+SUPABASE_URL=https://vwfwnsrplkfolmgehxbb.supabase.co
+SUPABASE_KEY=eyJ...
 ```
 
-## Production
-
-Build the application for production:
-
+## Migrasi
 ```bash
-pnpm build
+npx supabase db push --project-id vwfwnsrplkfolmgehxbb
 ```
+Lalu matikan **Allow new users to sign up** di dashboard Supabase (`Authentication → Providers`).
 
-Locally preview production build:
+## Akun Pengurus
+Buat satu akun `authenticated` via dashboard Supabase (`Authentication → Add User`) — ini adalah pengurus kelas yang bisa menulis data.
 
+## Dev
 ```bash
-pnpm preview
+npm run dev
 ```
+Buka `http://localhost:3000`.
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+Masuk sebagai pengurus: `/login` (Supabase Auth) → akses `/admin/*` untuk membuat/edit data.
 
-## Renovate integration
+## Deploy
+- **Vercel:** import repo → set Environment Variables (`SUPABASE_URL`, `SUPABASE_KEY`) → deploy.
+- **SSR:** sudah aktif (`routeRules` kosong); tidak perlu `ssr:false`.
 
-Install [Renovate GitHub app](https://github.com/apps/renovate/installations/select_target) on your repository and you are good to go.
+## Struktur Modul Admin
+`/admin/pengumuman`, `/admin/jadwal`, `/admin/tugas`, `/admin/anggota`, `/admin/galeri`, `/admin/proyek`.

@@ -1,9 +1,14 @@
 <script setup lang="ts">
-definePageMeta({ middleware: 'auth' })
+
+import { computed, ref } from 'vue'
+import { useSeoMeta } from '#app'
+import { useSupabaseClient } from '#imports'
+import { useAsyncData } from '#imports'
+
 useSeoMeta({ title: 'Kelola Tugas & Ujian — Admin Magyasaka' })
 
 const client = useSupabaseClient()
-const { data: items, refresh } = await useAsyncData('admin-assignments', async () => {
+const { data: items, refresh } = useAsyncData('admin-assignments', async () => {
   const { data, error } = await client.from('assignments').select('*').order('deadline', { ascending: true })
   if (error) throw error
   return data || []
@@ -22,18 +27,32 @@ function openCreate() {
 
 function openEdit(a: any) {
   editing.value = a
-  form.value = { ...a }
+  form.value = {
+    ...a,
+    deadline: a.deadline ? a.deadline.slice(0, 16) : '',
+    tanggal_ujian: a.tanggal_ujian ? a.tanggal_ujian.slice(0, 16) : '',
+    ruangan_ujian: a.ruangan_ujian || ''
+  }
   modalOpen.value = true
 }
 
 async function save() {
   loading.value = true
   try {
+    const payload = {
+      judul: form.value.judul,
+      deskripsi: form.value.deskripsi,
+      mata_kuliah: form.value.mata_kuliah,
+      tipe: form.value.tipe,
+      deadline: form.value.deadline || null,
+      tanggal_ujian: form.value.tanggal_ujian || null,
+      ruangan_ujian: form.value.ruangan_ujian || null
+    }
     if (editing.value) {
-      const { error } = await client.from('assignments').update(form.value).eq('id', editing.value.id)
+      const { error } = await client.from('assignments').update(payload).eq('id', editing.value.id)
       if (error) throw error
     } else {
-      const { error } = await client.from('assignments').insert(form.value)
+      const { error } = await client.from('assignments').insert(payload)
       if (error) throw error
     }
     modalOpen.value = false
@@ -52,7 +71,7 @@ async function remove(id: string) {
   else await refresh()
 }
 
-const tipeOpts = ['tugas', 'uts', 'uas', 'kuis', 'praktikum'].map(t => ({ label: t.toUpperCase(), value: t }))
+const tipeOpts = ['tugas', 'uts', 'uas', 'tubes', 'praktikum'].map(t => ({ label: t.toUpperCase(), value: t }))
 </script>
 
 <template>

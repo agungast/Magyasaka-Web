@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useSeoMeta } from '#app'
+import { useOfficers } from '~/composables/useData'
+
 // Fase 2: Struktur Pengurus Kelas
 useSeoMeta({ title: 'Pengurus Kelas — Magyasaka' })
 
@@ -40,7 +43,7 @@ const jabatanColor: Record<string, string> = {
         <UIcon name="i-lucide-shield" class="text-primary" />
         Struktur Pengurus Kelas
       </h1>
-      <p class="text-muted mt-1">Pengurus Kelas Magyasaka Periode 2023/2024</p>
+      <p class="text-muted mt-1">Kelompok Pengurus Magyasaka</p>
     </div>
 
     <!-- Organization Chart -->

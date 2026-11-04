@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { computed, ref } from 'vue'
+import { useSeoMeta } from '#app'
+import { useMembers } from '~/composables/useData'
+
 // Fase 2: Daftar Anggota + Pencarian
 useSeoMeta({ title: 'Anggota Kelas — Magyasaka' })
 
@@ -91,14 +95,14 @@ function getInitials(name: string) {
         <div class="flex items-center gap-3">
           <!-- Avatar -->
           <div
-            class="w-12 h-12 rounded-full bg-elevated border border-default flex items-center justify-center flex-shrink-0 font-display font-bold text-sm"
+            class="w-12 h-12 rounded-full bg-elevated border border-default flex items-center justify-center shrink-0 font-display font-bold text-sm"
           >
             {{ getInitials(member.nama) }}
           </div>
           <div class="flex-1 min-w-0">
             <h2 class="font-semibold text-sm truncate">{{ member.nama }}</h2>
             <p class="text-xs text-muted">NIM: {{ member.nim }}</p>
-            <p v-if="member.email" class="text-xs text-muted truncate">{{ member.email }}</p>
+            <p v-if="member.email" class="text-xs text-muted break-all">{{ member.email }}</p>
           </div>
           <UBadge
             :label="member.status || 'aktif'"
