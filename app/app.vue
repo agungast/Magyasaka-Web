@@ -31,7 +31,6 @@ const categoryIcons: Record<string, string> = {
 }
 
 // Keyboard shortcut for search
-// @ts-ignore
 if (import.meta.client) {
   useEventListener(document, 'keydown', (e: KeyboardEvent) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
@@ -66,7 +65,7 @@ if (import.meta.client) {
             v-for="item in navItems"
             :key="item.to"
             :to="item.to"
-            class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-muted rounded-md transition-colors duration-200 hover:text-foreground hover:bg-elevated/60"
+            class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-muted rounded-md transition-colors duration-200 hover:bg-elevated/60"
             active-class="text-primary!"
           >
             <UIcon :name="item.icon" class="text-base" />

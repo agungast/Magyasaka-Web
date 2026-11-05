@@ -39,7 +39,7 @@ async function handleLogin() {
     } else {
       router.push('/admin')
     }
-  } catch (e: any) {
+  } catch {
     errorMsg.value = 'Terjadi kesalahan. Pastikan koneksi ke Supabase sudah dikonfigurasi.'
   } finally {
     loading.value = false

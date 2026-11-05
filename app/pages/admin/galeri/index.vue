@@ -41,11 +41,9 @@ async function save() {
       is_featured: form.value.is_featured
     }
     if (editing.value) {
-      // @ts-ignore
       const { error } = await client.from('albums').update(payload as any).eq('id', editing.value.id)
       if (error) throw error
     } else {
-      // @ts-ignore
       const { error } = await client.from('albums').insert(payload as any)
       if (error) throw error
     }
@@ -60,7 +58,6 @@ async function save() {
 
 async function remove(id: string) {
   if (!confirm('Hapus album ini?')) return
-  // @ts-ignore
   const { error } = await client.from('albums').delete().eq('id', id)
   if (error) alert(error.message)
   else await refresh()
@@ -81,13 +78,11 @@ function openPhotos(a: any) {
 
 async function addPhoto() {
   if (!activeAlbum.value || !photoUrl.value) return
-  // @ts-ignore
   const { error } = await client.from('photos').insert({ album_id: activeAlbum.value.id, url: photoUrl.value, caption: photoCaption.value } as any)
   if (error) alert(error.message)
   else {
     // Auto-set cover jika belum ada
     if (!activeAlbum.value.cover_url) {
-      // @ts-ignore
       await client.from('albums').update({ cover_url: photoUrl.value } as any).eq('id', activeAlbum.value.id)
     }
     photoModal.value = false
@@ -105,14 +100,12 @@ async function removePhoto(id: string) {
     // Jika foto yang dihapus adalah cover_url, set ke URL berikutnya atau null
     if (activeAlbum.value.cover_url === photo?.url) {
       const next = activeAlbum.value.photos.find((p: any) => p.id !== id)
-      // @ts-ignore
       await client.from('albums').update({ cover_url: next?.url || null }).eq('id', activeAlbum.value.id)
     }
   }
 }
 
 async function setCover(albumId: string, url: string) {
-  // @ts-ignore
   const { error } = await client.from('albums').update({ cover_url: url } as any).eq('id', albumId)
   if (error) alert(error.message)
   else await refresh()

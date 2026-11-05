@@ -1,9 +1,8 @@
 <script setup lang="ts">
 
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { useSeoMeta } from '#app'
-import { useSupabaseClient } from '#imports'
-import { useAsyncData } from '#imports'
+import { useSupabaseClient, useAsyncData } from '#imports'
 
 useSeoMeta({ title: 'Kelola Tugas & Ujian — Admin Magyasaka' })
 

@@ -24,9 +24,22 @@ export interface Database {
         Update: Partial<Database['public']['Tables']['announcements']['Row']>
         Relationships: []
       }
+      semesters: {
+        Row: {
+          id: string
+          nomor: number
+          tipe: string
+          tahun_ajaran: string
+          created_at?: string | null
+        }
+        Insert: Partial<Database['public']['Tables']['semesters']['Row']> & { nomor: number; tipe: string; tahun_ajaran: string }
+        Update: Partial<Database['public']['Tables']['semesters']['Row']>
+        Relationships: []
+      }
       schedules: {
         Row: {
           id: string
+          semester_id?: string | null
           mata_kuliah: string
           dosen: string
           hari: string
@@ -41,7 +54,15 @@ export interface Database {
         }
         Insert: Partial<Database['public']['Tables']['schedules']['Row']> & { mata_kuliah: string }
         Update: Partial<Database['public']['Tables']['schedules']['Row']>
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'schedules_semester_id_fkey'
+            columns: ['semester_id']
+            isOneToOne: false
+            referencedRelation: 'semesters'
+            referencedColumns: ['id']
+          }
+        ]
       }
       assignments: {
         Row: {

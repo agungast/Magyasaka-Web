@@ -32,15 +32,19 @@ const mockAnnouncements = [
   }
 ]
 
+const mockSemesters = [
+  { id: '1', nomor: 1, tipe: 'GASAL', tahun_ajaran: '2023/2024', created_at: '2023-08-01T00:00:00.000Z' }
+]
+
 const mockSchedules = [
-  { id: '1', mata_kuliah: 'Algoritma & Pemrograman', dosen: 'Dr. Ahmad Fauzi, M.T.', hari: 'Senin', jam_mulai: '08:00', jam_selesai: '10:30', ruangan: 'Lab Komputer 1', kode_mk: 'TRK201', sks: 3, warna: '#6366f1' },
-  { id: '2', mata_kuliah: 'Matematika Diskrit', dosen: 'Prof. Siti Rahayu, Ph.D.', hari: 'Senin', jam_mulai: '13:00', jam_selesai: '15:30', ruangan: 'R.301', kode_mk: 'TRK202', sks: 3, warna: '#8b5cf6' },
-  { id: '3', mata_kuliah: 'Arsitektur Komputer', dosen: 'Dr. Budi Santoso, M.Kom.', hari: 'Selasa', jam_mulai: '08:00', jam_selesai: '10:30', ruangan: 'R.205', kode_mk: 'TRK203', sks: 3, warna: '#ec4899' },
-  { id: '4', mata_kuliah: 'Jaringan Komputer', dosen: 'Ir. Maya Dewi, M.T.', hari: 'Selasa', jam_mulai: '13:00', jam_selesai: '15:30', ruangan: 'Lab Jaringan', kode_mk: 'TRK204', sks: 3, warna: '#f59e0b' },
-  { id: '5', mata_kuliah: 'Basis Data', dosen: 'Dr. Rudi Hartono, M.Cs.', hari: 'Rabu', jam_mulai: '08:00', jam_selesai: '10:30', ruangan: 'Lab Komputer 2', kode_mk: 'TRK205', sks: 3, warna: '#10b981' },
-  { id: '6', mata_kuliah: 'Sistem Operasi', dosen: 'Dr. Eko Prasetyo, M.T.', hari: 'Rabu', jam_mulai: '13:00', jam_selesai: '15:30', ruangan: 'R.302', kode_mk: 'TRK206', sks: 3, warna: '#f43f5e' },
-  { id: '7', mata_kuliah: 'Pemrograman Web', dosen: 'Dra. Rina Kusuma, M.Kom.', hari: 'Kamis', jam_mulai: '08:00', jam_selesai: '10:30', ruangan: 'Lab Komputer 1', kode_mk: 'TRK207', sks: 3, warna: '#0ea5e9' },
-  { id: '8', mata_kuliah: 'Statistika & Probabilitas', dosen: 'Dr. Hendra Wijaya, M.Si.', hari: 'Jumat', jam_mulai: '08:00', jam_selesai: '10:30', ruangan: 'R.201', kode_mk: 'TRK208', sks: 3, warna: '#a855f7' }
+  { id: '1', semester_id: '1', mata_kuliah: 'Algoritma & Pemrograman', dosen: 'Dr. Ahmad Fauzi, M.T.', hari: 'Senin', jam_mulai: '08:00', jam_selesai: '10:30', ruangan: 'Lab Komputer 1', kode_mk: 'TRK201', sks: 3, warna: '#6366f1' },
+  { id: '2', semester_id: '1', mata_kuliah: 'Matematika Diskrit', dosen: 'Prof. Siti Rahayu, Ph.D.', hari: 'Senin', jam_mulai: '13:00', jam_selesai: '15:30', ruangan: 'R.301', kode_mk: 'TRK202', sks: 3, warna: '#8b5cf6' },
+  { id: '3', semester_id: '1', mata_kuliah: 'Arsitektur Komputer', dosen: 'Dr. Budi Santoso, M.Kom.', hari: 'Selasa', jam_mulai: '08:00', jam_selesai: '10:30', ruangan: 'R.205', kode_mk: 'TRK203', sks: 3, warna: '#ec4899' },
+  { id: '4', semester_id: '1', mata_kuliah: 'Jaringan Komputer', dosen: 'Ir. Maya Dewi, M.T.', hari: 'Selasa', jam_mulai: '13:00', jam_selesai: '15:30', ruangan: 'Lab Jaringan', kode_mk: 'TRK204', sks: 3, warna: '#f59e0b' },
+  { id: '5', semester_id: '1', mata_kuliah: 'Basis Data', dosen: 'Dr. Rudi Hartono, M.Cs.', hari: 'Rabu', jam_mulai: '08:00', jam_selesai: '10:30', ruangan: 'Lab Komputer 2', kode_mk: 'TRK205', sks: 3, warna: '#10b981' },
+  { id: '6', semester_id: '1', mata_kuliah: 'Sistem Operasi', dosen: 'Dr. Eko Prasetyo, M.T.', hari: 'Rabu', jam_mulai: '13:00', jam_selesai: '15:30', ruangan: 'R.302', kode_mk: 'TRK206', sks: 3, warna: '#f43f5e' },
+  { id: '7', semester_id: '1', mata_kuliah: 'Pemrograman Web', dosen: 'Dra. Rina Kusuma, M.Kom.', hari: 'Kamis', jam_mulai: '08:00', jam_selesai: '10:30', ruangan: 'Lab Komputer 1', kode_mk: 'TRK207', sks: 3, warna: '#0ea5e9' },
+  { id: '8', semester_id: '1', mata_kuliah: 'Statistika & Probabilitas', dosen: 'Dr. Hendra Wijaya, M.Si.', hari: 'Jumat', jam_mulai: '08:00', jam_selesai: '10:30', ruangan: 'R.201', kode_mk: 'TRK208', sks: 3, warna: '#a855f7' }
 ]
 
 const mockAssignments = [
@@ -111,6 +115,25 @@ export function useSchedules() {
     }
     return mockSchedules
   }, { lazy: true })
+}
+
+export function useSemesters() {
+  return useAsyncData('semesters', async () => {
+    if (isSupabaseConfigured()) {
+      const client = useSupabaseClient()
+      const { data, error } = await client
+        .from('semesters')
+        .select('*')
+        .order('nomor')
+      if (error) throw error
+      return data
+    }
+    return mockSemesters
+  }, { lazy: true })
+}
+
+export function semesterLabel(semester: { nomor: number; tipe: string; tahun_ajaran: string }) {
+  return `Semester ${semester.nomor} ${semester.tipe} ${semester.tahun_ajaran}`
 }
 
 export function useAssignments() {

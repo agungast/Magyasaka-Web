@@ -35,17 +35,15 @@ async function save() {
   loading.value = true
   try {
     const payload = {
-      member_id: form.value.member_id || null,
+      member_id: form.value.member_id,
       jabatan: form.value.jabatan || '',
       periode: form.value.periode || '2023/2024',
       urutan: form.value.urutan || 0
     }
     if (editing.value) {
-      // @ts-ignore
       const { error } = await client.from('class_officers').update(payload).eq('id', editing.value.id)
       if (error) throw error
     } else {
-      // @ts-ignore
       const { error } = await client.from('class_officers').insert(payload)
       if (error) throw error
     }

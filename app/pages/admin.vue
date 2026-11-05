@@ -28,6 +28,7 @@ const menuItems = [
   { label: 'Anggota', to: '/admin/anggota', icon: 'i-lucide-users' },
   { label: 'Pengurus', to: '/admin/pengurus', icon: 'i-lucide-shield' },
   { label: 'Galeri', to: '/admin/galeri', icon: 'i-lucide-image' },
+  { label: 'Semester', to: '/admin/semester', icon: 'i-lucide-calendar-days' },
   { label: 'Proyek', to: '/admin/proyek', icon: 'i-lucide-folder-code' }
 ]
 </script>

@@ -1,11 +1,31 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
 import { useSeoMeta } from '#app'
-import { useSchedules } from '~/composables/useData'
+import { useSchedules, useSemesters, semesterLabel } from '~/composables/useData'
 // Fase 2: Jadwal Kuliah — Tampilan Mingguan
 useSeoMeta({ title: 'Jadwal Kuliah — Magyasaka' })
 
 const { data: schedules } = useSchedules()
+const { data: semesters } = useSemesters()
+
+const activeSemesterId = ref('')
+
+watchEffect(() => {
+  if (activeSemesterId.value || !semesters.value?.length) return
+  const latest = [...semesters.value]
+    .sort((a: any, b: any) => (b.created_at || '').localeCompare(a.created_at || ''))[0]
+  if (latest) activeSemesterId.value = latest.id
+})
+
+const activeSemester = computed(() =>
+  semesters.value?.find((s: any) => s.id === activeSemesterId.value) || null
+)
+
+const filteredSchedules = computed(() => {
+  const all = schedules.value || []
+  if (!semesters.value?.length || !activeSemesterId.value) return all
+  return all.filter((s: any) => s.semester_id === activeSemesterId.value)
+})
 
 const days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat']
 const currentDay = ref(days[Math.min(new Date().getDay() - 1, 4)])
@@ -15,10 +35,18 @@ if (new Date().getDay() === 0 || new Date().getDay() === 6) {
 
 const viewMode = ref<'week' | 'day'>('week')
 
+function blockStyle(s: any) {
+  const color = s.warna || '#6366f1'
+  return {
+    borderLeft: `4px solid ${color}`,
+    backgroundColor: `color-mix(in srgb, ${color} 14%, var(--ui-bg))`
+  }
+}
+
 const scheduleByDay = computed(() => {
   const grouped: Record<string, any[]> = {}
   days.forEach(d => { grouped[d] = [] })
-  schedules.value?.forEach((s: any) => {
+  filteredSchedules.value.forEach((s: any) => {
     if (grouped[s.hari]) {
       grouped[s.hari]!.push(s)
     }
@@ -32,11 +60,11 @@ const todayName = computed(() => {
 })
 
 const todaySchedules = computed(() =>
-  schedules.value?.filter((s: any) => s.hari === todayName.value) || []
+  filteredSchedules.value.filter((s: any) => s.hari === todayName.value)
 )
 
 const totalSKS = computed(() =>
-  schedules.value?.reduce((sum: number, s: any) => sum + (s.sks || 0), 0) || 0
+  filteredSchedules.value.reduce((sum: number, s: any) => sum + (s.sks || 0), 0)
 )
 </script>
 
@@ -49,7 +77,9 @@ const totalSKS = computed(() =>
           <UIcon name="i-lucide-calendar" class="text-primary" />
           Jadwal Kuliah
         </h1>
-        <p class="text-muted mt-1">Total {{ totalSKS }} SKS</p>
+        <p class="text-muted mt-1">
+          <span v-if="activeSemester">{{ semesterLabel(activeSemester) }} · </span>Total {{ totalSKS }} SKS
+        </p>
       </div>
       <div class="flex items-center gap-2">
         <UButtonGroup>
@@ -71,6 +101,19 @@ const totalSKS = computed(() =>
           />
         </UButtonGroup>
       </div>
+    </div>
+
+    <!-- Semester tabs -->
+    <div v-if="semesters?.length" class="flex gap-1 overflow-x-auto pb-2 mb-6">
+      <UButton
+        v-for="sem in semesters"
+        :key="sem.id"
+        :label="`Sem ${sem.nomor} ${sem.tipe}`"
+        :color="activeSemesterId === sem.id ? 'primary' : 'neutral'"
+        :variant="activeSemesterId === sem.id ? 'solid' : 'ghost'"
+        size="sm"
+        @click="activeSemesterId = sem.id"
+      />
     </div>
 
     <!-- Weekly View -->
@@ -98,6 +141,7 @@ const totalSKS = computed(() =>
               v-for="s in scheduleByDay[currentDay || 'Senin']"
               :key="s.id"
               class="card-hover"
+              :style="blockStyle(s)"
             >
               <div class="flex items-center gap-3">
                 <div
@@ -145,14 +189,10 @@ const totalSKS = computed(() =>
             v-for="s in scheduleByDay[day]"
             :key="s.id"
             class="card-hover"
+            :style="blockStyle(s)"
           >
             <div>
-              <p class="font-semibold text-xs leading-tight mb-1 flex items-center gap-1.5">
-                <span
-                  class="w-1.5 h-1.5 rounded-full shrink-0"
-                  :style="{ backgroundColor: s.warna }"
-                  aria-hidden="true"
-                />
+              <p class="font-semibold text-xs leading-tight mb-1">
                 {{ s.mata_kuliah }}
               </p>
               <div class="space-y-0.5">
@@ -193,6 +233,7 @@ const totalSKS = computed(() =>
             v-for="(s, index) in todaySchedules"
             :key="s.id"
             class="card-hover relative"
+            :style="blockStyle(s)"
           >
             <!-- Timeline connector -->
             <div v-if="index < todaySchedules.length - 1" class="absolute left-8 top-full w-0.5 h-4 bg-default/30" />

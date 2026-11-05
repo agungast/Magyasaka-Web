@@ -56,11 +56,6 @@ function formatDate(dateStr: string) {
   })
 }
 
-function formatTime(dateStr: string) {
-  if (!dateStr) return ''
-  return new Date(dateStr).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
-}
-
 function daysUntil(dateStr: string) {
   if (!dateStr) return ''
   const diff = new Date(dateStr).getTime() - Date.now()

@@ -63,7 +63,7 @@ const kategoriColors: Record<string, string> = {
 
       <!-- Detail -->
       <UCard class="mb-8">
-        <div class="prose prose-sm max-w-none dark:prose-invert">
+        <div class="max-w-none">
           <h3 class="flex items-center gap-2 text-base font-semibold">
             <UIcon name="i-lucide-file-text" class="text-primary" />
             Deskripsi Lengkap

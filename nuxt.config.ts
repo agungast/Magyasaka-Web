@@ -62,10 +62,8 @@ export default defineNuxtConfig({
 
   eslint: {
     config: {
-      stylistic: {
-        commaDangle: 'never',
-        braceStyle: '1tbs'
-      }
+      // Formatting is handled by the editor/formatter; lint stays on real problems.
+      stylistic: false
     }
   }
 })

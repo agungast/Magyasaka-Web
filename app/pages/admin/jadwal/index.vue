@@ -9,15 +9,41 @@ const { data: items, refresh } = useAsyncData('admin-schedules', async () => {
   return (data || []) as any[]
 })
 
+const { data: semesters } = useSemesters()
+const semesterOpts = computed(() =>
+  (semesters.value || []).map((s: any) => ({ label: semesterLabel(s), value: s.id }))
+)
+const latestSemesterId = computed(() => {
+  const latest = [...(semesters.value || [])]
+    .sort((a: any, b: any) => (b.created_at || '').localeCompare(a.created_at || ''))[0]
+  return latest?.id || null
+})
+
+const warnaOpts = [
+  { label: 'Biru', value: '#6366f1' },
+  { label: 'Hijau', value: '#10b981' },
+  { label: 'Merah', value: '#ef4444' },
+  { label: 'Kuning', value: '#f59e0b' },
+  { label: 'Ungu', value: '#8b5cf6' },
+  { label: 'Pink', value: '#ec4899' },
+  { label: 'Cyan', value: '#06b6d4' },
+  { label: 'Oranye', value: '#f97316' }
+]
+
 const modalOpen = ref(false)
 const editing = ref<any>(null)
-const form = ref({ mata_kuliah: '', dosen: '', hari: 'Senin', jam_mulai: '08:00', jam_selesai: '10:30', ruangan: '', kode_mk: '', sks: 3, warna: '#6366f1' })
+const form = ref({ semester_id: null as string | null, mata_kuliah: '', dosen: '', hari: 'Senin', jam_mulai: '08:00', jam_selesai: '10:30', ruangan: '', kode_mk: '', sks: 3, warna: '#6366f1' })
 const loading = ref(false)
 
 function openCreate() {
   editing.value = null
-  form.value = { mata_kuliah: '', dosen: '', hari: 'Senin', jam_mulai: '08:00', jam_selesai: '10:30', ruangan: '', kode_mk: '', sks: 3, warna: '#6366f1' }
+  form.value = { semester_id: latestSemesterId.value, mata_kuliah: '', dosen: '', hari: 'Senin', jam_mulai: '08:00', jam_selesai: '10:30', ruangan: '', kode_mk: '', sks: 3, warna: '#6366f1' }
   modalOpen.value = true
+}
+
+function semesterName(id: string | null) {
+  const sem = semesters.value?.find((s: any) => s.id === id)
+  return sem ? `Sem ${sem.nomor} ${sem.tipe}` : '—'
 }
 
 function openEdit(s: any) {
@@ -30,11 +56,9 @@ async function save() {
   loading.value = true
   try {
     if (editing.value) {
-      // @ts-ignore
       const { error } = await client.from('schedules').update(form.value as any).eq('id', editing.value.id)
       if (error) throw error
     } else {
-      // @ts-ignore
       const { error } = await client.from('schedules').insert(form.value as any)
       if (error) throw error
     }
@@ -49,13 +73,11 @@ async function save() {
 
 async function remove(id: string) {
   if (!confirm('Hapus jadwal ini?')) return
-  // @ts-ignore
   const { error } = await client.from('schedules').delete().eq('id', id)
   if (error) alert(error.message)
   else await refresh()
 }
 
-const hariOpts = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'].map(h => ({ label: h, value: h }))
 </script>
 
 <template>
@@ -74,10 +96,11 @@ const hariOpts = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'].map(h => ({ label
           <thead>
             <tr class="border-b border-default">
               <th class="text-left py-2">Mata Kuliah</th>
+              <th class="text-left py-2">Semester</th>
               <th class="text-left py-2">Hari</th>
               <th class="text-left py-2">Jam</th>
               <th class="text-left py-2">Ruangan</th>
-              <th class="text-left py-2">SKS</th>
+              <th class="text-left py-2">Warna</th>
               <th class="text-right py-2">Aksi</th>
             </tr>
           </thead>
@@ -87,10 +110,13 @@ const hariOpts = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'].map(h => ({ label
                 <p class="font-medium">{{ s.mata_kuliah }}</p>
                 <p class="text-xs text-muted">{{ s.dosen }}</p>
               </td>
+              <td class="py-2 text-xs text-muted">{{ semesterName(s.semester_id) }}</td>
               <td class="py-2">{{ s.hari }}</td>
               <td class="py-2">{{ s.jam_mulai.slice(0, 5) }} - {{ s.jam_selesai.slice(0, 5) }}</td>
               <td class="py-2">{{ s.ruangan }}</td>
-              <td class="py-2">{{ s.sks }}</td>
+              <td class="py-2">
+                <span class="inline-block w-3 h-3 rounded-full" :style="{ backgroundColor: s.warna }" aria-label="warna" />
+              </td>
               <td class="py-2 text-right">
                 <UButton size="xs" variant="ghost" icon="i-lucide-edit" @click="openEdit(s)" />
                 <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" @click="remove(s.id)" />
@@ -105,10 +131,10 @@ const hariOpts = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'].map(h => ({ label
       <template #content>
         <div class="p-4 space-y-3">
           <h3 class="font-semibold">{{ editing ? 'Edit' : 'Tambah' }} Jadwal</h3>
-          <UInput v-model="form.mata_kuliah" placeholder="Mata Kuliah" />
-          <UInput v-model="form.dosen" placeholder="Dosen" />
-          <div class="grid grid-cols-2 gap-2">
-            <USelect v-model="form.hari" :items="hariOpts" />
+          <USelect v-model="form.semester_id" :items="semesterOpts" placeholder="Pilih Semester" />
+          <div class="grid grid-cols-3 gap-2">
+            <USelect v-model="form.mata_kuliah" placeholder="Mata Kuliah" />
+            <USelect v-model="form.dosen" placeholder="Dosen" />
             <UInput v-model="form.sks" type="number" placeholder="SKS" />
           </div>
           <div class="grid grid-cols-2 gap-2">
@@ -117,7 +143,8 @@ const hariOpts = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'].map(h => ({ label
           </div>
           <UInput v-model="form.ruangan" placeholder="Ruangan" />
           <UInput v-model="form.kode_mk" placeholder="Kode MK" />
-          <UInput v-model="form.warna" type="color" />
+          <USelect v-model="form.warna" :items="warnaOpts" placeholder="Warna Mata Kuliah" />
+          <p class="text-xs text-muted">Contoh: biru = jam 1, hijau = jam 2, merah = jam 3</p>
           <div class="flex gap-2 justify-end">
             <UButton variant="ghost" label="Batal" @click="modalOpen = false" />
             <UButton :loading="loading" label="Simpan" @click="save" />

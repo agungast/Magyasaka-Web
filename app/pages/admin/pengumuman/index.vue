@@ -30,11 +30,9 @@ async function save() {
   loading.value = true
   try {
     if (editing.value) {
-      // @ts-ignore
       const { error } = await client.from('announcements').update(form.value).eq('id', editing.value.id)
       if (error) throw error
     } else {
-      // @ts-ignore
       const { error } = await client.from('announcements').insert(form.value)
       if (error) throw error
     }

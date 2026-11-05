@@ -53,11 +53,9 @@ async function save() {
       kategori: form.value.kategori
     }
     if (editing.value) {
-      // @ts-ignore
       const { error } = await client.from('projects').update(payload).eq('id', editing.value.id)
       if (error) throw error
     } else {
-      // @ts-ignore
       const { error } = await client.from('projects').insert(payload)
       if (error) throw error
     }
