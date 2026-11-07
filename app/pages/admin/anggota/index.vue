@@ -9,7 +9,7 @@ import { UButton, UCard, UModal, UInput, USelect, UIcon } from '#components'
 
 <script setup lang="ts">
 
-useSeoMeta({ title: 'Kelola Anggota — Admin Magyasaka' })
+useSeoMeta({ title: 'Kelola Anggota - Admin Magyasaka' })
 
 const client = useSupabaseClient()
 const { data: items, refresh } = await useAsyncData('admin-members', async () => {
@@ -20,12 +20,12 @@ const { data: items, refresh } = await useAsyncData('admin-members', async () =>
 
 const modalOpen = ref(false)
 const editing = ref<any>(null)
-const form = reactive({ nim: '', nama: '', email: '', no_telepon: '', jurusan: 'Teknik Rekayasa Komputer', angkatan: 2023, status: 'aktif' })
+const form = reactive({ nim: '', nama: '', email: '', no_telepon: '', jurusan: 'Teknologi Rekayasa Komputer', angkatan: 2023, status: 'aktif' })
 const loading = ref(false)
 
 function openCreate() {
   editing.value = null
-  Object.assign(form, { nim: '', nama: '', email: '', no_telepon: '', jurusan: 'Teknik Rekayasa Komputer', angkatan: 2023, status: 'aktif' })
+  Object.assign(form, { nim: '', nama: '', email: '', no_telepon: '', jurusan: 'Teknologi Rekayasa Komputer', angkatan: 2023, status: 'aktif' })
   modalOpen.value = true
 }
 
@@ -104,16 +104,55 @@ const statusOpts = ['aktif', 'tidak aktif', 'cuti'].map(s => ({ label: s, value:
 
     <UModal v-model:open="modalOpen">
       <template #content>
-        <div class="p-4 space-y-3">
-          <h3 class="font-semibold">{{ editing ? 'Edit' : 'Tambah' }} Anggota</h3>
-          <UInput v-model="form.nim" placeholder="NIM" />
-          <UInput v-model="form.nama" placeholder="Nama Lengkap" />
-          <UInput v-model="form.email" placeholder="Email" />
-          <UInput v-model="form.no_telepon" placeholder="No Telepon" />
-          <USelect v-model="form.status" :items="statusOpts" />
-          <div class="flex gap-2 justify-end">
-            <UButton variant="ghost" label="Batal" @click="modalOpen = false" />
-            <UButton :loading="loading" label="Simpan" @click="save" />
+        <div class="p-6 sm:p-7 space-y-5 bg-elevated/95 backdrop-blur-md rounded-2xl border border-default/50 shadow-2xl">
+          <!-- Header -->
+          <div class="flex items-center justify-between pb-4 border-b border-default/30">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0 shadow-sm">
+                <UIcon :name="editing ? 'i-lucide-user-pen' : 'i-lucide-user-plus'" class="text-xl" />
+              </div>
+              <div>
+                <h3 class="font-bold text-lg text-default leading-snug">{{ editing ? 'Edit' : 'Tambah' }} Anggota</h3>
+                <p class="text-xs text-muted">Lengkapi biodata anggota mahasiswa kelas di bawah ini</p>
+              </div>
+            </div>
+            <UButton variant="ghost" color="neutral" icon="i-lucide-x" size="xs" class="rounded-lg" @click="modalOpen = false" />
+          </div>
+
+          <!-- Form Fields -->
+          <div class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">NIM</label>
+                <UInput v-model="form.nim" placeholder="Contoh: 2311521001" size="md" class="w-full shadow-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Nama Lengkap</label>
+                <UInput v-model="form.nama" placeholder="Nama mahasiswa" size="md" class="w-full shadow-sm" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Email</label>
+                <UInput v-model="form.email" type="email" placeholder="nama@email.com" size="md" class="w-full shadow-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">No. Telepon / WhatsApp</label>
+                <UInput v-model="form.no_telepon" placeholder="08xxxxxxxxxx" size="md" class="w-full shadow-sm" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Status Keanggotaan</label>
+              <USelect v-model="form.status" :items="statusOpts" size="md" class="w-full shadow-sm" />
+            </div>
+          </div>
+
+          <!-- Footer Actions -->
+          <div class="flex items-center justify-end gap-3 pt-4 border-t border-default/30">
+            <UButton variant="outline" color="neutral" label="Batal" size="md" class="rounded-xl px-4" @click="modalOpen = false" />
+            <UButton :loading="loading" label="Simpan Anggota" color="primary" icon="i-lucide-check" size="md" class="rounded-xl px-5 shadow-sm" @click="save" />
           </div>
         </div>
       </template>

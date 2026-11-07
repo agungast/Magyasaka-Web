@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { useSeoMeta } from '#app'
 import { useAlbums } from '~/composables/useData'
 // Fase 3: Galeri Kegiatan
-useSeoMeta({ title: 'Galeri Kegiatan — Magyasaka' })
+useSeoMeta({ title: 'Galeri - Magyasaka' })
 
 const { data: albums } = useAlbums()
 

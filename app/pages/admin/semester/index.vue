@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useSeoMeta } from '#app'
 import { useSupabaseClient, useAsyncData } from '#imports'
 
-useSeoMeta({ title: 'Kelola Semester — Admin Magyasaka' })
+useSeoMeta({ title: 'Kelola Semester - Admin Magyasaka' })
 
 const client = useSupabaseClient()
 const { data: semesters, refresh } = useAsyncData('admin-semesters', async () => {
@@ -114,17 +114,45 @@ async function remove(id: string) {
 
     <UModal v-model:open="modalOpen">
       <template #content>
-        <div class="p-4 space-y-3">
-          <h3 class="font-semibold">{{ editing ? 'Edit' : 'Tambah' }} Semester</h3>
-          <USelect v-model="form.nomor" :items="nomorOpts" placeholder="Nomor Semester (1–8)" />
-          <div class="grid grid-cols-2 gap-2">
-            <USelect v-model="form.tipe" :items="tipeOpts" />
-            <p class="text-xs text-muted">Default: nomor genap = Genap, ganjil = Ganjil</p>
+        <div class="p-6 sm:p-7 space-y-5 bg-elevated/95 backdrop-blur-md rounded-2xl border border-default/50 shadow-2xl">
+          <!-- Header -->
+          <div class="flex items-center justify-between pb-4 border-b border-default/30">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0 shadow-sm">
+                <UIcon :name="editing ? 'i-lucide-calendar-cog' : 'i-lucide-calendar-plus'" class="text-xl" />
+              </div>
+              <div>
+                <h3 class="font-bold text-lg text-default leading-snug">{{ editing ? 'Edit' : 'Tambah' }} Semester</h3>
+                <p class="text-xs text-muted">Kelola data periode semester perkuliahan dan tahun ajaran</p>
+              </div>
+            </div>
+            <UButton variant="ghost" color="neutral" icon="i-lucide-x" size="xs" class="rounded-lg" @click="modalOpen = false" />
           </div>
-          <USelect v-model="form.tahun_ajaran" :items="['2023/2024', '2024/2025', '2025/2026', '2026/2027']" />
-          <div class="flex gap-2 justify-end">
-            <UButton variant="ghost" label="Batal" @click="modalOpen = false" />
-            <UButton :loading="loading" label="Simpan" @click="save" />
+
+          <!-- Form Fields -->
+          <div class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Nomor Semester</label>
+                <USelect v-model="form.nomor" :items="nomorOpts" placeholder="Pilih Semester" size="md" class="w-full shadow-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Tipe Perkuliahan</label>
+                <USelect v-model="form.tipe" :items="tipeOpts" size="md" class="w-full shadow-sm" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Tahun Ajaran</label>
+              <USelect v-model="form.tahun_ajaran" :items="['2023/2024', '2024/2025', '2025/2026', '2026/2027', '2027/2028']" size="md" class="w-full shadow-sm" />
+              <p class="text-xs text-muted mt-1.5">Format tahun akademik perkuliahan angkatan</p>
+            </div>
+          </div>
+
+          <!-- Footer Actions -->
+          <div class="flex items-center justify-end gap-3 pt-4 border-t border-default/30">
+            <UButton variant="outline" color="neutral" label="Batal" size="md" class="rounded-xl px-4" @click="modalOpen = false" />
+            <UButton :loading="loading" label="Simpan Semester" color="primary" icon="i-lucide-check" size="md" class="rounded-xl px-5 shadow-sm" @click="save" />
           </div>
         </div>
       </template>

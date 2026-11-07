@@ -11,7 +11,7 @@ const albumId = route.params.id as string
 const { data: album } = useAlbum(albumId)
 
 useSeoMeta({
-  title: computed(() => `${album.value?.nama || 'Album'} — Galeri Magyasaka`)
+  title: computed(() => `${album.value?.nama || 'Album'} - Galeri Magyasaka`)
 })
 
 const lightboxOpen = ref(false)

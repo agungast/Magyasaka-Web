@@ -3,27 +3,36 @@ import { computed, ref, watchEffect } from 'vue'
 import { useSeoMeta } from '#app'
 import { useSchedules, useSemesters, semesterLabel } from '~/composables/useData'
 // Fase 2: Jadwal Kuliah — Tampilan Mingguan
-useSeoMeta({ title: 'Jadwal Kuliah — Magyasaka' })
+useSeoMeta({ title: 'Jadwal Kuliah - Magyasaka' })
 
 const { data: schedules } = useSchedules()
 const { data: semesters } = useSemesters()
 
 const activeSemesterId = ref('')
 
+// Urutkan semester terbaru di paling kiri (depan), semester lama di paling kanan (belakang)
+const sortedSemesters = computed(() => {
+  if (!semesters.value) return []
+  return [...semesters.value].sort((a: any, b: any) => {
+    const timeA = a.created_at ? new Date(a.created_at).getTime() : 0
+    const timeB = b.created_at ? new Date(b.created_at).getTime() : 0
+    if (timeA !== timeB) return timeB - timeA
+    return (b.nomor || 0) - (a.nomor || 0)
+  })
+})
+
 watchEffect(() => {
-  if (activeSemesterId.value || !semesters.value?.length) return
-  const latest = [...semesters.value]
-    .sort((a: any, b: any) => (b.created_at || '').localeCompare(a.created_at || ''))[0]
-  if (latest) activeSemesterId.value = latest.id
+  if (activeSemesterId.value || !sortedSemesters.value.length) return
+  activeSemesterId.value = sortedSemesters.value[0]?.id || ''
 })
 
 const activeSemester = computed(() =>
-  semesters.value?.find((s: any) => s.id === activeSemesterId.value) || null
+  sortedSemesters.value.find((s: any) => s.id === activeSemesterId.value) || null
 )
 
 const filteredSchedules = computed(() => {
   const all = schedules.value || []
-  if (!semesters.value?.length || !activeSemesterId.value) return all
+  if (!sortedSemesters.value.length || !activeSemesterId.value) return all
   return all.filter((s: any) => s.semester_id === activeSemesterId.value)
 })
 
@@ -104,9 +113,9 @@ const totalSKS = computed(() =>
     </div>
 
     <!-- Semester tabs -->
-    <div v-if="semesters?.length" class="flex gap-1 overflow-x-auto pb-2 mb-6">
+    <div v-if="sortedSemesters.length" class="flex gap-1 overflow-x-auto pb-2 mb-6">
       <UButton
-        v-for="sem in semesters"
+        v-for="sem in sortedSemesters"
         :key="sem.id"
         :label="`Sem ${sem.nomor} ${sem.tipe}`"
         :color="activeSemesterId === sem.id ? 'primary' : 'neutral'"

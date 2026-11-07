@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useSeoMeta } from '#app'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useSupabaseClient, useSupabaseUser } from '#imports'
 
 declare const definePageMeta: (meta: any) => void
@@ -9,11 +9,19 @@ definePageMeta({
   middleware: 'auth'
 })
 
-useSeoMeta({ title: 'Admin Dashboard — Magyasaka' })
+useSeoMeta({ title: 'Admin Dashboard - Magyasaka' })
 
 const user = useSupabaseUser()
 const supabase = useSupabaseClient()
 const router = useRouter()
+const route = useRoute()
+
+function isActive(to: string) {
+  if (to === '/admin') {
+    return route.path === '/admin' || route.path === '/admin/'
+  }
+  return route.path === to || route.path.startsWith(to + '/')
+}
 
 async function logout() {
   await supabase.auth.signOut()
@@ -47,16 +55,38 @@ const menuItems = [
       <UButton label="Keluar" icon="i-lucide-log-out" variant="outline" @click="logout" />
     </div>
 
-    <nav class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-10 divide-y divide-default mb-8">
+    <nav class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 mb-8">
       <NuxtLink
         v-for="item in menuItems"
         :key="item.to"
         :to="item.to"
-        class="group flex items-center gap-3 py-3.5"
+        :class="[
+          'group flex items-center gap-3 px-3.5 py-2.5 rounded-xl border transition-all duration-200',
+          isActive(item.to)
+            ? 'bg-primary/15 border-primary/40 text-primary shadow-sm font-semibold'
+            : 'bg-elevated/40 hover:bg-elevated/80 border-default/30 text-muted hover:text-default'
+        ]"
       >
-        <UIcon :name="item.icon" class="text-lg text-muted group-hover:text-primary transition-colors shrink-0" />
-        <span class="font-display font-semibold text-sm group-hover:text-primary transition-colors">{{ item.label }}</span>
-        <UIcon name="i-lucide-arrow-right" class="text-muted ml-auto group-hover:text-primary transition-colors" />
+        <div
+          :class="[
+            'w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors',
+            isActive(item.to)
+              ? 'bg-primary text-inverted shadow-xs'
+              : 'bg-default/20 text-muted group-hover:text-primary group-hover:bg-primary/10'
+          ]"
+        >
+          <UIcon :name="item.icon" class="text-base" />
+        </div>
+        <span class="font-display text-sm truncate">{{ item.label }}</span>
+        <UIcon
+          name="i-lucide-chevron-right"
+          :class="[
+            'ml-auto text-sm transition-transform duration-200 shrink-0',
+            isActive(item.to)
+              ? 'text-primary translate-x-0.5'
+              : 'text-muted/40 group-hover:text-muted group-hover:translate-x-0.5'
+          ]"
+        />
       </NuxtLink>
     </nav>
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-useSeoMeta({ title: 'Kelola Galeri — Admin Magyasaka' })
+useSeoMeta({ title: 'Kelola Galeri - Admin Magyasaka' })
 
 const client = useSupabaseClient()
 const { data: albums, refresh } = useAsyncData('admin-albums', async () => {
@@ -151,18 +151,53 @@ async function setCover(albumId: string, url: string) {
 
     <UModal v-model:open="modalOpen">
       <template #content>
-        <div class="p-4 space-y-3">
-          <h3 class="font-semibold">{{ editing ? 'Edit' : 'Tambah' }} Album</h3>
-          <UInput v-model="form.nama" placeholder="Nama Album" />
-          <UTextarea v-model="form.deskripsi" placeholder="Deskripsi" :rows="3" />
-          <UInput v-model="form.tanggal_kegiatan" type="date" />
-          <label class="flex items-center gap-2 text-sm">
-            <UCheckbox v-model="form.is_featured" />
-            Tampilkan di beranda (unggulan)
-          </label>
-          <div class="flex gap-2 justify-end">
-            <UButton variant="ghost" label="Batal" @click="modalOpen = false" />
-            <UButton :loading="loading" label="Simpan" @click="save" />
+        <div class="p-6 sm:p-7 space-y-5 bg-elevated/95 backdrop-blur-md rounded-2xl border border-default/50 shadow-2xl">
+          <!-- Header -->
+          <div class="flex items-center justify-between pb-4 border-b border-default/30">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0 shadow-sm">
+                <UIcon :name="editing ? 'i-lucide-folder-pen' : 'i-lucide-folder-plus'" class="text-xl" />
+              </div>
+              <div>
+                <h3 class="font-bold text-lg text-default leading-snug">{{ editing ? 'Edit' : 'Tambah' }} Album Galeri</h3>
+                <p class="text-xs text-muted">Kelola koleksi foto dokumentasi kegiatan angkatan</p>
+              </div>
+            </div>
+            <UButton variant="ghost" color="neutral" icon="i-lucide-x" size="xs" class="rounded-lg" @click="modalOpen = false" />
+          </div>
+
+          <!-- Form Fields -->
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Nama Album</label>
+              <UInput v-model="form.nama" placeholder="Contoh: Makrab Magyasaka 2024" size="md" class="w-full shadow-sm" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Deskripsi Album</label>
+              <UTextarea v-model="form.deskripsi" placeholder="Tuliskan cerita singkat tentang kegiatan ini..." :rows="3" size="md" class="w-full shadow-sm" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Tanggal Kegiatan</label>
+              <UInput v-model="form.tanggal_kegiatan" type="date" size="md" class="w-full shadow-sm" />
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-default/40 border border-default/30">
+              <label class="flex items-center gap-3 text-sm cursor-pointer select-none">
+                <UCheckbox v-model="form.is_featured" />
+                <div>
+                  <p class="font-medium text-default text-xs sm:text-sm">Tampilkan di Beranda (Album Unggulan)</p>
+                  <p class="text-xs text-muted">Album ini akan disorot pada halaman beranda utama</p>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Footer Actions -->
+          <div class="flex items-center justify-end gap-3 pt-4 border-t border-default/30">
+            <UButton variant="outline" color="neutral" label="Batal" size="md" class="rounded-xl px-4" @click="modalOpen = false" />
+            <UButton :loading="loading" label="Simpan Album" color="primary" icon="i-lucide-check" size="md" class="rounded-xl px-5 shadow-sm" @click="save" />
           </div>
         </div>
       </template>
@@ -170,14 +205,39 @@ async function setCover(albumId: string, url: string) {
 
     <UModal v-model:open="photoModal">
       <template #content>
-        <div class="p-4 space-y-3">
-          <h3 class="font-semibold">Tambah Foto ke {{ activeAlbum?.nama }}</h3>
-          <UInput v-model="photoUrl" placeholder="URL Foto (atau upload ke storage)" />
-          <UInput v-model="photoCaption" placeholder="Caption (opsional)" />
-          <p class="text-xs text-muted">Untuk upload file, gunakan Supabase Storage bucket "gallery" lalu masukkan URL-nya.</p>
-          <div class="flex gap-2 justify-end">
-            <UButton variant="ghost" label="Batal" @click="photoModal = false" />
-            <UButton label="Tambah" @click="addPhoto" />
+        <div class="p-6 sm:p-7 space-y-5 bg-elevated/95 backdrop-blur-md rounded-2xl border border-default/50 shadow-2xl">
+          <!-- Header -->
+          <div class="flex items-center justify-between pb-4 border-b border-default/30">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0 shadow-sm">
+                <UIcon name="i-lucide-image-plus" class="text-xl" />
+              </div>
+              <div>
+                <h3 class="font-bold text-lg text-default leading-snug">Tambah Foto</h3>
+                <p class="text-xs text-muted">Album: <span class="font-semibold text-primary">{{ activeAlbum?.nama }}</span></p>
+              </div>
+            </div>
+            <UButton variant="ghost" color="neutral" icon="i-lucide-x" size="xs" class="rounded-lg" @click="photoModal = false" />
+          </div>
+
+          <!-- Form Fields -->
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">URL Foto</label>
+              <UInput v-model="photoUrl" placeholder="https://... atau path storage" size="md" class="w-full shadow-sm" />
+              <p class="text-xs text-muted mt-1.5">Gunakan URL foto langsung atau unggah ke Supabase Storage bucket <code>gallery</code>.</p>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Caption / Keterangan (Opsional)</label>
+              <UInput v-model="photoCaption" placeholder="Keterangan singkat momen foto..." size="md" class="w-full shadow-sm" />
+            </div>
+          </div>
+
+          <!-- Footer Actions -->
+          <div class="flex items-center justify-end gap-3 pt-4 border-t border-default/30">
+            <UButton variant="outline" color="neutral" label="Batal" size="md" class="rounded-xl px-4" @click="photoModal = false" />
+            <UButton label="Tambahkan Foto" color="primary" icon="i-lucide-plus" size="md" class="rounded-xl px-5 shadow-sm" @click="addPhoto" />
           </div>
         </div>
       </template>

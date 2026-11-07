@@ -5,8 +5,8 @@
 const mockAnnouncements = [
   {
     id: '1',
-    judul: 'Selamat Datang di Portal Magyasaka! 🎉',
-    konten: 'Portal resmi kelas Teknik Rekayasa Komputer angkatan 2023 telah resmi diluncurkan. Gunakan portal ini untuk mengakses informasi akademik, jadwal kuliah, dan berbagai informasi penting lainnya.',
+    judul: 'Selamat Datang di Portal Magyasaka!',
+    konten: 'Portal resmi Magyasaka 2023 telah resmi diluncurkan. Gunakan portal ini untuk mengakses informasi akademik, jadwal kuliah, dan berbagai informasi penting lainnya.',
     kategori: 'penting',
     is_pinned: true,
     penulis: 'Ketua Kelas',

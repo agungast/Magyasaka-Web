@@ -7,7 +7,7 @@ definePageMeta({
   middleware: 'auth'
 })
 
-useSeoMeta({ title: 'Dashboard Admin — Magyasaka' })
+useSeoMeta({ title: 'Dashboard Admin - Magyasaka' })
 </script>
 
 <template>

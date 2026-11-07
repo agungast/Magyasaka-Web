@@ -4,12 +4,12 @@ import { useSeoMeta } from '#app'
 import { useState } from '#imports'
 import { useAssignments } from '~/composables/useData'
 // Fase 2: Daftar Tugas & Ujian
-useSeoMeta({ title: 'Tugas & Ujian — Magyasaka' })
+useSeoMeta({ title: 'Tugas & Ujian - Magyasaka' })
 
 const { data: assignments } = useAssignments()
 
 const filterType = ref('semua')
-const filterTypes = ['semua', 'tugas', 'uts', 'uas', 'tubes', 'praktikum']
+const filterTypes = ['semua', 'tugas', 'UTS', 'UAS', 'TUBES', 'Praktikum']
 
 // Local completion tracking (stored in browser)
 const completedTasks = useState<Set<string>>('completedTasks', () => new Set())

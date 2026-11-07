@@ -39,7 +39,7 @@ export default defineNuxtConfig({
     head: {
       title: 'Portal Magyasaka',
       meta: [
-        { name: 'description', content: 'Portal & Dashboard resmi Kelas Teknik Rekayasa Komputer Angkatan 2023' },
+        { name: 'description', content: 'Portal & Dashboard resmi Magyasaka 2023' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         { name: 'theme-color', content: '#05080c' }
       ],
@@ -64,6 +64,21 @@ export default defineNuxtConfig({
     config: {
       // Formatting is handled by the editor/formatter; lint stays on real problems.
       stylistic: false
+    }
+  },
+
+  hooks: {
+    'app:templates'(app) {
+      const uiCss = app.templates.find((t: any) => t.filename === 'ui.css')
+      if (uiCss && uiCss.getContents) {
+        const orig = uiCss.getContents
+        uiCss.getContents = async (data: any) => {
+          const res = await orig(data)
+          return typeof res === 'string'
+            ? res.replace(/@source\s+"[A-Za-z]:\/[^"]*\/app\/\*\*\/\*";/g, '@source "../app/**/*";')
+            : res
+        }
+      }
     }
   }
 })

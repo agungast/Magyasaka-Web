@@ -57,7 +57,11 @@ const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = 
   penting: 'error',
   akademik: 'info',
   kegiatan: 'success',
-  umum: 'neutral'
+  umum: 'neutral',
+  Penting: 'error',
+  Akademik: 'info',
+  Kegiatan: 'success',
+  Umum: 'neutral'
 }
 </script>
 
@@ -127,12 +131,13 @@ const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = 
                   :color="kategoriColor[announcement.kategori || 'umum'] || 'neutral'"
                   variant="outline"
                   size="sm"
+                  class="capitalize"
                 />
                 <span class="text-xs text-muted">{{ formatDate(announcement.created_at) }}</span>
               </div>
               <h3 class="font-display font-semibold text-base">{{ announcement.judul }}</h3>
               <p class="text-sm text-muted mt-1 line-clamp-2">{{ announcement.konten }}</p>
-              <p class="text-xs text-muted mt-2">— {{ announcement.penulis }}</p>
+              <p class="text-xs text-muted mt-2">- {{ announcement.penulis }}</p>
             </div>
           </article>
         </div>
@@ -261,6 +266,7 @@ const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = 
                   :color="kategoriColor[announcement.kategori || 'umum'] || 'neutral'"
                   variant="outline"
                   size="sm"
+                  class="capitalize"
                 />
                 <span class="text-xs text-muted">{{ formatDate(announcement.created_at) }} • {{ announcement.penulis }}</span>
               </div>

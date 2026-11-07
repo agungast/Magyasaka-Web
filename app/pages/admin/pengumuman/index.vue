@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-useSeoMeta({ title: 'Kelola Pengumuman — Admin Magyasaka' })
+useSeoMeta({ title: 'Kelola Pengumuman - Admin Magyasaka' })
 
 const client = useSupabaseClient()
 const { data: items, refresh } = useAsyncData('admin-announcements', async () => {
@@ -22,18 +22,23 @@ function openCreate() {
 
 function openEdit(a: any) {
   editing.value = a
-  form.value = { judul: a.judul, konten: a.konten, kategori: a.kategori, is_pinned: a.is_pinned, penulis: a.penulis || '' }
+  form.value = { judul: a.judul, konten: a.konten, kategori: (a.kategori || 'umum').toLowerCase(), is_pinned: a.is_pinned, penulis: a.penulis || '' }
   modalOpen.value = true
 }
 
 async function save() {
   loading.value = true
   try {
+    const payload = {
+      ...form.value,
+      // Pastikan kategori selalu lowercase agar sesuai CHECK constraint di database
+      kategori: (form.value.kategori || 'umum').toLowerCase()
+    }
     if (editing.value) {
-      const { error } = await client.from('announcements').update(form.value).eq('id', editing.value.id)
+      const { error } = await client.from('announcements').update(payload).eq('id', editing.value.id)
       if (error) throw error
     } else {
-      const { error } = await client.from('announcements').insert(form.value)
+      const { error } = await client.from('announcements').insert(payload)
       if (error) throw error
     }
     modalOpen.value = false
@@ -87,7 +92,7 @@ const kategoriOpts = [
                 <p class="font-medium">{{ a.judul }}</p>
                 <p class="text-xs text-muted line-clamp-1">{{ a.konten }}</p>
               </td>
-              <td class="py-2">{{ a.kategori }}</td>
+              <td class="py-2 capitalize">{{ a.kategori }}</td>
               <td class="py-2">{{ a.is_pinned ? 'Ya' : 'Tidak' }}</td>
               <td class="py-2 text-right">
                 <UButton size="xs" variant="ghost" icon="i-lucide-edit" @click="openEdit(a)" />
@@ -101,19 +106,59 @@ const kategoriOpts = [
 
     <UModal v-model:open="modalOpen">
       <template #content>
-        <div class="p-4 space-y-3">
-          <h3 class="font-semibold">{{ editing ? 'Edit' : 'Tambah' }} Pengumuman</h3>
-          <UInput v-model="form.judul" placeholder="Judul" />
-          <UTextarea v-model="form.konten" placeholder="Konten" :rows="4" />
-          <USelect v-model="form.kategori" :items="kategoriOpts" />
-          <UInput v-model="form.penulis" placeholder="Penulis" />
-          <label class="flex items-center gap-2 text-sm">
-            <UCheckbox v-model="form.is_pinned" />
-            Pin di beranda
-          </label>
-          <div class="flex gap-2 justify-end">
-            <UButton variant="ghost" label="Batal" @click="modalOpen = false" />
-            <UButton :loading="loading" label="Simpan" @click="save" />
+        <div class="p-6 sm:p-7 space-y-5 bg-elevated/95 backdrop-blur-md rounded-2xl border border-default/50 shadow-2xl max-h-[85vh] overflow-y-auto">
+          <!-- Header -->
+          <div class="flex items-center justify-between pb-4 border-b border-default/30">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0 shadow-sm">
+                <UIcon :name="editing ? 'i-lucide-megaphone' : 'i-lucide-volume-2'" class="text-xl" />
+              </div>
+              <div>
+                <h3 class="font-bold text-lg text-default leading-snug">{{ editing ? 'Edit' : 'Tambah' }} Pengumuman</h3>
+                <p class="text-xs text-muted">Publikasikan informasi penting untuk seluruh mahasiswa kelas</p>
+              </div>
+            </div>
+            <UButton variant="ghost" color="neutral" icon="i-lucide-x" size="xs" class="rounded-lg" @click="modalOpen = false" />
+          </div>
+
+          <!-- Form Fields -->
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Judul Pengumuman</label>
+              <UInput v-model="form.judul" placeholder="Tuliskan judul informasi..." size="md" class="w-full shadow-sm" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Isi Pengumuman</label>
+              <UTextarea v-model="form.konten" placeholder="Tuliskan isi detail pengumuman..." :rows="4" size="md" class="w-full shadow-sm" />
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Kategori</label>
+                <USelect v-model="form.kategori" :items="kategoriOpts" size="md" class="w-full shadow-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Penulis / Sumber</label>
+                <UInput v-model="form.penulis" placeholder="Contoh: Ketua Kelas / Sekretaris" size="md" class="w-full shadow-sm" />
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-default/40 border border-default/30">
+              <label class="flex items-center gap-3 text-sm cursor-pointer select-none">
+                <UCheckbox v-model="form.is_pinned" />
+                <div>
+                  <p class="font-medium text-default text-xs sm:text-sm">Sematkan di Beranda Utama (Highlight / Pinned)</p>
+                  <p class="text-xs text-muted">Pengumuman akan ditampilkan di banner sorotan teratas beranda</p>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Footer Actions -->
+          <div class="flex items-center justify-end gap-3 pt-4 border-t border-default/30">
+            <UButton variant="outline" color="neutral" label="Batal" size="md" class="rounded-xl px-4" @click="modalOpen = false" />
+            <UButton :loading="loading" label="Simpan Pengumuman" color="primary" icon="i-lucide-check" size="md" class="rounded-xl px-5 shadow-sm" @click="save" />
           </div>
         </div>
       </template>

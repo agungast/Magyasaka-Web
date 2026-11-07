@@ -4,7 +4,7 @@ import { ref } from 'vue'
 import { useSeoMeta } from '#app'
 import { useSupabaseClient, useAsyncData } from '#imports'
 
-useSeoMeta({ title: 'Kelola Tugas & Ujian — Admin Magyasaka' })
+useSeoMeta({ title: 'Kelola Tugas & Ujian - Admin Magyasaka' })
 
 const client = useSupabaseClient()
 const { data: items, refresh } = useAsyncData('admin-assignments', async () => {
@@ -113,18 +113,65 @@ const tipeOpts = ['tugas', 'uts', 'uas', 'tubes', 'praktikum'].map(t => ({ label
 
     <UModal v-model:open="modalOpen">
       <template #content>
-        <div class="p-4 space-y-3 max-h-[80vh] overflow-auto">
-          <h3 class="font-semibold">{{ editing ? 'Edit' : 'Tambah' }} Tugas/Ujian</h3>
-          <UInput v-model="form.judul" placeholder="Judul" />
-          <UInput v-model="form.mata_kuliah" placeholder="Mata Kuliah" />
-          <USelect v-model="form.tipe" :items="tipeOpts" />
-          <UTextarea v-model="form.deskripsi" placeholder="Deskripsi" :rows="3" />
-          <UInput v-model="form.deadline" type="datetime-local" label="Deadline" />
-          <UInput v-model="form.tanggal_ujian" type="datetime-local" label="Tanggal Ujian" />
-          <UInput v-model="form.ruangan_ujian" placeholder="Ruangan Ujian" />
-          <div class="flex gap-2 justify-end">
-            <UButton variant="ghost" label="Batal" @click="modalOpen = false" />
-            <UButton :loading="loading" label="Simpan" @click="save" />
+        <div class="p-6 sm:p-7 space-y-5 bg-elevated/95 backdrop-blur-md rounded-2xl border border-default/50 shadow-2xl max-h-[85vh] overflow-y-auto">
+          <!-- Header -->
+          <div class="flex items-center justify-between pb-4 border-b border-default/30">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0 shadow-sm">
+                <UIcon :name="editing ? 'i-lucide-clipboard-pen' : 'i-lucide-clipboard-plus'" class="text-xl" />
+              </div>
+              <div>
+                <h3 class="font-bold text-lg text-default leading-snug">{{ editing ? 'Edit' : 'Tambah' }} Tugas / Ujian</h3>
+                <p class="text-xs text-muted">Kelola tugas kuliah, kuis, praktikum, serta jadwal UTS/UAS</p>
+              </div>
+            </div>
+            <UButton variant="ghost" color="neutral" icon="i-lucide-x" size="xs" class="rounded-lg" @click="modalOpen = false" />
+          </div>
+
+          <!-- Form Fields -->
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Judul Tugas / Ujian</label>
+              <UInput v-model="form.judul" placeholder="Contoh: Laporan Akhir Praktikum Jaringan" size="md" class="w-full shadow-sm" />
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Mata Kuliah</label>
+                <UInput v-model="form.mata_kuliah" placeholder="Contoh: Jaringan Komputer" size="md" class="w-full shadow-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Tipe Aktivitas</label>
+                <USelect v-model="form.tipe" :items="tipeOpts" size="md" class="w-full shadow-sm" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Deskripsi / Petunjuk Pengerjaan</label>
+              <UTextarea v-model="form.deskripsi" placeholder="Tuliskan instruksi pengerjaan, format file, atau link submit..." :rows="3" size="md" class="w-full shadow-sm" />
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Deadline Pengumpulan (Tugas)</label>
+                <UInput v-model="form.deadline" type="datetime-local" size="md" class="w-full shadow-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Jadwal Pelaksanaan (Ujian/Kuis)</label>
+                <UInput v-model="form.tanggal_ujian" type="datetime-local" size="md" class="w-full shadow-sm" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Ruangan Ujian / Lokasi (Opsional)</label>
+              <UInput v-model="form.ruangan_ujian" placeholder="Contoh: Ruang 301 / Lab Komputer 1" size="md" class="w-full shadow-sm" />
+            </div>
+          </div>
+
+          <!-- Footer Actions -->
+          <div class="flex items-center justify-end gap-3 pt-4 border-t border-default/30">
+            <UButton variant="outline" color="neutral" label="Batal" size="md" class="rounded-xl px-4" @click="modalOpen = false" />
+            <UButton :loading="loading" label="Simpan Tugas" color="primary" icon="i-lucide-check" size="md" class="rounded-xl px-5 shadow-sm" @click="save" />
           </div>
         </div>
       </template>

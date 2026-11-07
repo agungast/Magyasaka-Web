@@ -4,7 +4,7 @@ import { useSeoMeta } from '#app'
 import { useMembers } from '~/composables/useData'
 
 // Fase 2: Daftar Anggota + Pencarian
-useSeoMeta({ title: 'Anggota Kelas — Magyasaka' })
+useSeoMeta({ title: 'Anggota Kelas - Magyasaka' })
 
 const { data: members } = useMembers()
 

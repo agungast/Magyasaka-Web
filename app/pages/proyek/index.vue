@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { useSeoMeta } from '#app'
 import { useProjects } from '~/composables/useData'
 // Fase 3: Katalog Proyek Kelas
-useSeoMeta({ title: 'Proyek Kelas — Magyasaka' })
+useSeoMeta({ title: 'Proyek Kelas - Magyasaka' })
 
 const { data: projects } = useProjects()
 

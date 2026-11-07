@@ -5,7 +5,7 @@ import { useSearch } from '~/composables/useSearch'
 useSeoMeta({
   title: 'Portal Magyasaka',
   description: 'Portal & Dashboard Magyasaka 2023. Akses jadwal kuliah, tugas, informasi anggota, galeri kegiatan, dan lebih banyak lagi.',
-  ogTitle: 'Portal Magyasaka — Magyasaka',
+  ogTitle: 'Portal Magyasaka - Magyasaka',
   ogDescription: 'Portal & Dashboard Magyasaka 2023',
   twitterCard: 'summary_large_image'
 })

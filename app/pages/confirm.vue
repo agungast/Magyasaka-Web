@@ -7,7 +7,7 @@ import { watch } from 'vue'
 declare const definePageMeta: (meta: any) => void
 
 definePageMeta({ layout: false })
-useSeoMeta({ title: 'Konfirmasi Login — Magyasaka' })
+useSeoMeta({ title: 'Konfirmasi Login - Magyasaka' })
 
 const user = useSupabaseUser()
 const router = useRouter()

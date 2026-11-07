@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-useSeoMeta({ title: 'Kelola Jadwal — Admin Magyasaka' })
+useSeoMeta({ title: 'Kelola Jadwal - Admin Magyasaka' })
 
 const client = useSupabaseClient()
 const { data: items, refresh } = useAsyncData('admin-schedules', async () => {
@@ -10,13 +10,24 @@ const { data: items, refresh } = useAsyncData('admin-schedules', async () => {
 })
 
 const { data: semesters } = useSemesters()
+
+// Urutkan semester terbaru di paling atas, semester lama di paling bawah
+const sortedSemesters = computed(() => {
+  if (!semesters.value) return []
+  return [...semesters.value].sort((a: any, b: any) => {
+    const timeA = a.created_at ? new Date(a.created_at).getTime() : 0
+    const timeB = b.created_at ? new Date(b.created_at).getTime() : 0
+    if (timeA !== timeB) return timeB - timeA
+    return (b.nomor || 0) - (a.nomor || 0)
+  })
+})
+
 const semesterOpts = computed(() =>
-  (semesters.value || []).map((s: any) => ({ label: semesterLabel(s), value: s.id }))
+  sortedSemesters.value.map((s: any) => ({ label: semesterLabel(s), value: s.id }))
 )
+
 const latestSemesterId = computed(() => {
-  const latest = [...(semesters.value || [])]
-    .sort((a: any, b: any) => (b.created_at || '').localeCompare(a.created_at || ''))[0]
-  return latest?.id || null
+  return sortedSemesters.value[0]?.id || null
 })
 
 const warnaOpts = [
@@ -29,6 +40,8 @@ const warnaOpts = [
   { label: 'Cyan', value: '#06b6d4' },
   { label: 'Oranye', value: '#f97316' }
 ]
+
+const hariOpts = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'].map(h => ({ label: h, value: h }))
 
 const modalOpen = ref(false)
 const editing = ref<any>(null)
@@ -129,25 +142,83 @@ async function remove(id: string) {
 
     <UModal v-model:open="modalOpen">
       <template #content>
-        <div class="p-4 space-y-3">
-          <h3 class="font-semibold">{{ editing ? 'Edit' : 'Tambah' }} Jadwal</h3>
-          <USelect v-model="form.semester_id" :items="semesterOpts" placeholder="Pilih Semester" />
-          <div class="grid grid-cols-3 gap-2">
-            <USelect v-model="form.mata_kuliah" placeholder="Mata Kuliah" />
-            <USelect v-model="form.dosen" placeholder="Dosen" />
-            <UInput v-model="form.sks" type="number" placeholder="SKS" />
+        <div class="p-6 sm:p-7 space-y-5 bg-elevated/95 backdrop-blur-md rounded-2xl border border-default/50 shadow-2xl max-h-[85vh] overflow-y-auto">
+          <!-- Header -->
+          <div class="flex items-center justify-between pb-4 border-b border-default/30">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0 shadow-sm">
+                <UIcon :name="editing ? 'i-lucide-calendar-clock' : 'i-lucide-calendar-plus'" class="text-xl" />
+              </div>
+              <div>
+                <h3 class="font-bold text-lg text-default leading-snug">{{ editing ? 'Edit' : 'Tambah' }} Jadwal Kuliah</h3>
+                <p class="text-xs text-muted">Atur jadwal mata kuliah per semester dan jam perkuliahan</p>
+              </div>
+            </div>
+            <UButton variant="ghost" color="neutral" icon="i-lucide-x" size="xs" class="rounded-lg" @click="modalOpen = false" />
           </div>
-          <div class="grid grid-cols-2 gap-2">
-            <UInput v-model="form.jam_mulai" type="time" />
-            <UInput v-model="form.jam_selesai" type="time" />
+
+          <!-- Form Fields -->
+          <div class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Semester</label>
+                <USelect v-model="form.semester_id" :items="semesterOpts" placeholder="Pilih Semester" size="md" class="w-full shadow-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Hari</label>
+                <USelect v-model="form.hari" :items="hariOpts" placeholder="Pilih Hari" size="md" class="w-full shadow-sm" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div class="sm:col-span-2">
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Mata Kuliah</label>
+                <UInput v-model="form.mata_kuliah" placeholder="Contoh: Pemrograman Web Lanjut" size="md" class="w-full shadow-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Kode MK</label>
+                <UInput v-model="form.kode_mk" placeholder="TRK201" size="md" class="w-full shadow-sm" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div class="sm:col-span-2">
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Dosen Pengampu</label>
+                <UInput v-model="form.dosen" placeholder="Nama dosen beserta gelar" size="md" class="w-full shadow-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Jumlah SKS</label>
+                <UInput v-model="form.sks" type="number" min="1" max="6" size="md" class="w-full shadow-sm" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Jam Mulai</label>
+                <UInput v-model="form.jam_mulai" type="time" size="md" class="w-full shadow-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Jam Selesai</label>
+                <UInput v-model="form.jam_selesai" type="time" size="md" class="w-full shadow-sm" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Ruangan / Lab</label>
+                <UInput v-model="form.ruangan" placeholder="Contoh: Lab Jaringan 2" size="md" class="w-full shadow-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Warna Aksen</label>
+                <USelect v-model="form.warna" :items="warnaOpts" placeholder="Pilih Warna" size="md" class="w-full shadow-sm" />
+              </div>
+            </div>
           </div>
-          <UInput v-model="form.ruangan" placeholder="Ruangan" />
-          <UInput v-model="form.kode_mk" placeholder="Kode MK" />
-          <USelect v-model="form.warna" :items="warnaOpts" placeholder="Warna Mata Kuliah" />
-          <p class="text-xs text-muted">Contoh: biru = jam 1, hijau = jam 2, merah = jam 3</p>
-          <div class="flex gap-2 justify-end">
-            <UButton variant="ghost" label="Batal" @click="modalOpen = false" />
-            <UButton :loading="loading" label="Simpan" @click="save" />
+
+          <!-- Footer Actions -->
+          <div class="flex items-center justify-end gap-3 pt-4 border-t border-default/30">
+            <UButton variant="outline" color="neutral" label="Batal" size="md" class="rounded-xl px-4" @click="modalOpen = false" />
+            <UButton :loading="loading" label="Simpan Jadwal" color="primary" icon="i-lucide-check" size="md" class="rounded-xl px-5 shadow-sm" @click="save" />
           </div>
         </div>
       </template>

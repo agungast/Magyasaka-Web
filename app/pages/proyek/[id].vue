@@ -10,7 +10,7 @@ const projectId = route.params.id as string
 const { data: project } = useProject(projectId)
 
 useSeoMeta({
-  title: computed(() => `${project.value?.nama || 'Proyek'} — Magyasaka`)
+  title: computed(() => `${project.value?.nama || 'Proyek'} - Magyasaka`)
 })
 
 const kategoriColors: Record<string, string> = {

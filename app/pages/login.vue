@@ -4,7 +4,7 @@ import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSupabaseClient, useSupabaseUser } from '#imports'
 // Fase 4: Login Pengurus
-useSeoMeta({ title: 'Login Pengurus — Magyasaka' })
+useSeoMeta({ title: 'Login Pengurus - Magyasaka' })
 
 const supabase = useSupabaseClient()
 const user = useSupabaseUser()

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-useSeoMeta({ title: 'Kelola Pengurus — Admin Magyasaka' })
+useSeoMeta({ title: 'Kelola Pengurus - Admin Magyasaka' })
 
 const client = useSupabaseClient()
 const { data: officers, refresh } = useAsyncData('admin-officers', async () => {
@@ -106,15 +106,49 @@ const memberOpts = computed(() => members.value?.map(m => ({ label: `${m.nama} (
 
     <UModal v-model:open="modalOpen">
       <template #content>
-        <div class="p-4 space-y-3">
-          <h3 class="font-semibold">{{ editing ? 'Edit' : 'Tambah' }} Pengurus</h3>
-          <USelect v-model="form.member_id" :items="memberOpts" placeholder="Pilih Anggota" />
-          <UInput v-model="form.jabatan" placeholder="Jabatan" />
-          <UInput v-model="form.periode" placeholder="Periode" />
-          <UInput v-model="form.urutan" type="number" placeholder="Urutan" />
-          <div class="flex gap-2 justify-end">
-            <UButton variant="ghost" label="Batal" @click="modalOpen = false" />
-            <UButton :loading="loading" label="Simpan" @click="save" />
+        <div class="p-6 sm:p-7 space-y-5 bg-elevated/95 backdrop-blur-md rounded-2xl border border-default/50 shadow-2xl">
+          <!-- Header -->
+          <div class="flex items-center justify-between pb-4 border-b border-default/30">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0 shadow-sm">
+                <UIcon :name="editing ? 'i-lucide-shield-alert' : 'i-lucide-shield-plus'" class="text-xl" />
+              </div>
+              <div>
+                <h3 class="font-bold text-lg text-default leading-snug">{{ editing ? 'Edit' : 'Tambah' }} Pengurus Kelas</h3>
+                <p class="text-xs text-muted">Tetapkan struktur organisasi dan posisi kepengurusan kelas</p>
+              </div>
+            </div>
+            <UButton variant="ghost" color="neutral" icon="i-lucide-x" size="xs" class="rounded-lg" @click="modalOpen = false" />
+          </div>
+
+          <!-- Form Fields -->
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Nama Anggota Mahasiswa</label>
+              <USelect v-model="form.member_id" :items="memberOpts" placeholder="Pilih Anggota Mahasiswa" size="md" class="w-full shadow-sm" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Jabatan / Posisi</label>
+              <UInput v-model="form.jabatan" placeholder="Contoh: Ketua Kelas / Bendahara Umum" size="md" class="w-full shadow-sm" />
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Periode Kepengurusan</label>
+                <UInput v-model="form.periode" placeholder="Contoh: 2023/2024" size="md" class="w-full shadow-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Urutan Tampilan</label>
+                <UInput v-model="form.urutan" type="number" min="0" placeholder="1, 2, 3..." size="md" class="w-full shadow-sm" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer Actions -->
+          <div class="flex items-center justify-end gap-3 pt-4 border-t border-default/30">
+            <UButton variant="outline" color="neutral" label="Batal" size="md" class="rounded-xl px-4" @click="modalOpen = false" />
+            <UButton :loading="loading" label="Simpan Pengurus" color="primary" icon="i-lucide-check" size="md" class="rounded-xl px-5 shadow-sm" @click="save" />
           </div>
         </div>
       </template>

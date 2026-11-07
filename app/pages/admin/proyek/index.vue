@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-useSeoMeta({ title: 'Kelola Proyek — Admin Magyasaka' })
+useSeoMeta({ title: 'Kelola Proyek - Admin Magyasaka' })
 
 const client = useSupabaseClient()
 const { data: items, refresh } = useAsyncData('admin-projects', async () => {
@@ -116,24 +116,88 @@ const kategoriOpts = ['akademik', 'IoT', 'Mobile App', 'Web', 'Security', 'AI'].
 
     <UModal v-model:open="modalOpen">
       <template #content>
-        <div class="p-4 space-y-3 max-h-[80vh] overflow-auto">
-          <h3 class="font-semibold">{{ editing ? 'Edit' : 'Tambah' }} Proyek</h3>
-          <UInput v-model="form.nama" placeholder="Nama Proyek" />
-          <USelect v-model="form.kategori" :items="kategoriOpts" />
-          <UTextarea v-model="form.deskripsi" placeholder="Deskripsi Singkat" :rows="2" />
-          <UTextarea v-model="form.detail" placeholder="Deskripsi Lengkap" :rows="4" />
-          <UInput v-model="form.thumbnail_url" placeholder="Thumbnail URL" />
-          <UInput v-model="form.repo_url" placeholder="Repo URL" />
-          <UInput v-model="form.demo_url" placeholder="Demo URL" />
-          <UInput v-model="form.teknologi" placeholder="Teknologi (pisahkan koma, contoh: Vue,Nuxt)" />
-          <UInput v-model="form.anggota" placeholder="Anggota (pisahkan koma)" />
-          <label class="flex items-center gap-2 text-sm">
-            <UCheckbox v-model="form.is_highlighted" />
-            Jadikan sorotan terbaik
-          </label>
-          <div class="flex gap-2 justify-end">
-            <UButton variant="ghost" label="Batal" @click="modalOpen = false" />
-            <UButton :loading="loading" label="Simpan" @click="save" />
+        <div class="p-6 sm:p-7 space-y-5 bg-elevated/95 backdrop-blur-md rounded-2xl border border-default/50 shadow-2xl max-h-[85vh] overflow-y-auto">
+          <!-- Header -->
+          <div class="flex items-center justify-between pb-4 border-b border-default/30">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0 shadow-sm">
+                <UIcon :name="editing ? 'i-lucide-folder-pen' : 'i-lucide-folder-plus'" class="text-xl" />
+              </div>
+              <div>
+                <h3 class="font-bold text-lg text-default leading-snug">{{ editing ? 'Edit' : 'Tambah' }} Proyek Karya</h3>
+                <p class="text-xs text-muted">Showcase portofolio karya mahasiswa kelas Magyasaka</p>
+              </div>
+            </div>
+            <UButton variant="ghost" color="neutral" icon="i-lucide-x" size="xs" class="rounded-lg" @click="modalOpen = false" />
+          </div>
+
+          <!-- Form Fields -->
+          <div class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div class="sm:col-span-2">
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Nama Proyek</label>
+                <UInput v-model="form.nama" placeholder="Contoh: Sistem Monitoring IoT Smart Farm" size="md" class="w-full shadow-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Kategori</label>
+                <USelect v-model="form.kategori" :items="kategoriOpts" size="md" class="w-full shadow-sm" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Deskripsi Singkat</label>
+              <UTextarea v-model="form.deskripsi" placeholder="Penjelasan singkat 1-2 kalimat untuk kartu proyek..." :rows="2" size="md" class="w-full shadow-sm" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Deskripsi Lengkap / Detail</label>
+              <UTextarea v-model="form.detail" placeholder="Detail arsitektur, fitur utama, dan tujuan proyek..." :rows="4" size="md" class="w-full shadow-sm" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Thumbnail URL (Gambar Sampul)</label>
+              <UInput v-model="form.thumbnail_url" placeholder="https://... atau /images/proyek.png" size="md" class="w-full shadow-sm" />
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Repository GitHub URL</label>
+                <UInput v-model="form.repo_url" placeholder="https://github.com/..." size="md" class="w-full shadow-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Live Demo URL</label>
+                <UInput v-model="form.demo_url" placeholder="https://..." size="md" class="w-full shadow-sm" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Teknologi / Stack</label>
+                <UInput v-model="form.teknologi" placeholder="Vue, Nuxt, Tailwind, Supabase" size="md" class="w-full shadow-sm" />
+                <p class="text-xs text-muted mt-1">Pisahkan dengan koma</p>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Anggota Tim Pengembang</label>
+                <UInput v-model="form.anggota" placeholder="Nama 1, Nama 2, Nama 3" size="md" class="w-full shadow-sm" />
+                <p class="text-xs text-muted mt-1">Pisahkan dengan koma</p>
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-default/40 border border-default/30">
+              <label class="flex items-center gap-3 text-sm cursor-pointer select-none">
+                <UCheckbox v-model="form.is_highlighted" />
+                <div>
+                  <p class="font-medium text-default text-xs sm:text-sm">Jadikan Karya Sorotan Terbaik (Highlight Proyek)</p>
+                  <p class="text-xs text-muted">Proyek ini akan tampil di bagian unggulan beranda dan puncak daftar proyek</p>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Footer Actions -->
+          <div class="flex items-center justify-end gap-3 pt-4 border-t border-default/30">
+            <UButton variant="outline" color="neutral" label="Batal" size="md" class="rounded-xl px-4" @click="modalOpen = false" />
+            <UButton :loading="loading" label="Simpan Proyek" color="primary" icon="i-lucide-check" size="md" class="rounded-xl px-5 shadow-sm" @click="save" />
           </div>
         </div>
       </template>
