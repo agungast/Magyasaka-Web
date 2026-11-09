@@ -56,11 +56,53 @@ async function save() {
   }
 }
 
-async function remove(id: string) {
-  if (!confirm('Hapus album ini?')) return
-  const { error } = await client.from('albums').delete().eq('id', id)
-  if (error) alert(error.message)
-  else await refresh()
+const deleteModalOpen = ref(false)
+const deleteTitle = ref('Hapus Data')
+const deleteDesc = ref('Apakah Anda yakin ingin menghapus data ini?')
+const deleteLoading = ref(false)
+let pendingDeleteAction: (() => Promise<void>) | null = null
+
+function confirmDeleteAlbum(a: any) {
+  deleteTitle.value = 'Hapus Album Galeri'
+  deleteDesc.value = `Apakah Anda yakin ingin menghapus album "${a.nama}" beserta seluruh foto di dalamnya? Tindakan ini bersifat permanen.`
+  pendingDeleteAction = async () => {
+    const { error } = await client.from('albums').delete().eq('id', a.id)
+    if (error) alert(error.message)
+    else await refresh()
+  }
+  deleteModalOpen.value = true
+}
+
+function confirmDeletePhoto(p: any) {
+  deleteTitle.value = 'Hapus Foto'
+  deleteDesc.value = 'Apakah Anda yakin ingin menghapus foto ini dari album? Tindakan ini bersifat permanen.'
+  pendingDeleteAction = async () => {
+    const { error } = await client.from('photos').delete().eq('id', p.id)
+    if (error) alert(error.message)
+    else {
+      await refresh()
+      if (activeAlbum.value?.cover_url === p.url) {
+        const remaining = activeAlbum.value.photos?.filter((x: any) => x.id !== p.id) || []
+        const newCover = remaining[0]?.url || null
+        await client.from('albums').update({ cover_url: newCover } as any).eq('id', activeAlbum.value.id)
+        await refresh()
+      }
+    }
+  }
+  deleteModalOpen.value = true
+}
+
+async function executeDelete() {
+  if (!pendingDeleteAction) return
+  deleteLoading.value = true
+  try {
+    await pendingDeleteAction()
+    deleteModalOpen.value = false
+  } catch (e: any) {
+    alert(e.message)
+  } finally {
+    deleteLoading.value = false
+  }
 }
 
 // Simple photo add
@@ -87,21 +129,6 @@ async function addPhoto() {
     }
     photoModal.value = false
     await refresh()
-  }
-}
-
-async function removePhoto(id: string) {
-  if (!confirm('Hapus foto ini?')) return
-  const photo = activeAlbum.value.photos?.find((p: any) => p.id === id)
-  const { error } = await client.from('photos').delete().eq('id', id)
-  if (error) alert(error.message)
-  else {
-    await refresh()
-    // Jika foto yang dihapus adalah cover_url, set ke URL berikutnya atau null
-    if (activeAlbum.value.cover_url === photo?.url) {
-      const next = activeAlbum.value.photos.find((p: any) => p.id !== id)
-      await client.from('albums').update({ cover_url: next?.url || null }).eq('id', activeAlbum.value.id)
-    }
   }
 }
 
@@ -133,14 +160,14 @@ async function setCover(albumId: string, url: string) {
           <div class="flex gap-1">
             <UButton size="xs" variant="ghost" icon="i-lucide-images" @click="openPhotos(album)" />
             <UButton size="xs" variant="ghost" icon="i-lucide-edit" @click="openEdit(album)" />
-            <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" @click="remove(album.id)" />
+            <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" @click="confirmDeleteAlbum(album)" />
           </div>
         </div>
         <div class="flex flex-wrap gap-2">
           <div v-for="p in album.photos" :key="p.id" class="relative group">
             <img :src="p.url" class="w-20 h-20 object-cover rounded" />
             <button class="absolute bottom-0 left-0 bg-primary/80 text-white rounded-full px-1.5 py-0.5 text-[10px] hidden group-hover:block" @click="setCover(album.id, p.url)">✦ Thumbnail</button>
-            <button class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 text-xs hidden group-hover:flex items-center justify-center" @click="removePhoto(p.id)">×</button>
+            <button class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 text-xs hidden group-hover:flex items-center justify-center" @click="confirmDeletePhoto(p)">×</button>
           </div>
           <button class="w-20 h-20 border border-dashed border-default rounded flex items-center justify-center" @click="openPhotos(album)">
             <UIcon name="i-lucide-plus" />
@@ -242,5 +269,14 @@ async function setCover(albumId: string, url: string) {
         </div>
       </template>
     </UModal>
+
+    <!-- Modal Konfirmasi Hapus -->
+    <ConfirmModal
+      v-model:open="deleteModalOpen"
+      :title="deleteTitle"
+      :description="deleteDesc"
+      :loading="deleteLoading"
+      @confirm="executeDelete"
+    />
   </div>
 </template>

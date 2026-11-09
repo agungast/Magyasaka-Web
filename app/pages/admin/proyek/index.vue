@@ -68,11 +68,30 @@ async function save() {
   }
 }
 
-async function remove(id: string) {
-  if (!confirm('Hapus proyek ini?')) return
-  const { error } = await client.from('projects').delete().eq('id', id)
-  if (error) alert(error.message)
-  else await refresh()
+const deleteModalOpen = ref(false)
+const selectedProject = ref<any>(null)
+const deleteLoading = ref(false)
+
+function confirmDelete(p: any) {
+  selectedProject.value = p
+  deleteModalOpen.value = true
+}
+
+async function executeDelete() {
+  if (!selectedProject.value) return
+  deleteLoading.value = true
+  try {
+    const { error } = await client.from('projects').delete().eq('id', selectedProject.value.id)
+    if (error) alert(error.message)
+    else {
+      deleteModalOpen.value = false
+      await refresh()
+    }
+  } catch (e: any) {
+    alert(e.message)
+  } finally {
+    deleteLoading.value = false
+  }
 }
 
 const kategoriOpts = ['akademik', 'IoT', 'Mobile App', 'Web', 'Security', 'AI'].map(k => ({ label: k, value: k }))
@@ -106,7 +125,7 @@ const kategoriOpts = ['akademik', 'IoT', 'Mobile App', 'Web', 'Security', 'AI'].
               <td class="py-2">{{ p.is_highlighted ? 'Ya' : 'Tidak' }}</td>
               <td class="py-2 text-right">
                 <UButton size="xs" variant="ghost" icon="i-lucide-edit" @click="openEdit(p)" />
-                <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" @click="remove(p.id)" />
+                <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" @click="confirmDelete(p)" />
               </td>
             </tr>
           </tbody>
@@ -202,5 +221,14 @@ const kategoriOpts = ['akademik', 'IoT', 'Mobile App', 'Web', 'Security', 'AI'].
         </div>
       </template>
     </UModal>
+
+    <!-- Modal Konfirmasi Hapus -->
+    <ConfirmModal
+      v-model:open="deleteModalOpen"
+      title="Hapus Proyek Karya"
+      :description="`Apakah Anda yakin ingin menghapus proyek '${selectedProject?.nama || ''}'? Tindakan ini bersifat permanen dan tidak dapat dibatalkan.`"
+      :loading="deleteLoading"
+      @confirm="executeDelete"
+    />
   </div>
 </template>

@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS public.schedules (
 );
 
 -- ============================================================
--- 7. TABEL: assignments (Tugas & Ujian)
+-- 6. TABEL: assignments (Tugas & Ujian)
 -- ============================================================
 CREATE TABLE IF NOT EXISTS public.assignments (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS public.assignments (
 );
 
 -- ============================================================
--- 6. TABEL: albums (Album Galeri Kegiatan)
+-- 7. TABEL: albums (Album Galeri Kegiatan)
 -- ============================================================
 CREATE TABLE IF NOT EXISTS public.albums (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -109,7 +109,7 @@ CREATE TABLE IF NOT EXISTS public.albums (
 );
 
 -- ============================================================
--- 7. TABEL: photos (Foto dalam Album)
+-- 8. TABEL: photos (Foto dalam Album)
 -- ============================================================
 CREATE TABLE IF NOT EXISTS public.photos (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,

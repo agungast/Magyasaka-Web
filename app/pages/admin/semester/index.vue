@@ -66,11 +66,30 @@ async function save() {
   }
 }
 
-async function remove(id: string) {
-  if (!confirm('Hapus semester ini? Jadwal yang terkait akan tetap ada.')) return
-  const { error } = await client.from('semesters').delete().eq('id', id)
-  if (error) alert(error.message)
-  else await refresh()
+const deleteModalOpen = ref(false)
+const selectedSemester = ref<any>(null)
+const deleteLoading = ref(false)
+
+function confirmDelete(s: any) {
+  selectedSemester.value = s
+  deleteModalOpen.value = true
+}
+
+async function executeDelete() {
+  if (!selectedSemester.value) return
+  deleteLoading.value = true
+  try {
+    const { error } = await client.from('semesters').delete().eq('id', selectedSemester.value.id)
+    if (error) alert(error.message)
+    else {
+      deleteModalOpen.value = false
+      await refresh()
+    }
+  } catch (e: any) {
+    alert(e.message)
+  } finally {
+    deleteLoading.value = false
+  }
 }
 </script>
 
@@ -101,7 +120,7 @@ async function remove(id: string) {
               <td class="py-2">{{ s.tipe }}</td>
               <td class="py-2 text-muted">{{ s.tahun_ajaran }}</td>
               <td class="py-2 text-right">
-                <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" @click="remove(s.id)" />
+                <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" @click="confirmDelete(s)" />
               </td>
             </tr>
             <tr v-if="!semesters?.length">
@@ -157,5 +176,14 @@ async function remove(id: string) {
         </div>
       </template>
     </UModal>
+
+    <!-- Modal Konfirmasi Hapus -->
+    <ConfirmModal
+      v-model:open="deleteModalOpen"
+      title="Hapus Semester"
+      :description="`Apakah Anda yakin ingin menghapus data Semester ${selectedSemester?.nomor || ''} ${selectedSemester?.tipe || ''} (${selectedSemester?.tahun_ajaran || ''})? Jadwal kuliah yang terkait akan tetap tersimpan.`"
+      :loading="deleteLoading"
+      @confirm="executeDelete"
+    />
   </div>
 </template>

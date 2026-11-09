@@ -56,11 +56,30 @@ async function save() {
   }
 }
 
-async function remove(id: string) {
-  if (!confirm('Hapus pengurus ini?')) return
-  const { error } = await client.from('class_officers').delete().eq('id', id)
-  if (error) alert(error.message)
-  else await refresh()
+const deleteModalOpen = ref(false)
+const selectedOfficer = ref<any>(null)
+const deleteLoading = ref(false)
+
+function confirmDelete(o: any) {
+  selectedOfficer.value = o
+  deleteModalOpen.value = true
+}
+
+async function executeDelete() {
+  if (!selectedOfficer.value) return
+  deleteLoading.value = true
+  try {
+    const { error } = await client.from('class_officers').delete().eq('id', selectedOfficer.value.id)
+    if (error) alert(error.message)
+    else {
+      deleteModalOpen.value = false
+      await refresh()
+    }
+  } catch (e: any) {
+    alert(e.message)
+  } finally {
+    deleteLoading.value = false
+  }
 }
 
 const memberOpts = computed(() => members.value?.map(m => ({ label: `${m.nama} (${m.nim})`, value: m.id })) || [])
@@ -96,7 +115,7 @@ const memberOpts = computed(() => members.value?.map(m => ({ label: `${m.nama} (
               <td class="py-2">{{ o.periode }}</td>
               <td class="py-2 text-right">
                 <UButton size="xs" variant="ghost" icon="i-lucide-edit" @click="openEdit(o)" />
-                <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" @click="remove(o.id)" />
+                <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" @click="confirmDelete(o)" />
               </td>
             </tr>
           </tbody>
@@ -153,5 +172,14 @@ const memberOpts = computed(() => members.value?.map(m => ({ label: `${m.nama} (
         </div>
       </template>
     </UModal>
+
+    <!-- Modal Konfirmasi Hapus -->
+    <ConfirmModal
+      v-model:open="deleteModalOpen"
+      title="Hapus Pengurus Kelas"
+      :description="`Apakah Anda yakin ingin menghapus '${selectedOfficer?.member?.nama || ''}' dari jabatan ${selectedOfficer?.jabatan || ''}? Tindakan ini bersifat permanen.`"
+      :loading="deleteLoading"
+      @confirm="executeDelete"
+    />
   </div>
 </template>

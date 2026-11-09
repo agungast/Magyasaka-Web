@@ -3,13 +3,28 @@ import { computed, ref } from 'vue'
 import { useSeoMeta } from '#app'
 import { useState } from '#imports'
 import { useAssignments } from '~/composables/useData'
+import { parseDescription } from '~/utils/description'
 // Fase 2: Daftar Tugas & Ujian
 useSeoMeta({ title: 'Tugas & Ujian - Magyasaka' })
 
 const { data: assignments } = useAssignments()
 
 const filterType = ref('semua')
-const filterTypes = ['semua', 'tugas', 'UTS', 'UAS', 'TUBES', 'Praktikum']
+// Stored `tipe` values are lowercase (tugas/uts/uas/tubes/praktikum), so the
+// filter compares against lowercase values. Labels are cased for display only.
+const filterOptions = [
+  { label: 'Semua', value: 'semua' },
+  { label: 'Tugas', value: 'tugas' },
+  { label: 'UTS', value: 'uts' },
+  { label: 'UAS', value: 'uas' },
+  { label: 'TUBES', value: 'tubes' },
+  { label: 'Praktikum', value: 'praktikum' }
+]
+
+function tipeLabel(tipe: string | null | undefined) {
+  return filterOptions.find(o => o.value === tipe)?.label
+    ?? (tipe ? tipe.charAt(0).toUpperCase() + tipe.slice(1) : 'Tugas')
+}
 
 // Local completion tracking (stored in browser)
 const completedTasks = useState<Set<string>>('completedTasks', () => new Set())
@@ -140,13 +155,13 @@ const tipeColor: Record<string, string> = {
     <!-- Filter -->
     <div class="flex gap-1 flex-wrap mb-6">
       <UButton
-        v-for="type in filterTypes"
-        :key="type"
-        :label="type.charAt(0).toUpperCase() + type.slice(1)"
-        :color="filterType === type ? 'primary' : 'neutral'"
-        :variant="filterType === type ? 'solid' : 'ghost'"
+        v-for="opt in filterOptions"
+        :key="opt.value"
+        :label="opt.label"
+        :color="filterType === opt.value ? 'primary' : 'neutral'"
+        :variant="filterType === opt.value ? 'solid' : 'ghost'"
         size="sm"
-        @click="filterType = type"
+        @click="filterType = opt.value"
       />
     </div>
 
@@ -185,9 +200,19 @@ const tipeColor: Record<string, string> = {
               {{ task.judul }}
             </h2>
             <p class="text-xs text-muted mt-0.5">{{ task.mata_kuliah }}</p>
-            <p v-if="task.deskripsi" class="text-xs text-muted mt-1 line-clamp-2">{{ task.deskripsi }}</p>
+            <div v-if="task.deskripsi" class="text-xs text-muted mt-1 space-y-1">
+              <template v-for="(block, bi) in parseDescription(task.deskripsi)" :key="bi">
+                <ul v-if="block.type === 'ul'" class="list-disc pl-4 space-y-1">
+                  <li v-for="(item, ii) in block.items" :key="ii">{{ item }}</li>
+                </ul>
+                <ol v-else-if="block.type === 'ol'" class="list-decimal pl-4 space-y-1">
+                  <li v-for="(item, ii) in block.items" :key="ii">{{ item }}</li>
+                </ol>
+                <p v-else class="whitespace-pre-wrap">{{ block.text }}</p>
+              </template>
+            </div>
             <div class="flex items-center gap-2 mt-2">
-              <UBadge :label="task.tipe || 'Tugas'" variant="subtle" size="xs" />
+              <UBadge :label="tipeLabel(task.tipe)" variant="subtle" size="xs" />
               <span v-if="task.deadline" class="text-xs text-muted flex items-center gap-1">
                 <UIcon name="i-lucide-clock" />
                 {{ formatDate(task.deadline) }}
@@ -219,7 +244,7 @@ const tipeColor: Record<string, string> = {
     <div v-if="filteredAssignments.length === 0" class="text-center py-16">
       <UIcon name="i-lucide-inbox" class="text-5xl text-muted mb-3" />
       <h2 class="font-semibold text-lg mb-1">Tidak ada tugas</h2>
-      <p class="text-muted text-sm">Belum ada tugas untuk filter "{{ filterType }}"</p>
+      <p class="text-muted text-sm">Belum ada tugas untuk filter "{{ tipeLabel(filterType) }}"</p>
     </div>
   </UContainer>
 </template>

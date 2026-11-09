@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useAnnouncements, useAssignments, useSchedules } from '~/composables/useData'
+import { parseDescription } from '~/utils/description'
 // Fase 1: Beranda Angkatan
 const { data: announcements } = useAnnouncements()
 const { data: assignments } = useAssignments()
@@ -136,7 +137,17 @@ const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = 
                 <span class="text-xs text-muted">{{ formatDate(announcement.created_at) }}</span>
               </div>
               <h3 class="font-display font-semibold text-base">{{ announcement.judul }}</h3>
-              <p class="text-sm text-muted mt-1 line-clamp-2">{{ announcement.konten }}</p>
+              <div class="text-sm text-muted mt-1 space-y-1">
+                <template v-for="(block, bi) in parseDescription(announcement.konten)" :key="bi">
+                  <ul v-if="block.type === 'ul'" class="list-disc pl-4 space-y-1">
+                    <li v-for="(item, ii) in block.items" :key="ii">{{ item }}</li>
+                  </ul>
+                  <ol v-else-if="block.type === 'ol'" class="list-decimal pl-4 space-y-1">
+                    <li v-for="(item, ii) in block.items" :key="ii">{{ item }}</li>
+                  </ol>
+                  <p v-else class="whitespace-pre-wrap">{{ block.text }}</p>
+                </template>
+              </div>
               <p class="text-xs text-muted mt-2">- {{ announcement.penulis }}</p>
             </div>
           </article>
@@ -259,7 +270,17 @@ const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = 
                   <span class="sr-only">Disematkan</span>
                 </span>
               </div>
-              <p class="text-sm text-muted line-clamp-2">{{ announcement.konten }}</p>
+              <div class="text-sm text-muted space-y-1">
+                <template v-for="(block, bi) in parseDescription(announcement.konten)" :key="bi">
+                  <ul v-if="block.type === 'ul'" class="list-disc pl-4 space-y-1">
+                    <li v-for="(item, ii) in block.items" :key="ii">{{ item }}</li>
+                  </ul>
+                  <ol v-else-if="block.type === 'ol'" class="list-decimal pl-4 space-y-1">
+                    <li v-for="(item, ii) in block.items" :key="ii">{{ item }}</li>
+                  </ol>
+                  <p v-else class="whitespace-pre-wrap">{{ block.text }}</p>
+                </template>
+              </div>
               <div class="flex flex-wrap items-center gap-3 mt-2">
                 <UBadge
                   :label="announcement.kategori || 'umum'"

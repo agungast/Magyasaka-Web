@@ -54,11 +54,30 @@ async function save() {
   }
 }
 
-async function remove(id: string) {
-  if (!confirm('Hapus anggota ini?')) return
-  const { error } = await (client.from('members') as any).delete().eq('id' as any, id as any)
-  if (error) alert(error.message)
-  else await refresh()
+const deleteModalOpen = ref(false)
+const selectedMember = ref<any>(null)
+const deleteLoading = ref(false)
+
+function confirmDelete(m: any) {
+  selectedMember.value = m
+  deleteModalOpen.value = true
+}
+
+async function executeDelete() {
+  if (!selectedMember.value) return
+  deleteLoading.value = true
+  try {
+    const { error } = await (client.from('members') as any).delete().eq('id' as any, selectedMember.value.id as any)
+    if (error) alert(error.message)
+    else {
+      deleteModalOpen.value = false
+      await refresh()
+    }
+  } catch (e: any) {
+    alert(e.message)
+  } finally {
+    deleteLoading.value = false
+  }
 }
 
 const statusOpts = ['aktif', 'tidak aktif', 'cuti'].map(s => ({ label: s, value: s }))
@@ -94,7 +113,7 @@ const statusOpts = ['aktif', 'tidak aktif', 'cuti'].map(s => ({ label: s, value:
               <td class="py-2">{{ m.status }}</td>
               <td class="py-2 text-right">
                 <UButton size="xs" variant="ghost" icon="i-lucide-edit" @click="openEdit(m)" />
-                <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" @click="remove(m.id)" />
+                <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" @click="confirmDelete(m)" />
               </td>
             </tr>
           </tbody>
@@ -157,5 +176,14 @@ const statusOpts = ['aktif', 'tidak aktif', 'cuti'].map(s => ({ label: s, value:
         </div>
       </template>
     </UModal>
+
+    <!-- Modal Konfirmasi Hapus -->
+    <ConfirmModal
+      v-model:open="deleteModalOpen"
+      title="Hapus Anggota Mahasiswa"
+      :description="`Apakah Anda yakin ingin menghapus data anggota ${selectedMember?.nama || ''} (${selectedMember?.nim || ''})? Data yang dihapus tidak dapat dipulihkan.`"
+      :loading="deleteLoading"
+      @confirm="executeDelete"
+    />
   </div>
 </template>

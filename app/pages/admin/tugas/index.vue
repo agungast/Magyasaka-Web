@@ -63,14 +63,46 @@ async function save() {
   }
 }
 
-async function remove(id: string) {
-  if (!confirm('Hapus tugas/ujian ini?')) return
-  const { error } = await client.from('assignments').delete().eq('id', id)
-  if (error) alert(error.message)
-  else await refresh()
+const deleteModalOpen = ref(false)
+const selectedAssignment = ref<any>(null)
+const deleteLoading = ref(false)
+
+function confirmDelete(a: any) {
+  selectedAssignment.value = a
+  deleteModalOpen.value = true
+}
+
+async function executeDelete() {
+  if (!selectedAssignment.value) return
+  deleteLoading.value = true
+  try {
+    const { error } = await client.from('assignments').delete().eq('id', selectedAssignment.value.id)
+    if (error) alert(error.message)
+    else {
+      deleteModalOpen.value = false
+      await refresh()
+    }
+  } catch (e: any) {
+    alert(e.message)
+  } finally {
+    deleteLoading.value = false
+  }
 }
 
 const tipeOpts = ['tugas', 'uts', 'uas', 'tubes', 'praktikum'].map(t => ({ label: t.toUpperCase(), value: t }))
+
+// Compact id-ID date + time for the table columns. Tugas rows carry their time
+// in `deadline`; ujian/kuis rows (uts/uas/praktikum) carry it in `tanggal_ujian`.
+function formatDateTime(value: string | null | undefined) {
+  if (!value) return '-'
+  return new Date(value).toLocaleString('id-ID', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
 </script>
 
 <template>
@@ -92,6 +124,7 @@ const tipeOpts = ['tugas', 'uts', 'uas', 'tubes', 'praktikum'].map(t => ({ label
               <th class="text-left py-2">Mata Kuliah</th>
               <th class="text-left py-2">Tipe</th>
               <th class="text-left py-2">Deadline</th>
+              <th class="text-left py-2">Pelaksanaan</th>
               <th class="text-right py-2">Aksi</th>
             </tr>
           </thead>
@@ -100,10 +133,11 @@ const tipeOpts = ['tugas', 'uts', 'uas', 'tubes', 'praktikum'].map(t => ({ label
               <td class="py-2">{{ a.judul }}</td>
               <td class="py-2">{{ a.mata_kuliah }}</td>
               <td class="py-2">{{ a.tipe }}</td>
-              <td class="py-2">{{ a.deadline ? new Date(a.deadline).toLocaleDateString('id-ID') : '-' }}</td>
+              <td class="py-2 whitespace-nowrap">{{ formatDateTime(a.deadline) }}</td>
+              <td class="py-2 whitespace-nowrap">{{ formatDateTime(a.tanggal_ujian) }}</td>
               <td class="py-2 text-right">
                 <UButton size="xs" variant="ghost" icon="i-lucide-edit" @click="openEdit(a)" />
-                <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" @click="remove(a.id)" />
+                <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" @click="confirmDelete(a)" />
               </td>
             </tr>
           </tbody>
@@ -154,11 +188,11 @@ const tipeOpts = ['tugas', 'uts', 'uas', 'tubes', 'praktikum'].map(t => ({ label
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Deadline Pengumpulan (Tugas)</label>
-                <UInput v-model="form.deadline" type="datetime-local" size="md" class="w-full shadow-sm" />
+                <DateTimeField v-model="form.deadline" placeholder="Pilih tanggal & waktu deadline" />
               </div>
               <div>
                 <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Jadwal Pelaksanaan (Ujian/Kuis)</label>
-                <UInput v-model="form.tanggal_ujian" type="datetime-local" size="md" class="w-full shadow-sm" />
+                <DateTimeField v-model="form.tanggal_ujian" placeholder="Pilih tanggal & waktu pelaksanaan" />
               </div>
             </div>
 
@@ -176,5 +210,14 @@ const tipeOpts = ['tugas', 'uts', 'uas', 'tubes', 'praktikum'].map(t => ({ label
         </div>
       </template>
     </UModal>
+
+    <!-- Modal Konfirmasi Hapus -->
+    <ConfirmModal
+      v-model:open="deleteModalOpen"
+      title="Hapus Tugas / Ujian"
+      :description="`Apakah Anda yakin ingin menghapus data '${selectedAssignment?.judul || ''}' (${selectedAssignment?.mata_kuliah || ''})? Tindakan ini bersifat permanen.`"
+      :loading="deleteLoading"
+      @confirm="executeDelete"
+    />
   </div>
 </template>

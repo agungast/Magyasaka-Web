@@ -50,11 +50,30 @@ async function save() {
   }
 }
 
-async function remove(id: string) {
-  if (!confirm('Hapus pengumuman ini?')) return
-  const { error } = await client.from('announcements').delete().eq('id', id)
-  if (error) alert(error.message)
-  else await refresh()
+const deleteModalOpen = ref(false)
+const selectedAnnouncement = ref<any>(null)
+const deleteLoading = ref(false)
+
+function confirmDelete(a: any) {
+  selectedAnnouncement.value = a
+  deleteModalOpen.value = true
+}
+
+async function executeDelete() {
+  if (!selectedAnnouncement.value) return
+  deleteLoading.value = true
+  try {
+    const { error } = await client.from('announcements').delete().eq('id', selectedAnnouncement.value.id)
+    if (error) alert(error.message)
+    else {
+      deleteModalOpen.value = false
+      await refresh()
+    }
+  } catch (e: any) {
+    alert(e.message)
+  } finally {
+    deleteLoading.value = false
+  }
 }
 
 const kategoriOpts = [
@@ -96,7 +115,7 @@ const kategoriOpts = [
               <td class="py-2">{{ a.is_pinned ? 'Ya' : 'Tidak' }}</td>
               <td class="py-2 text-right">
                 <UButton size="xs" variant="ghost" icon="i-lucide-edit" @click="openEdit(a)" />
-                <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" @click="remove(a.id)" />
+                <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" @click="confirmDelete(a)" />
               </td>
             </tr>
           </tbody>
@@ -163,5 +182,14 @@ const kategoriOpts = [
         </div>
       </template>
     </UModal>
+
+    <!-- Modal Konfirmasi Hapus -->
+    <ConfirmModal
+      v-model:open="deleteModalOpen"
+      title="Hapus Pengumuman"
+      :description="`Apakah Anda yakin ingin menghapus pengumuman '${selectedAnnouncement?.judul || ''}'? Tindakan ini bersifat permanen dan tidak dapat dibatalkan.`"
+      :loading="deleteLoading"
+      @confirm="executeDelete"
+    />
   </div>
 </template>

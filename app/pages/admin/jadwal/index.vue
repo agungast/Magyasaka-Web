@@ -43,14 +43,103 @@ const warnaOpts = [
 
 const hariOpts = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'].map(h => ({ label: h, value: h }))
 
+// Filter tabel berdasarkan semester & hari
+const filterSemesterId = ref('all')
+const filterHari = ref('all')
+
+const filterSemesterOpts = computed(() => [
+  { label: 'Semua Semester', value: 'all' },
+  ...semesterOpts.value
+])
+
+const filterHariOpts = [
+  { label: 'Semua Hari', value: 'all' },
+  ...hariOpts
+]
+
+const filteredItems = computed(() =>
+  (items.value || []).filter((s: any) =>
+    (filterSemesterId.value === 'all' || s.semester_id === filterSemesterId.value)
+    && (filterHari.value === 'all' || s.hari === filterHari.value)
+  )
+)
+
+// Pengaturan waktu perkuliahan (Jam & Menit)
+const hourOptions = Array.from({ length: 16 }, (_, i) => {
+  const h = String(i + 7).padStart(2, '0') // 07 hingga 22
+  return { label: h, value: h }
+})
+
+const minuteOptions = ['00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55'].map(m => ({
+  label: m,
+  value: m
+}))
+
+const timePresets = [
+  { label: 'Pagi 1', start: '07:00', end: '11:50' },
+  { label: 'Pagi 2', start: '07:00', end: '08:30' },
+  { label: 'Siang 1', start: '12:30', end: '14:00' },
+  { label: 'Siang 2', start: '12:30', end: '17:30' },
+  { label: 'Sore', start: '16:00', end: '21:00' }
+]
+
+function applyPreset(start: string, end: string) {
+  form.value.jam_mulai = start
+  form.value.jam_selesai = end
+}
+
+const startHour = computed({
+  get: () => form.value.jam_mulai?.slice(0, 2) || '07',
+  set: (v) => {
+    const m = form.value.jam_mulai?.slice(3, 5) || '00'
+    form.value.jam_mulai = `${v}:${m}`
+  }
+})
+
+const startMinute = computed({
+  get: () => form.value.jam_mulai?.slice(3, 5) || '00',
+  set: (v) => {
+    const h = form.value.jam_mulai?.slice(0, 2) || '07'
+    form.value.jam_mulai = `${h}:${v}`
+  }
+})
+
+const endHour = computed({
+  get: () => form.value.jam_selesai?.slice(0, 2) || '11',
+  set: (v) => {
+    const m = form.value.jam_selesai?.slice(3, 5) || '50'
+    form.value.jam_selesai = `${v}:${m}`
+  }
+})
+
+const endMinute = computed({
+  get: () => form.value.jam_selesai?.slice(3, 5) || '30',
+  set: (v) => {
+    const h = form.value.jam_selesai?.slice(0, 2) || '10'
+    form.value.jam_selesai = `${h}:${v}`
+  }
+})
+
+const durationText = computed(() => {
+  const [h1 = 0, m1 = 0] = (form.value.jam_mulai || '07:00').split(':').map(Number)
+  const [h2 = 0, m2 = 0] = (form.value.jam_selesai || '11:50').split(':').map(Number)
+  const totalMin = (h2 * 60 + m2) - (h1 * 60 + m1)
+  if (isNaN(totalMin) || totalMin <= 0) return ''
+  const hours = Math.floor(totalMin / 60)
+  const mins = totalMin % 60
+  if (hours > 0 && mins > 0) return `${hours} jam ${mins} mnt`
+  if (hours > 0) return `${hours} jam`
+  return `${mins} mnt`
+})
+
 const modalOpen = ref(false)
 const editing = ref<any>(null)
-const form = ref({ semester_id: null as string | null, mata_kuliah: '', dosen: '', hari: 'Senin', jam_mulai: '08:00', jam_selesai: '10:30', ruangan: '', kode_mk: '', sks: 3, warna: '#6366f1' })
+const form = ref({ semester_id: null as string | null, mata_kuliah: '', dosen: '', hari: 'Senin', jam_mulai: '07:00', jam_selesai: '10:30', ruangan: '', kode_mk: '', sks: 3, warna: '#6366f1' })
 const loading = ref(false)
 
 function openCreate() {
   editing.value = null
-  form.value = { semester_id: latestSemesterId.value, mata_kuliah: '', dosen: '', hari: 'Senin', jam_mulai: '08:00', jam_selesai: '10:30', ruangan: '', kode_mk: '', sks: 3, warna: '#6366f1' }
+  form.value = { semester_id: latestSemesterId.value, mata_kuliah: '', dosen: '', hari: 'Senin', jam_mulai: '07:00', jam_selesai: '10:30', ruangan: '', kode_mk: '', sks: 3, warna: '#6366f1' }
   modalOpen.value = true
 }
 
@@ -61,7 +150,11 @@ function semesterName(id: string | null) {
 
 function openEdit(s: any) {
   editing.value = s
-  form.value = { ...s }
+  form.value = {
+    ...s,
+    jam_mulai: s.jam_mulai?.slice(0, 5) || '07:00',
+    jam_selesai: s.jam_selesai?.slice(0, 5) || '11:50'
+  }
   modalOpen.value = true
 }
 
@@ -84,11 +177,30 @@ async function save() {
   }
 }
 
-async function remove(id: string) {
-  if (!confirm('Hapus jadwal ini?')) return
-  const { error } = await client.from('schedules').delete().eq('id', id)
-  if (error) alert(error.message)
-  else await refresh()
+const deleteModalOpen = ref(false)
+const selectedSchedule = ref<any>(null)
+const deleteLoading = ref(false)
+
+function confirmDelete(s: any) {
+  selectedSchedule.value = s
+  deleteModalOpen.value = true
+}
+
+async function executeDelete() {
+  if (!selectedSchedule.value) return
+  deleteLoading.value = true
+  try {
+    const { error } = await client.from('schedules').delete().eq('id', selectedSchedule.value.id)
+    if (error) alert(error.message)
+    else {
+      deleteModalOpen.value = false
+      await refresh()
+    }
+  } catch (e: any) {
+    alert(e.message)
+  } finally {
+    deleteLoading.value = false
+  }
 }
 
 </script>
@@ -104,6 +216,24 @@ async function remove(id: string) {
     </div>
 
     <UCard>
+      <div class="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
+        <div class="flex flex-col sm:flex-row gap-2 flex-1">
+          <USelect v-model="filterSemesterId" :items="filterSemesterOpts" size="sm" class="sm:w-60" />
+          <USelect v-model="filterHari" :items="filterHariOpts" size="sm" class="sm:w-44" />
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-muted">{{ filteredItems.length }} jadwal</span>
+          <UButton
+            v-if="filterSemesterId !== 'all' || filterHari !== 'all'"
+            label="Reset"
+            icon="i-lucide-x"
+            size="xs"
+            variant="ghost"
+            color="neutral"
+            @click="filterSemesterId = 'all'; filterHari = 'all'"
+          />
+        </div>
+      </div>
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
           <thead>
@@ -118,7 +248,7 @@ async function remove(id: string) {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="s in items" :key="s.id" class="border-b border-default/50">
+            <tr v-for="s in filteredItems" :key="s.id" class="border-b border-default/50">
               <td class="py-2">
                 <p class="font-medium">{{ s.mata_kuliah }}</p>
                 <p class="text-xs text-muted">{{ s.dosen }}</p>
@@ -132,8 +262,11 @@ async function remove(id: string) {
               </td>
               <td class="py-2 text-right">
                 <UButton size="xs" variant="ghost" icon="i-lucide-edit" @click="openEdit(s)" />
-                <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" @click="remove(s.id)" />
+                <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" @click="confirmDelete(s)" />
               </td>
+            </tr>
+            <tr v-if="!filteredItems.length">
+              <td colspan="7" class="py-6 text-center text-muted">Tidak ada jadwal untuk filter ini.</td>
             </tr>
           </tbody>
         </table>
@@ -192,14 +325,71 @@ async function remove(id: string) {
               </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Jam Mulai</label>
-                <UInput v-model="form.jam_mulai" type="time" size="md" class="w-full shadow-sm" />
+            <!-- Custom Time Picker Section -->
+            <div class="p-4 rounded-xl bg-default/40 border border-default/30 space-y-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <UIcon name="i-lucide-clock" class="text-primary text-base" />
+                  <label class="text-xs font-semibold text-muted uppercase tracking-wider">Waktu Perkuliahan</label>
+                </div>
+                <span v-if="durationText" class="text-xs text-primary font-medium bg-primary/10 px-2.5 py-0.5 rounded-full border border-primary/20">
+                  Durasi: {{ durationText }}
+                </span>
               </div>
-              <div>
-                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Jam Selesai</label>
-                <UInput v-model="form.jam_selesai" type="time" size="md" class="w-full shadow-sm" />
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <!-- Jam Mulai -->
+                <div class="p-3 rounded-xl bg-elevated/80 border border-default/30 shadow-xs">
+                  <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-1.5">
+                      <div class="w-2 h-2 rounded-full bg-emerald-500 shadow-xs shadow-emerald-500/50" />
+                      <span class="text-xs font-semibold text-default">Jam Mulai</span>
+                    </div>
+                    <span class="text-[11px] font-mono text-muted">{{ form.jam_mulai }} WIB</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <USelect v-model="startHour" :items="hourOptions" size="md" class="flex-1 text-center font-mono" />
+                    <span class="text-muted font-bold text-base select-none">:</span>
+                    <USelect v-model="startMinute" :items="minuteOptions" size="md" class="flex-1 text-center font-mono" />
+                  </div>
+                </div>
+
+                <!-- Jam Selesai -->
+                <div class="p-3 rounded-xl bg-elevated/80 border border-default/30 shadow-xs">
+                  <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-1.5">
+                      <div class="w-2 h-2 rounded-full bg-amber-500 shadow-xs shadow-amber-500/50" />
+                      <span class="text-xs font-semibold text-default">Jam Selesai</span>
+                    </div>
+                    <span class="text-[11px] font-mono text-muted">{{ form.jam_selesai }} WIB</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <USelect v-model="endHour" :items="hourOptions" size="md" class="flex-1 text-center font-mono" />
+                    <span class="text-muted font-bold text-base select-none">:</span>
+                    <USelect v-model="endMinute" :items="minuteOptions" size="md" class="flex-1 text-center font-mono" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pilihan Cepat Slot Perkuliahan -->
+              <div class="pt-1">
+                <span class="text-[11px] font-medium text-muted block mb-1.5">Pilihan Cepat Sesi Kuliah:</span>
+                <div class="flex flex-wrap gap-1.5">
+                  <button
+                    v-for="preset in timePresets"
+                    :key="preset.label"
+                    type="button"
+                    :class="[
+                      'text-xs px-2.5 py-1 rounded-lg border transition-all select-none',
+                      form.jam_mulai === preset.start && form.jam_selesai === preset.end
+                        ? 'bg-primary/15 border-primary/40 text-primary font-semibold shadow-xs'
+                        : 'border-default/30 bg-elevated/50 hover:bg-primary/10 hover:border-primary/30 hover:text-primary text-muted'
+                    ]"
+                    @click="applyPreset(preset.start, preset.end)"
+                  >
+                    {{ preset.label }} ({{ preset.start }} - {{ preset.end }})
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -223,5 +413,14 @@ async function remove(id: string) {
         </div>
       </template>
     </UModal>
+
+    <!-- Modal Konfirmasi Hapus -->
+    <ConfirmModal
+      v-model:open="deleteModalOpen"
+      title="Hapus Jadwal Kuliah"
+      :description="`Apakah Anda yakin ingin menghapus jadwal mata kuliah '${selectedSchedule?.mata_kuliah || ''}' pada hari ${selectedSchedule?.hari || ''}? Tindakan ini tidak dapat dibatalkan.`"
+      :loading="deleteLoading"
+      @confirm="executeDelete"
+    />
   </div>
 </template>
