@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useSeoMeta } from '#app'
-import { useState } from '#imports'
 import { useAssignments } from '~/composables/useData'
 import { parseDescription } from '~/utils/description'
 // Fase 2: Daftar Tugas & Ujian
@@ -24,29 +23,6 @@ const filterOptions = [
 function tipeLabel(tipe: string | null | undefined) {
   return filterOptions.find(o => o.value === tipe)?.label
     ?? (tipe ? tipe.charAt(0).toUpperCase() + tipe.slice(1) : 'Tugas')
-}
-
-// Local completion tracking (stored in browser)
-const completedTasks = useState<Set<string>>('completedTasks', () => new Set())
-
-if (import.meta.client) {
-  const stored = localStorage.getItem('trk2023_completed_tasks')
-  if (stored) {
-    completedTasks.value = new Set(JSON.parse(stored))
-  }
-}
-
-function toggleComplete(id: string) {
-  const newSet = new Set(completedTasks.value)
-  if (newSet.has(id)) {
-    newSet.delete(id)
-  } else {
-    newSet.add(id)
-  }
-  completedTasks.value = newSet
-  if (import.meta.client) {
-    localStorage.setItem('trk2023_completed_tasks', JSON.stringify([...newSet]))
-  }
 }
 
 const filteredAssignments = computed(() => {
@@ -118,7 +94,6 @@ const tipeColor: Record<string, string> = {
         </h1>
         <p class="text-muted mt-1">
           {{ filteredAssignments.length }} item
-          <span v-if="completedTasks.size > 0"> • {{ completedTasks.size }} selesai</span>
         </p>
       </div>
     </div>
@@ -170,22 +145,9 @@ const tipeColor: Record<string, string> = {
       <UCard
         v-for="task in filteredAssignments"
         :key="task.id"
-        :class="['card-hover transition-all', completedTasks.has(task.id) ? 'opacity-60' : '']"
+        class="card-hover transition-all"
       >
         <div class="flex items-start gap-3">
-          <!-- Checkbox -->
-          <button
-            :class="[
-              'w-6 h-6 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all',
-              completedTasks.has(task.id)
-                ? 'bg-success border-success text-inverted'
-                : 'border-default hover:border-primary'
-            ]"
-            @click="toggleComplete(task.id)"
-          >
-            <UIcon v-if="completedTasks.has(task.id)" name="i-lucide-check" class="text-sm" />
-          </button>
-
           <!-- Icon -->
           <div
             class="accent w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
@@ -196,7 +158,7 @@ const tipeColor: Record<string, string> = {
 
           <!-- Content -->
           <div class="flex-1 min-w-0">
-            <h2 :class="['font-semibold text-sm', completedTasks.has(task.id) ? 'line-through' : '']">
+            <h2 class="font-semibold text-sm">
               {{ task.judul }}
             </h2>
             <p class="text-xs text-muted mt-0.5">{{ task.mata_kuliah }}</p>
@@ -222,17 +184,9 @@ const tipeColor: Record<string, string> = {
 
           <!-- Deadline badge -->
           <UBadge
-            v-if="task.deadline && !completedTasks.has(task.id)"
+            v-if="task.deadline"
             :label="daysUntil(task.deadline)"
             :color="deadlineColor(task.deadline)"
-            variant="subtle"
-            size="xs"
-            class="shrink-0"
-          />
-          <UBadge
-            v-else-if="completedTasks.has(task.id)"
-            label="Selesai ✓"
-            color="success"
             variant="subtle"
             size="xs"
             class="shrink-0"

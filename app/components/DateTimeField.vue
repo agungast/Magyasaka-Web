@@ -5,9 +5,11 @@ import { CalendarDate } from '@internationalized/date'
 const props = withDefaults(defineProps<{
   modelValue?: string
   placeholder?: string
+  dateOnly?: boolean
 }>(), {
   modelValue: '',
-  placeholder: 'Pilih tanggal & waktu'
+  placeholder: 'Pilih tanggal & waktu',
+  dateOnly: false
 })
 
 const emit = defineEmits<{
@@ -36,6 +38,7 @@ function pad2(n: number) {
 
 function buildValue() {
   if (!dateValue.value) return ''
+  if (props.dateOnly) return dateValue.value.toString()
   return `${dateValue.value.toString()}T${pad2(hour.value ?? 0)}:${pad2(minute.value ?? 0)}`
 }
 
@@ -76,7 +79,8 @@ const hasValue = computed(() => dateValue.value != null)
 const preview = computed(() => {
   const d = dateValue.value
   if (!d) return ''
-  return `${d.day} ${monthShort[d.month - 1]} ${d.year} · ${pad2(hour.value ?? 0)}:${pad2(minute.value ?? 0)}`
+  const date = `${d.day} ${monthShort[d.month - 1]} ${d.year}`
+  return props.dateOnly ? date : `${date} · ${pad2(hour.value ?? 0)}:${pad2(minute.value ?? 0)}`
 })
 
 function clear() {
@@ -126,23 +130,25 @@ watch(() => props.modelValue, (v) => {
           @update:model-value="onCalendarUpdate"
         />
 
-        <!-- Printed-rule divider, echoing the site's halftone/paper motif -->
-        <div class="border-t border-dashed border-default/40" />
+        <template v-if="!dateOnly">
+          <!-- Printed-rule divider, echoing the site's halftone/paper motif -->
+          <div class="border-t border-dashed border-default/40" />
 
-        <!-- Time selection -->
-        <div>
-          <div class="text-[10px] font-semibold text-dimmed uppercase tracking-wider mb-1.5">Waktu</div>
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="block text-[10px] font-semibold text-dimmed uppercase tracking-wider mb-1">Jam</label>
-              <USelect v-model="hour" :items="hourOptions" size="sm" class="w-full" />
-            </div>
-            <div>
-              <label class="block text-[10px] font-semibold text-dimmed uppercase tracking-wider mb-1">Menit</label>
-              <USelect v-model="minute" :items="minuteOptions" size="sm" class="w-full" />
+          <!-- Time selection -->
+          <div>
+            <div class="text-[10px] font-semibold text-dimmed uppercase tracking-wider mb-1.5">Waktu</div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[10px] font-semibold text-dimmed uppercase tracking-wider mb-1">Jam</label>
+                <USelect v-model="hour" :items="hourOptions" size="sm" class="w-full" />
+              </div>
+              <div>
+                <label class="block text-[10px] font-semibold text-dimmed uppercase tracking-wider mb-1">Menit</label>
+                <USelect v-model="minute" :items="minuteOptions" size="sm" class="w-full" />
+              </div>
             </div>
           </div>
-        </div>
+        </template>
 
         <!-- Footer actions -->
         <div class="flex items-center justify-between pt-1">

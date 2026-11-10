@@ -2,10 +2,15 @@
 import { computed } from 'vue'
 import { useSeoMeta } from '#app'
 import { useAlbums } from '~/composables/useData'
+import { isVideoUrl } from '~/composables/useGalleryUpload'
 // Fase 3: Galeri Kegiatan
 useSeoMeta({ title: 'Galeri - Magyasaka' })
 
-const { data: albums } = useAlbums()
+const { data: albums, status: albumsStatus } = useAlbums()
+
+// Lazy: data album belum ada saat pindah halaman — tampilkan skeleton, bukan
+// state "Belum ada album".
+const loading = computed(() => albumsStatus.value === 'pending' || albumsStatus.value === 'idle')
 
 const featuredAlbums = computed(() =>
   albums.value?.filter((a: any) => a.is_featured) || []
@@ -25,6 +30,12 @@ function formatDate(dateStr: string) {
 function getPhotoCount(album: any) {
   return album.photos?.length || 0
 }
+
+// Cover album: pakai cover_url, atau foto (gambar) pertama yang bukan video.
+function coverOf(album: any) {
+  if (album.cover_url) return album.cover_url
+  return album.photos?.find((p: any) => !isVideoUrl(p.url))?.url || album.photos?.[0]?.url || null
+}
 </script>
 
 <template>
@@ -37,6 +48,16 @@ function getPhotoCount(album: any) {
       <p class="text-muted mt-1">Dokumentasi momen berharga angkatan Magyasaka</p>
     </div>
 
+    <!-- Skeleton saat album sedang dimuat -->
+    <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <UCard v-for="i in 6" :key="i">
+        <USkeleton class="h-40 w-full rounded-lg mb-3" />
+        <USkeleton class="h-4 w-2/3 mb-2" />
+        <USkeleton class="h-3 w-full" />
+      </UCard>
+    </div>
+
+    <template v-else>
     <!-- Album Terbaru / Featured -->
     <section v-if="featuredAlbums.length > 0" class="mb-12">
       <div class="flex items-center gap-2 mb-6">
@@ -53,8 +74,8 @@ function getPhotoCount(album: any) {
           <UCard class="card-hover overflow-hidden h-full">
             <!-- Cover placeholder -->
             <Plate class="mb-4">
-              <div v-if="album.cover_url || album.photos?.[0]?.url" class="w-full h-full">
-                <img :src="album.cover_url || album.photos?.[0]?.url" :alt="album.nama" class="w-full h-full object-cover" />
+              <div v-if="coverOf(album)" class="w-full h-full">
+                <img :src="coverOf(album)" :alt="album.nama" class="w-full h-full object-cover" />
               </div>
               <div v-else class="w-full h-full flex items-center justify-center">
                 <span class="text-xs text-muted">{{ getPhotoCount(album) }} foto</span>
@@ -97,8 +118,8 @@ function getPhotoCount(album: any) {
         >
           <UCard class="card-hover h-full">
             <Plate class="mb-3">
-              <div v-if="album.cover_url || album.photos?.[0]?.url" class="w-full h-full">
-                <img :src="album.cover_url || album.photos?.[0]?.url" :alt="album.nama" class="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+              <div v-if="coverOf(album)" class="w-full h-full">
+                <img :src="coverOf(album)" :alt="album.nama" class="w-full h-full object-cover group-hover:scale-105 transition-transform" />
               </div>
               <div v-else class="w-full h-full flex items-center justify-center">
                 <UIcon name="i-lucide-camera" class="text-3xl text-muted" />
@@ -126,5 +147,6 @@ function getPhotoCount(album: any) {
       <h3 class="font-semibold text-lg mb-1">Belum ada album</h3>
       <p class="text-muted text-sm">Album kegiatan akan ditampilkan di sini</p>
     </div>
+    </template>
   </UContainer>
 </template>

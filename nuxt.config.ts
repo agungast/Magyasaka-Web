@@ -54,6 +54,13 @@ export default defineNuxtConfig({
     }
   },
 
+  vite: {
+    optimizeDeps: {
+      // Jangan pre-bundle: worker internal @ffmpeg/ffmpeg di-resolve Vite saat runtime.
+      exclude: ['@ffmpeg/ffmpeg', '@ffmpeg/util']
+    }
+  },
+
   experimental: {
     typescriptPlugin: true
   },

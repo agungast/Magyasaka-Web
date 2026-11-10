@@ -5,8 +5,14 @@ import { useSchedules, useSemesters, semesterLabel } from '~/composables/useData
 // Fase 2: Jadwal Kuliah — Tampilan Mingguan
 useSeoMeta({ title: 'Jadwal Kuliah - Magyasaka' })
 
-const { data: schedules } = useSchedules()
-const { data: semesters } = useSemesters()
+const { data: schedules, status: scheduleStatus } = useSchedules()
+const { data: semesters, status: semesterStatus } = useSemesters()
+
+// Lazy: saat pindah halaman, data semester/jadwal belum ada → jangan render
+// jadwal mentah (semua semester) sebelum semester aktif ditentukan.
+const loadingData = computed(() =>
+  [semesterStatus.value, scheduleStatus.value].some(s => s === 'pending' || s === 'idle')
+)
 
 const activeSemesterId = ref('')
 
@@ -30,9 +36,12 @@ const activeSemester = computed(() =>
   sortedSemesters.value.find((s: any) => s.id === activeSemesterId.value) || null
 )
 
+// Semester 7 = periode Magang Kerja (MBKM), tidak ada jadwal perkuliahan reguler.
+const isInternshipSemester = computed(() => activeSemester.value?.nomor === 7)
+
 const filteredSchedules = computed(() => {
   const all = schedules.value || []
-  if (!sortedSemesters.value.length || !activeSemesterId.value) return all
+  if (!activeSemesterId.value) return []
   return all.filter((s: any) => s.semester_id === activeSemesterId.value)
 })
 
@@ -87,10 +96,15 @@ const totalSKS = computed(() =>
           Jadwal Kuliah
         </h1>
         <p class="text-muted mt-1">
-          <span v-if="activeSemester">{{ semesterLabel(activeSemester) }} · </span>Total {{ totalSKS }} SKS
+          <template v-if="isInternshipSemester && activeSemester">
+            {{ semesterLabel(activeSemester) }} · Periode Magang Kerja
+          </template>
+          <template v-else-if="activeSemester">
+            <span>{{ semesterLabel(activeSemester) }} · </span>Total {{ totalSKS }} SKS
+          </template>
         </p>
       </div>
-      <div class="flex items-center gap-2">
+      <div v-if="!isInternshipSemester" class="flex items-center gap-2">
         <UButtonGroup>
           <UButton
             :color="viewMode === 'week' ? 'primary' : 'neutral'"
@@ -125,8 +139,19 @@ const totalSKS = computed(() =>
       />
     </div>
 
-    <!-- Weekly View -->
-    <div v-if="viewMode === 'week'">
+    <!-- Menunggu data semester (navigasi client-side bersifat lazy) -->
+    <div v-if="loadingData" class="py-16 text-center text-muted">
+      <UIcon name="i-lucide-loader-2" class="animate-spin text-2xl" />
+      <p class="text-sm mt-2">Memuat jadwal...</p>
+    </div>
+
+    <!-- Semester 7: tampilan khusus periode internship -->
+    <InternshipNotice v-else-if="isInternshipSemester" :semester="activeSemester" />
+
+    <!-- Semester reguler: tampilan jadwal -->
+    <template v-else>
+      <!-- Weekly View -->
+      <div v-if="viewMode === 'week'">
       <!-- Mobile: Tab view -->
       <div class="lg:hidden mb-4">
         <div class="flex gap-1 overflow-x-auto pb-2">
@@ -181,8 +206,7 @@ const totalSKS = computed(() =>
       </div>
 
       <!-- Desktop: Grid view -->
-      <div class="hidden lg:grid lg:grid-cols-5 gap-3">
-        <div v-for="day in days" :key="day" class="space-y-3">
+      <div class="hidden lg:grid lg:grid-cols-5 gap-3">        <div v-for="day in days" :key="day" class="space-y-3">
           <div
             :class="[
               'text-center py-2 rounded-lg font-semibold text-sm',
@@ -274,5 +298,6 @@ const totalSKS = computed(() =>
         </div>
       </div>
     </div>
+    </template>
   </UContainer>
 </template>

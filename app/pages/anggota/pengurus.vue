@@ -16,7 +16,8 @@ const jabatanIcon: Record<string, string> = {
   'Wakil Ketua': 'i-lucide-award',
   'Sekretaris': 'i-lucide-pen-tool',
   'Bendahara': 'i-lucide-wallet',
-  'Koordinator Akademik': 'i-lucide-book-open'
+  'Koordinator Akademik': 'i-lucide-book-open',
+  'PJ': 'i-lucide-book-open'
 }
 
 const jabatanColor: Record<string, string> = {
@@ -24,7 +25,8 @@ const jabatanColor: Record<string, string> = {
   'Wakil Ketua': '#6366f1',
   'Sekretaris': '#10b981',
   'Bendahara': '#ec4899',
-  'Koordinator Akademik': '#0ea5e9'
+  'Koordinator Akademik': '#0ea5e9',
+  'PJ': '#a855f7'
 }
 </script>
 
@@ -52,7 +54,14 @@ const jabatanColor: Record<string, string> = {
       <div v-if="officers?.[0]" class="flex justify-center mb-8">
         <UCard class="card-hover w-full max-w-sm text-center border-2 border-amber-500/30">
           <div class="flex flex-col items-center">
+            <img
+              v-if="officers[0].member?.foto_url"
+              :src="officers[0].member.foto_url"
+              :alt="officers[0].member?.nama || officers[0].jabatan"
+              class="w-20 h-20 rounded-full object-cover border-2 border-default/40 mb-3"
+            />
             <div
+              v-else
               :style="{ backgroundColor: jabatanColor[officers[0].jabatan] + '20', color: jabatanColor[officers[0].jabatan] }"
               class="w-20 h-20 rounded-full flex items-center justify-center font-bold text-xl mb-3"
             >
@@ -79,7 +88,14 @@ const jabatanColor: Record<string, string> = {
           class="card-hover text-center"
         >
           <div class="flex flex-col items-center">
+            <img
+              v-if="officer.member?.foto_url"
+              :src="officer.member.foto_url"
+              :alt="officer.member?.nama || officer.jabatan"
+              class="w-16 h-16 rounded-full object-cover border-2 border-default/40 mb-3"
+            />
             <div
+              v-else
               class="accent w-16 h-16 rounded-full flex items-center justify-center font-bold text-lg mb-3"
               :style="{ '--accent': jabatanColor[officer.jabatan] || '#6366f1' }"
             >
@@ -88,6 +104,10 @@ const jabatanColor: Record<string, string> = {
             <UIcon :name="jabatanIcon[officer.jabatan] || 'i-lucide-user'" class="text-xl mb-1 text-muted" />
             <h2 class="font-semibold text-sm">{{ officer.member?.nama || '-' }}</h2>
             <p class="text-xs text-muted">{{ officer.jabatan }}</p>
+            <p v-if="officer.mata_kuliah" class="text-xs text-muted mt-0.5 inline-flex items-center gap-1">
+              <UIcon name="i-lucide-book-open" class="text-[11px]" />
+              PJ {{ officer.mata_kuliah }}
+            </p>
             <p class="text-xs text-muted mt-1">NIM: {{ officer.member?.nim || '-' }}</p>
           </div>
         </UCard>
