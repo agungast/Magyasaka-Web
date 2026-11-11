@@ -105,7 +105,7 @@ const totalSKS = computed(() =>
         </p>
       </div>
       <div v-if="!isInternshipSemester" class="flex items-center gap-2">
-        <UButtonGroup>
+        <div class="flex">
           <UButton
             :color="viewMode === 'week' ? 'primary' : 'neutral'"
             :variant="viewMode === 'week' ? 'solid' : 'outline'"
@@ -122,7 +122,7 @@ const totalSKS = computed(() =>
             size="sm"
             @click="viewMode = 'day'"
           />
-        </UButtonGroup>
+        </div>
       </div>
     </div>
 

@@ -68,11 +68,11 @@ const mockMembers = [
 ]
 
 const mockOfficers = [
-  { id: '1', jabatan: 'Ketua Kelas', urutan: 1, member: mockMembers[0] },
-  { id: '2', jabatan: 'Wakil Ketua', urutan: 2, member: mockMembers[1] },
-  { id: '3', jabatan: 'Sekretaris', urutan: 3, member: mockMembers[2] },
-  { id: '4', jabatan: 'Bendahara', urutan: 4, member: mockMembers[3] },
-  { id: '5', jabatan: 'Koordinator Akademik', urutan: 5, member: mockMembers[4] }
+  { id: '1', jabatan: 'Ketua Kelas', urutan: 1, mata_kuliah: null, member: mockMembers[0] },
+  { id: '2', jabatan: 'Wakil Ketua', urutan: 2, mata_kuliah: null, member: mockMembers[1] },
+  { id: '3', jabatan: 'Sekretaris', urutan: 3, mata_kuliah: null, member: mockMembers[2] },
+  { id: '4', jabatan: 'Bendahara', urutan: 4, mata_kuliah: null, member: mockMembers[3] },
+  { id: '5', jabatan: 'Koordinator Akademik', urutan: 5, mata_kuliah: null, member: mockMembers[4] }
 ]
 
 function isSupabaseConfigured() {

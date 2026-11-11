@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useSeoMeta } from '#app'
+import { computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useSupabaseClient, useSupabaseUser } from '#imports'
 
@@ -28,6 +29,21 @@ async function logout() {
   router.push('/')
 }
 
+// shortcut: nama login di-map dari email; tambah pengurus baru = 1 baris di sini + allowlist SQL
+const namaPengurus: Record<string, string> = {
+  'admin1@magyasaka.co.id': 'Admin 1',
+  'ketua@magyasaka.co.id': 'Ketua',
+  'sekretaris1@magyasaka.co.id': 'Sekretaris 1',
+  'sekretaris2@magyasaka.co.id': 'Sekretaris 2',
+  'bendahara1@magyasaka.co.id': 'Bendahara 1',
+  'bendahara2@magyasaka.co.id': 'Bendahara 2'
+}
+
+const namaLogin = computed(() => {
+  const email = user.value?.email?.toLowerCase()
+  return email ? namaPengurus[email] ?? email : null
+})
+
 const menuItems = [
   { label: 'Dashboard', to: '/admin', icon: 'i-lucide-layout-dashboard' },
   { label: 'Pengumuman', to: '/admin/pengumuman', icon: 'i-lucide-megaphone' },
@@ -50,7 +66,7 @@ const menuItems = [
           Panel Admin
         </h1>
         <p class="text-muted mt-1">Kelola konten Portal Magyasaka</p>
-        <p v-if="user?.email" class="text-xs text-muted mt-1">Login sebagai {{ user.email }}</p>
+        <p v-if="namaLogin" class="text-xs text-muted mt-1">Login sebagai {{ namaLogin }}</p>
       </div>
       <UButton label="Keluar" icon="i-lucide-log-out" variant="outline" @click="logout" />
     </div>

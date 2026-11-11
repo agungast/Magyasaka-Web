@@ -17,7 +17,7 @@ export default defineNuxtConfig({
   fonts: {
     families: [
       { name: 'Outfit', provider: 'google', weights: [400, 500, 600, 700, 800] },
-      { name: 'Plus Jakarta Sans', provider: 'google', weights: [400, 500, 600, 700] },
+      { name: 'Schibsted Grotesk', provider: 'google', weights: [400, 500, 600, 700] },
       { name: 'Geist Mono', provider: 'google', weights: [400, 500] }
     ]
   },

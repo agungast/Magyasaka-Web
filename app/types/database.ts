@@ -89,6 +89,7 @@ export interface Database {
           nama: string
           email: string | null
           no_telepon?: string | null
+          foto_url?: string | null
           jurusan: string
           angkatan: number
           status: string

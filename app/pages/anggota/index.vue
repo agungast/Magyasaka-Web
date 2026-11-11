@@ -61,7 +61,7 @@ const totalMembers = computed(() => members.value?.length || 0)
           size="md"
         />
       </div>
-      <UButtonGroup>
+      <div class="flex">
         <UButton
           :color="sortBy === 'nim' ? 'primary' : 'neutral'"
           :variant="sortBy === 'nim' ? 'solid' : 'outline'"
@@ -78,7 +78,7 @@ const totalMembers = computed(() => members.value?.length || 0)
           size="sm"
           @click="sortBy = 'nama'"
         />
-      </UButtonGroup>
+      </div>
     </div>
 
     <!-- Members Grid -->

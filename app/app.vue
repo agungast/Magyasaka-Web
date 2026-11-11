@@ -47,7 +47,7 @@ if (import.meta.client) {
 <template>
   <UApp>
     <!-- Header / Navbar -->
-    <UHeader :ui="{ root: 'bg-default' }">
+    <UHeader :ui="{ root: 'bg-default' }" mode="slideover" :menu="{ side: 'right' }">
       <template #left>
         <NuxtLink
           to="/"
@@ -97,6 +97,31 @@ if (import.meta.client) {
           variant="ghost"
           aria-label="Login Pengurus"
           class="hidden sm:inline-flex"
+        />
+      </template>
+
+      <!-- Mobile Navigation (shown via hamburger toggle) -->
+      <template #body>
+        <nav class="flex flex-col gap-1">
+          <NuxtLink
+            v-for="item in navItems"
+            :key="item.to"
+            :to="item.to"
+            class="flex items-center gap-3 px-3 py-2.5 text-base font-medium text-muted rounded-md transition-colors hover:bg-elevated/60"
+            active-class="text-primary! bg-elevated/40"
+          >
+            <UIcon :name="item.icon" class="text-lg" />
+            {{ item.label }}
+          </NuxtLink>
+        </nav>
+        <USeparator class="my-4" />
+        <UButton
+          to="/login"
+          icon="i-lucide-log-in"
+          color="neutral"
+          variant="ghost"
+          label="Login Pengurus"
+          class="w-full justify-center"
         />
       </template>
     </UHeader>

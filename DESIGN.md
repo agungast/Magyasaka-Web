@@ -84,7 +84,7 @@ This document captures the visual language rebuilt around the class crest (Lamba
 | Role | Family | Weights | CSS Var |
 |------|--------|---------|---------|
 | Display / Logo | **Outfit** | 400, 500, 600, 700, **800** | `--font-display` |
-| Sans / UI | **Plus Jakarta Sans** | 400, 500, 600, 700 | `--font-sans` |
+| Sans / UI | **Schibsted Grotesk** | 400, 500, 600, 700 | `--font-sans` |
 | Mono / Data | **Geist Mono** | 400, 500 | `--font-mono` |
 
 **Self-hosted** via `@nuxt/fonts` (`nuxt.config.ts → fonts.families`).
@@ -111,7 +111,7 @@ This document captures the visual language rebuilt around the class crest (Lamba
 | Location | Size | Mode | Context |
 |----------|------|------|---------|
 | Header (left) | 32px | ink | `text-muted` → `hover:text-primary!` |
-| Hero | 200px | light | centered, `animate: hero-enter` |
+| Hero | 200px | ink / light (ikut mode) | centered, `animate: hero-enter`, `text-highlighted` |
 | Login | 72px | light | replaces shield tile |
 | Admin | 48px | ink | next to `font-display` heading |
 | Footer | 28px | ink | centered, `text-muted` |
@@ -236,7 +236,7 @@ This document captures the visual language rebuilt around the class crest (Lamba
 - [ ] `backdropFilter: none` on header
 - [ ] `colorScheme: dark` in dark mode
 - [ ] Crest masks render (header 32×30, hero 216×200, login 78×72)
-- [ ] Fonts loaded: Archivo 400/500/600/700/800, Schibsted 400/500/600, JetBrains 400
+- [ ] Fonts loaded: Outfit 400/500/600/700/800, Schibsted Grotesk 400/500/600/700, Geist Mono 400/500
 - [ ] Badge text ≥11px, contrast ≥4.5:1
 - [ ] No text <10px
 
@@ -254,4 +254,6 @@ This document captures the visual language rebuilt around the class crest (Lamba
 
 ## Changelog (v2)
 
+- **2026-11-11** — `--font-sans` Plus Jakarta Sans → **Schibsted Grotesk** (menghapus temuan `overused-font` detector; Outfit dan Geist Mono tetap). QA checklist font diperbaiki ke trio yang benar.
+- **2026-11-11** — Hero beranda mengikuti mode halaman: kelas `dark` hardcode dihapus dari `.hero-plate` (dulu banner selalu ink di kedua mode); teks/crest/badge pakai token mode (`text-highlighted`, `text-muted`, `text-azure-500 dark:text-azure-300`).
 - **2026-10-22** — Crest-centered rebuild: ink/azure tokens, Archivo/Schibsted/JetBrains, halftone plates, crest mask, single action ink, semantic 500 overrides, badge 11px floor, `.accent` system, zero blur/glass/gradient text, authored motion only, browser surfaces themed. All routes pass Impeccable + CDP audit (1 false positive on proyek-light IoT badge — HMR stale bundle).

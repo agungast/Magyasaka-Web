@@ -101,15 +101,15 @@ const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = 
 <template>
   <div>
     <!-- Hero Section -->
-    <section class="hero-plate dark relative isolate overflow-hidden text-white">
+    <section class="hero-plate relative isolate overflow-hidden">
       <UContainer class="relative py-16 md:py-24">
         <div class="grid gap-12 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
           <div class="hero-enter">
-            <h1 class="font-display text-[2.75rem] md:text-6xl lg:text-7xl font-extrabold tracking-[-0.035em] leading-[1.02] text-balance">
+            <h1 class="font-display text-[2.75rem] md:text-6xl lg:text-7xl font-extrabold tracking-[-0.035em] leading-[1.02] text-balance text-highlighted">
               Portal Kelas<br>
-              <span class="text-azure-300">MAGYASAKA</span>
+              <span class="text-azure-500 dark:text-azure-300">MAGYASAKA</span>
             </h1>
-            <p class="mt-6 text-lg text-ink-200 leading-relaxed max-w-[58ch]">
+            <p class="mt-6 text-lg text-muted leading-relaxed max-w-[58ch]">
               Akses informasi akademik, jadwal kuliah, tugas, dan semua yang kamu butuhkan dalam satu tempat.
             </p>
             <div class="mt-8 flex flex-wrap gap-3">
@@ -128,14 +128,14 @@ const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = 
                 size="lg"
                 color="neutral"
                 variant="outline"
-                class="text-white ring-white/30 hover:bg-white/10"
+                class="ring-ink-950/30! hover:bg-ink-950/10! dark:ring-white/30! dark:hover:bg-white/10!"
               />
             </div>
           </div>
 
           <figure class="order-first lg:order-last flex flex-col items-center gap-4">
-            <MagyasakaCrest :size="200" class="text-white" />
-            <figcaption class="text-xs uppercase tracking-[0.2em] text-ink-300 text-center leading-relaxed max-w-60">
+            <MagyasakaCrest :size="200" class="text-highlighted" />
+            <figcaption class="text-xs uppercase tracking-[0.2em] text-muted text-center leading-relaxed max-w-60">
               MAHASISWA TEKNOLOGI REKAYASA KOMPUTER A<br>ANGKATAN 2023
             </figcaption>
           </figure>

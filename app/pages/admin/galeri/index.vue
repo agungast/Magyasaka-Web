@@ -68,6 +68,7 @@ function confirmDeleteAlbum(a: any) {
   deleteTitle.value = 'Hapus Album Galeri'
   deleteDesc.value = `Apakah Anda yakin ingin menghapus album "${a.nama}" beserta seluruh foto di dalamnya? Tindakan ini bersifat permanen.`
   pendingDeleteAction = async () => {
+    for (const p of a.photos || []) await removeFromStorage(p.url)
     const { error } = await client.from('albums').delete().eq('id', a.id)
     if (error) alert(error.message)
     else await refresh()
