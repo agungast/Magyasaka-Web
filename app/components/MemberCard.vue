@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { maskedNim } from '~/utils/nim'
 
 interface Member {
   id: string

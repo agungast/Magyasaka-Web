@@ -1,13 +1,14 @@
+<script setup lang="ts">
 // ------------------------------------------------------------
 //  IMPORTS – semua simbol yang dipakai dalam script setup
 //  Nuxt‑4 menyediakan auto‑imports, tetapi TypeScript/Volar
 //  memerlukan deklarasi eksplisit agar diagnostics berfungsi.
 // ------------------------------------------------------------
 import { ref, reactive } from 'vue'
-import { useSeoMeta, useSupabaseClient, useAsyncData } from '#app'
+import { useSeoMeta, useAsyncData } from '#app'
 import { UButton, UCard, UModal, UInput, USelect, UIcon } from '#components'
-
-<script setup lang="ts">
+import { useAvatarUpload } from '~/composables/useAvatarUpload'
+import { useGalleryUpload } from '~/composables/useGalleryUpload'
 
 useSeoMeta({ title: 'Kelola Anggota - Admin Magyasaka' })
 
