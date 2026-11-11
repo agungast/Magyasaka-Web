@@ -33,7 +33,7 @@ const mockAnnouncements = [
 ]
 
 const mockSemesters = [
-  { id: '1', nomor: 1, tipe: 'GASAL', tahun_ajaran: '2023/2024', created_at: '2023-08-01T00:00:00.000Z' }
+  { id: '1', nomor: 1, tipe: 'Ganjil', tahun_ajaran: '2023/2024', created_at: '2023-08-01T00:00:00.000Z' }
 ]
 
 const mockSchedules = [
@@ -76,13 +76,16 @@ const mockOfficers = [
 ]
 
 function isSupabaseConfigured() {
+  let configured = false
   try {
-    const config = useRuntimeConfig()
-    const url = config.public?.supabase?.url
-    return !!url && typeof url === 'string' && !url.includes('your-project') && !url.includes('example')
-  } catch {
-    return false
-  }
+    const url = useRuntimeConfig().public?.supabase?.url
+    configured = !!url && typeof url === 'string' && !url.includes('your-project') && !url.includes('example')
+  } catch { /* runtime config belum tersedia */ }
+  if (configured) return true
+  // Mock data hanya untuk development; di produksi tanpa env harus error
+  // supaya halaman menampilkan state error, bukan data palsu.
+  if (import.meta.dev) return false
+  throw new Error('Supabase belum dikonfigurasi: set SUPABASE_URL dan SUPABASE_KEY.')
 }
 
 export function useAnnouncements() {
@@ -157,7 +160,7 @@ export function useMembers() {
       const client = useSupabaseClient()
       const { data, error } = await client
         .from('members')
-        .select('*')
+        .select('id, nim, nama, email, jurusan, angkatan, status, foto_url')
         .order('nim')
       if (error) throw error
       return data
@@ -172,7 +175,7 @@ export function useOfficers() {
       const client = useSupabaseClient()
       const { data, error } = await client
         .from('class_officers')
-        .select('*, member:members(*)')
+        .select('*, member:members(id, nim, nama, jurusan, angkatan, status, foto_url)')
         .order('urutan')
       if (error) throw error
       return data

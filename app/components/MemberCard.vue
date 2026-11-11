@@ -28,21 +28,8 @@ const initials = computed(() =>
 // Tampilkan NIM tersensor sebagian; klik untuk reveal 3 digit terakhir.
 const nimRevealed = ref(false)
 
-const maskedNim = computed(() => {
-  const nim = props.member.nim || ''
-  if (!nim) return '-'
-  // Format berpemisah titik (mis. "4.33.23.45") -> sensor segmen terakhir
-  if (nim.includes('.')) {
-    const parts = nim.split('.')
-    parts[parts.length - 1] = '**'
-    return parts.join('.')
-  }
-  // Tanpa titik (mis. "2023001") -> sensor 3 karakter terakhir
-  return nim.length <= 2 ? '**' : nim.slice(0, -2) + '**'
-})
-
 const displayNim = computed(() =>
-  nimRevealed.value ? (props.member.nim || '-') : maskedNim.value
+  nimRevealed.value ? (props.member.nim || '-') : maskedNim(props.member.nim)
 )
 
 // --- Copy email ke clipboard ---

@@ -120,7 +120,8 @@ function initials(name: string) {
 }
 
 const fileInput = ref<HTMLInputElement | null>(null)
-const { upload: uploadAvatar, remove: removeAvatar, uploading: avatarUploading, error: avatarError } = useAvatarUpload()
+const { upload: uploadAvatar, uploading: avatarUploading, error: avatarError } = useAvatarUpload()
+const { removeFromStorage } = useGalleryUpload()
 
 async function onPhotoChange(e: Event) {
   const target = e.target as HTMLInputElement
@@ -132,7 +133,7 @@ async function onPhotoChange(e: Event) {
 }
 
 async function removePhoto() {
-  if (form.foto_url) await removeAvatar(form.foto_url)
+  if (form.foto_url) await removeFromStorage(form.foto_url)
   form.foto_url = ''
 }
 </script>

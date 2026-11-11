@@ -244,7 +244,7 @@ This document captures the visual language rebuilt around the class crest (Lamba
 
 ## Open Decisions
 
-- **`AppLogo.vue`** — keep (wordmark for potential co-branding) vs retire (crest is the mark). Currently unused.
+- **`AppLogo.vue`** — retired (Sprint 4 audit): crest is the mark; wordmark SVG dan 3 gambar logo tak terpakai dihapus.
 - **Package manager** — npm (`package-lock.json` exists) vs pnpm (CI, README). Pick one.
 - **RLS per-role** — restrict writes to `class_officers` only (currently any authenticated).
 - **File upload** — Supabase Storage buckets + signed URLs vs external URL paste.

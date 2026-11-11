@@ -34,17 +34,5 @@ export function useAvatarUpload() {
     }
   }
 
-  // Hapus object storage dari URL publiknya (best-effort, abaikan jika gagal).
-  async function remove(publicUrl: string): Promise<void> {
-    if (!publicUrl) return
-    try {
-      const marker = `/${BUCKET}/`
-      const idx = publicUrl.indexOf(marker)
-      if (idx === -1) return
-      const path = publicUrl.slice(idx + marker.length)
-      await client.storage.from(BUCKET).remove([path])
-    } catch { /* ignore */ }
-  }
-
-  return { upload, remove, uploading, error }
+  return { upload, uploading, error }
 }

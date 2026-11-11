@@ -28,7 +28,7 @@ export function isVideoUrl(url: string): boolean {
   return /\.(mp4|webm|mov|m4v|ogg)(\?|#|$)/i.test(url)
 }
 
-function videoExt(file: File): string {
+export function videoExt(file: File): string {
   const m = /\.(\w+)$/.exec(file.name)
   const ext = m?.[1]?.toLowerCase()
   if (ext && /^(mp4|webm|mov|m4v|ogg)$/.test(ext)) return ext

@@ -85,7 +85,7 @@ Mekanisme pembeda yang tidak bisa disalin apa adanya oleh produk lain: satu pane
   - **Nol blur/kaca:** `backdrop-filter: none` di header; tidak ada `.glass`, `.glass-light`, gradient text, atau colored `border-l` >1px.
   - **Gerak:** satu momen yang diantisipasi — `.hero-enter` (900ms ease-out) + `halftone-drift` (24s loop, `prefers-reduced-motion` guard). Tanpa `animate-float`, `animate-pulse-glow`, bounce.
   - **Browser surfaces:** `::selection` azure, caret azure, scrollbar ink, page/layout transitions.
-- **Aset:** `public/favicon-64.png`, `public/apple-touch-icon.png`, `public/favicon.ico` (PNG-in-ICO), `app/assets/images/magyasaka-crest-ink.png`, `app/assets/images/magyasaka-crest-light.png`. `AppLogo.vue` (wordmark SVG inline, dua huruf `var(--ui-primary)`) **belum pernah dirender di halaman mana pun** — keputusan keep-vs-retire masih terbuka.
+- **Aset:** `public/favicon-64.png`, `public/apple-touch-icon.png`, `public/favicon.ico` (PNG-in-ICO), `app/assets/images/magyasaka-crest-ink.png`, `app/assets/images/magyasaka-crest-light.png`.
 
 ## Evidence on Hand
 

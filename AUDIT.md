@@ -155,10 +155,10 @@ npm run dev
 
 Tujuan: PII berhenti bocor, mock tidak bisa tayang di produksi, duplikasi hilang, logika berisiko mulai teruji.
 
-- [ ] **3a. Batasi kolom publik**: `useMembers()` di `useData.ts` → `.select('id, nim, nama, email, jurusan, angkatan, status, foto_url')` (putuskan `email` bersama pengurus: tombol "Kontak Email" memakainya; `no_telepon` pasti keluar).
-- [ ] **3b. Mock hanya di dev**: di `useData.ts`, `isSupabaseConfigured()` kembalikan `false` hanya jika `import.meta.dev`; di produksi tanpa env → `throw` agar `useAsyncData` menampilkan state error.
-- [ ] **3c. Satukan helper remove**: hapus fungsi `remove` di `useAvatarUpload.ts`, ekspor `removeFromStorage` dari `useGalleryUpload.ts` (atau pindah ke sana), perbarui pemanggilnya di `admin/anggota`.
-- [ ] **3d. Tes pertama**: `npm i -D vitest` + satu file `app/composables/__tests__/upload.spec.ts` untuk `isHeicFile`/`isVideoFile`/`videoExt`/`isVideoUrl` dan `maskedNim` (pindahkan `maskedNim` dari MemberCard ke utils jika perlu agar bisa diimpor). Tambah script `"test": "vitest run"`.
+- [x] **3a. Batasi kolom publik**: `useMembers()` di `useData.ts` → `.select('id, nim, nama, email, jurusan, angkatan, status, foto_url')` (putuskan `email` bersama pengurus: tombol "Kontak Email" memakainya; `no_telepon` pasti keluar).
+- [x] **3b. Mock hanya di dev**: di `useData.ts`, `isSupabaseConfigured()` kembalikan `false` hanya jika `import.meta.dev`; di produksi tanpa env → `throw` agar `useAsyncData` menampilkan state error.
+- [x] **3c. Satukan helper remove**: hapus fungsi `remove` di `useAvatarUpload.ts`, ekspor `removeFromStorage` dari `useGalleryUpload.ts` (atau pindah ke sana), perbarui pemanggilnya di `admin/anggota`.
+- [x] **3d. Tes pertama**: `npm i -D vitest` + satu file `app/composables/__tests__/upload.spec.ts` untuk `isHeicFile`/`isVideoFile`/`videoExt`/`isVideoUrl` dan `maskedNim` (pindahkan `maskedNim` dari MemberCard ke utils jika perlu agar bisa diimpor). Tambah script `"test": "vitest run"`.
 
 **Verifikasi Sprint 3:**
 ```
@@ -171,9 +171,9 @@ npm run test
 
 Tujuan: kurangi baris yang harus dibaca orang berikutnya.
 
-- [ ] **4a. Hapus** `app/components/AppLogo.vue` dan 3 aset tak terpakai (`Logo Magyasaka.png`, `Logo Magyasaka putih.png`, `Profile Picture Instagram.png`) — grep ulang sebelum hapus untuk memastikan masih nol referensi.
-- [ ] **4b.** Tambah `supabase/.temp/` ke `.gitignore`, `git rm --cached` isinya.
-- [ ] **4c.** Samakan mock semester: `'GASAL'` → `'Ganjil'` di `useData.ts:36`.
+- [x] **4a. Hapus** `app/components/AppLogo.vue` dan 3 aset tak terpakai (`Logo Magyasaka.png`, `Logo Magyasaka putih.png`, `Profile Picture Instagram.png`) — grep ulang sebelum hapus untuk memastikan masih nol referensi.
+- [x] **4b.** Tambah `supabase/.temp/` ke `.gitignore`, `git rm --cached` isinya.
+- [x] **4c.** Samakan mock semester: `'GASAL'` → `'Ganjil'` di `useData.ts:36`.
 - [ ] **4d. (opsional)** salin `ffmpeg-core.js` + `ffmpeg-core.wasm` ke `public/ffmpeg/` dan arahkan `loadFFmpeg` ke sana (temuan 13) — hanya kalau CDN unpkg pernah bermasalah di jaringan kampus.
 - [ ] **4e. (opsional)** bereskan sisa warning `no-explicit-any` yang tersisa setelah 1b — jangan dikejar semuanya sekali jalan.
 
