@@ -1,5 +1,7 @@
 <script setup lang="ts">
 
+import { useGalleryUpload, isImageFile, isVideoFile, isVideoUrl, type UploadItem } from '~/composables/useGalleryUpload'
+
 useSeoMeta({ title: 'Kelola Proyek - Admin Magyasaka' })
 
 const client = useSupabaseClient()
@@ -11,12 +13,12 @@ const { data: items, refresh } = useAsyncData('admin-projects', async () => {
 
 const modalOpen = ref(false)
 const editing = ref<any>(null)
-const form = ref({ nama: '', deskripsi: '', detail: '', thumbnail_url: '', repo_url: '', demo_url: '', teknologi: '', anggota: '', is_highlighted: false, kategori: 'akademik' })
+const form = ref({ nama: '', deskripsi: '', detail: '', thumbnail_url: '', screenshots: [] as string[], repo_url: '', website_url: '', demo_url: '', teknologi: '', anggota: '', is_highlighted: false, kategori: 'akademik' })
 const loading = ref(false)
 
 function openCreate() {
   editing.value = null
-  form.value = { nama: '', deskripsi: '', detail: '', thumbnail_url: '', repo_url: '', demo_url: '', teknologi: '', anggota: '', is_highlighted: false, kategori: 'akademik' }
+  form.value = { nama: '', deskripsi: '', detail: '', thumbnail_url: '', screenshots: [], repo_url: '', website_url: '', demo_url: '', teknologi: '', anggota: '', is_highlighted: false, kategori: 'akademik' }
   modalOpen.value = true
 }
 
@@ -27,7 +29,9 @@ function openEdit(p: any) {
     deskripsi: p.deskripsi,
     detail: p.detail,
     thumbnail_url: p.thumbnail_url || '',
+    screenshots: Array.isArray(p.screenshots) ? p.screenshots : [],
     repo_url: p.repo_url || '',
+    website_url: p.website_url || '',
     demo_url: p.demo_url || '',
     teknologi: Array.isArray(p.teknologi) ? p.teknologi.join(', ') : p.teknologi || '',
     anggota: Array.isArray(p.anggota) ? p.anggota.join(', ') : p.anggota || '',
@@ -45,7 +49,9 @@ async function save() {
       deskripsi: form.value.deskripsi,
       detail: form.value.detail,
       thumbnail_url: form.value.thumbnail_url || null,
+      screenshots: form.value.screenshots,
       repo_url: form.value.repo_url || null,
+      website_url: form.value.website_url || null,
       demo_url: form.value.demo_url || null,
       teknologi: form.value.teknologi ? form.value.teknologi.split(',').map((s: string) => s.trim()).filter(Boolean) : [],
       anggota: form.value.anggota ? form.value.anggota.split(',').map((s: string) => s.trim()).filter(Boolean) : [],
@@ -84,6 +90,9 @@ async function executeDelete() {
     const { error } = await client.from('projects').delete().eq('id', selectedProject.value.id)
     if (error) alert(error.message)
     else {
+      if (selectedProject.value.thumbnail_url) await removeFromStorage(selectedProject.value.thumbnail_url)
+      if (selectedProject.value.demo_url) await removeFromStorage(selectedProject.value.demo_url)
+      for (const url of selectedProject.value.screenshots || []) await removeFromStorage(url)
       deleteModalOpen.value = false
       await refresh()
     }
@@ -92,6 +101,76 @@ async function executeDelete() {
   } finally {
     deleteLoading.value = false
   }
+}
+
+// Upload thumbnail (foto) dan video demo langsung dari browser.
+const { uploadOne, removeFromStorage } = useGalleryUpload()
+const thumbInput = ref<HTMLInputElement | null>(null)
+const demoInput = ref<HTMLInputElement | null>(null)
+const thumbUploading = ref(false)
+const demoUploading = ref(false)
+
+function projectFolder() {
+  return `projects/${editing.value?.id || Date.now()}`
+}
+
+async function uploadThumb(e: Event) {
+  const t = e.target as HTMLInputElement
+  const file = t.files?.[0]
+  t.value = ''
+  if (!file || !isImageFile(file)) return
+  thumbUploading.value = true
+  try {
+    const item: UploadItem = { file, status: 'pending', progress: 0 }
+    form.value.thumbnail_url = await uploadOne(item, projectFolder())
+  } catch (err: any) {
+    alert(err?.message || 'Gagal mengunggah thumbnail')
+  } finally {
+    thumbUploading.value = false
+  }
+}
+
+async function uploadDemo(e: Event) {
+  const t = e.target as HTMLInputElement
+  const file = t.files?.[0]
+  t.value = ''
+  if (!file || !isVideoFile(file)) return
+  demoUploading.value = true
+  try {
+    const item: UploadItem = { file, status: 'pending', progress: 0 }
+    form.value.demo_url = await uploadOne(item, projectFolder())
+  } catch (err: any) {
+    alert(err?.message || 'Gagal mengunggah video demo')
+  } finally {
+    demoUploading.value = false
+  }
+}
+
+// Beberapa screenshot sekaligus (capture web, proses, hasil karya).
+const screensInput = ref<HTMLInputElement | null>(null)
+const screensUploading = ref(false)
+
+async function uploadScreens(e: Event) {
+  const t = e.target as HTMLInputElement
+  const files = Array.from(t.files || [])
+  t.value = ''
+  const images = files.filter(isImageFile)
+  if (!images.length) return
+  screensUploading.value = true
+  try {
+    for (const file of images) {
+      const item: UploadItem = { file, status: 'pending', progress: 0 }
+      form.value.screenshots.push(await uploadOne(item, projectFolder()))
+    }
+  } catch (err: any) {
+    alert(err?.message || 'Gagal mengunggah screenshot')
+  } finally {
+    screensUploading.value = false
+  }
+}
+
+function removeScreenshot(i: number) {
+  form.value.screenshots.splice(i, 1)
 }
 
 const kategoriOpts = ['akademik', 'IoT', 'Mobile App', 'Web', 'Security', 'AI'].map(k => ({ label: k, value: k }))
@@ -133,7 +212,7 @@ const kategoriOpts = ['akademik', 'IoT', 'Mobile App', 'Web', 'Security', 'AI'].
       </div>
     </UCard>
 
-    <UModal v-model:open="modalOpen">
+    <UModal v-model:open="modalOpen" :ui="{ content: 'max-w-4xl' }">
       <template #content>
         <div class="p-6 sm:p-7 space-y-5 bg-elevated/95 backdrop-blur-md rounded-2xl border border-default/50 shadow-2xl max-h-[85vh] overflow-y-auto">
           <!-- Header -->
@@ -174,19 +253,86 @@ const kategoriOpts = ['akademik', 'IoT', 'Mobile App', 'Web', 'Security', 'AI'].
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Thumbnail URL (Gambar Sampul)</label>
-              <UInput v-model="form.thumbnail_url" placeholder="https://... atau /images/proyek.png" size="md" class="w-full shadow-sm" />
+              <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Thumbnail (Gambar Sampul)</label>
+              <div v-if="form.thumbnail_url" class="relative group rounded-xl overflow-hidden border border-default/50">
+                <img :src="form.thumbnail_url" alt="Thumbnail proyek" class="w-full h-40 object-cover" />
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+                  <UButton size="xs" color="neutral" icon="i-lucide-refresh-cw" label="Ganti" @click="thumbInput?.click()" />
+                  <UButton size="xs" color="error" icon="i-lucide-trash-2" label="Hapus" @click="form.thumbnail_url = ''" />
+                </div>
+              </div>
+              <button
+                v-else
+                type="button"
+                class="w-full border-2 border-dashed border-default hover:border-primary/50 rounded-xl p-6 text-center transition-colors disabled:opacity-60"
+                :disabled="thumbUploading"
+                @click="thumbInput?.click()"
+              >
+                <UIcon :name="thumbUploading ? 'i-lucide-loader-2' : 'i-lucide-image-up'" :class="['text-2xl text-muted mb-1', thumbUploading ? 'animate-spin' : '']" />
+                <p class="text-sm text-default font-medium">{{ thumbUploading ? 'Mengompres & mengunggah...' : 'Pilih gambar sampul' }}</p>
+                <p class="text-xs text-muted mt-1">JPG, PNG, WebP, HEIC — otomatis dikompres ke WebP.</p>
+              </button>
+              <input ref="thumbInput" type="file" accept="image/*,.heic,.heif" class="hidden" @change="uploadThumb" />
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider">Screenshot Proyek (Opsional)</label>
+                <span class="text-[11px] text-muted">{{ form.screenshots.length }} foto</span>
+              </div>
+              <div v-if="form.screenshots.length" class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
+                <div v-for="(shot, i) in form.screenshots" :key="shot" class="relative group rounded-xl overflow-hidden border border-default/50">
+                  <img :src="shot" alt="Screenshot proyek" class="w-full h-24 object-cover" />
+                  <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                    <UButton size="xs" color="error" icon="i-lucide-trash-2" @click="removeScreenshot(i)" />
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                class="w-full border-2 border-dashed border-default hover:border-primary/50 rounded-xl p-4 text-center transition-colors disabled:opacity-60"
+                :disabled="screensUploading"
+                @click="screensInput?.click()"
+              >
+                <UIcon :name="screensUploading ? 'i-lucide-loader-2' : 'i-lucide-images'" :class="['text-2xl text-muted mb-1', screensUploading ? 'animate-spin' : '']" />
+                <p class="text-sm text-default font-medium">{{ screensUploading ? 'Mengompres & mengunggah...' : 'Tambah screenshot' }}</p>
+                <p class="text-xs text-muted mt-1">Capture website, proses pembuatan, atau hasil karya. Bisa pilih banyak sekaligus.</p>
+              </button>
+              <input ref="screensInput" type="file" accept="image/*,.heic,.heif" multiple class="hidden" @change="uploadScreens" />
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
-                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Repository GitHub URL</label>
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Repository / Link Karya (Opsional)</label>
                 <UInput v-model="form.repo_url" placeholder="https://github.com/..." size="md" class="w-full shadow-sm" />
+                <p class="text-xs text-muted mt-1">GitHub, Figma, Drive, atau tautan karya lainnya.</p>
               </div>
               <div>
-                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Live Demo URL</label>
-                <UInput v-model="form.demo_url" placeholder="https://..." size="md" class="w-full shadow-sm" />
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Link Website (Opsional)</label>
+                <UInput v-model="form.website_url" placeholder="https://..." size="md" class="w-full shadow-sm" />
+                <p class="text-xs text-muted mt-1">Isi jika proyek sudah di-hosting.</p>
               </div>
+              <div>
+                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Live Demo URL (Opsional)</label>
+                <UInput v-model="form.demo_url" placeholder="https://..." size="md" class="w-full shadow-sm" />
+                <p class="text-xs text-muted mt-1">Atau unggah video demo di bawah.</p>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Video Demo (Opsional)</label>
+              <div v-if="form.demo_url && isVideoUrl(form.demo_url)" class="rounded-xl overflow-hidden border border-default/50 bg-default/40">
+                <video :src="form.demo_url" controls class="w-full max-h-56 object-contain" />
+                <div class="flex items-center justify-between gap-2 p-2">
+                  <span class="text-xs text-muted">Video demo terpasang</span>
+                  <UButton size="xs" color="error" variant="soft" icon="i-lucide-trash-2" label="Hapus video" @click="form.demo_url = ''" />
+                </div>
+              </div>
+              <div v-else class="flex flex-col sm:flex-row sm:items-center gap-2">
+                <UButton :loading="demoUploading" :label="demoUploading ? 'Mengompres & mengunggah...' : 'Unggah Video Demo'" icon="i-lucide-video" variant="outline" size="sm" @click="demoInput?.click()" />
+                <p class="text-xs text-muted">Atau isi link demo di atas. Video otomatis dikompres ke MP4.</p>
+              </div>
+              <input ref="demoInput" type="file" accept="video/*" class="hidden" @change="uploadDemo" />
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">

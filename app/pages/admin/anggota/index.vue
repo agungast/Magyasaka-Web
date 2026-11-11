@@ -12,6 +12,7 @@ import { UButton, UCard, UModal, UInput, USelect, UIcon } from '#components'
 useSeoMeta({ title: 'Kelola Anggota - Admin Magyasaka' })
 
 const client = useSupabaseClient()
+const toast = useToast()
 const { data: items, refresh } = await useAsyncData('admin-members', async () => {
   const { data, error } = await client.from('members').select('*').order('nim')
   if (error) throw error
@@ -20,12 +21,38 @@ const { data: items, refresh } = await useAsyncData('admin-members', async () =>
 
 const modalOpen = ref(false)
 const editing = ref<any>(null)
-const form = reactive({ nim: '', nama: '', email: '', no_telepon: '', jurusan: 'Teknologi Rekayasa Komputer', angkatan: 2023, status: 'aktif' })
+const form = reactive({ nim: '', nama: '', email: '', no_telepon: '', jurusan: 'Teknologi Rekayasa Komputer', angkatan: 2023, status: 'aktif', foto_url: '' as string | null })
 const loading = ref(false)
+
+// NIM: hanya angka, otomatis diformat X.XX.XX.X.XX (8 digit).
+const NIM_GROUPS = [1, 2, 2, 1, 2]
+function onNimInput(value: string | number) {
+  const digits = String(value).replace(/\D/g, '').slice(0, 8)
+  let out = ''
+  let i = 0
+  for (const len of NIM_GROUPS) {
+    if (i >= digits.length) break
+    out += (out ? '.' : '') + digits.slice(i, i + len)
+    i += len
+  }
+  form.nim = out
+}
+
+const nimError = computed(() =>
+  form.nim && !/^\d\.\d{2}\.\d{2}\.\d\.\d{2}$/.test(form.nim)
+    ? 'NIM harus 8 digit dengan format X.XX.XX.X.XX'
+    : ''
+)
+
+const emailError = computed(() =>
+  form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email)
+    ? 'Format email tidak valid, contoh: nama@email.com'
+    : ''
+)
 
 function openCreate() {
   editing.value = null
-  Object.assign(form, { nim: '', nama: '', email: '', no_telepon: '', jurusan: 'Teknologi Rekayasa Komputer', angkatan: 2023, status: 'aktif' })
+  Object.assign(form, { nim: '', nama: '', email: '', no_telepon: '', jurusan: 'Teknologi Rekayasa Komputer', angkatan: 2023, status: 'aktif', foto_url: '' })
   modalOpen.value = true
 }
 
@@ -36,6 +63,11 @@ function openEdit(m: any) {
 }
 
 async function save() {
+  form.email = form.email.trim()
+  form.nim = form.nim.trim()
+  if (!form.nim) return toast.add({ title: 'NIM wajib diisi', description: 'Nomor Induk Mahasiswa tidak boleh kosong.', color: 'warning', icon: 'i-lucide-triangle-alert' })
+  if (nimError.value) return toast.add({ title: 'Format NIM tidak valid', description: nimError.value, color: 'warning', icon: 'i-lucide-triangle-alert' })
+  if (emailError.value) return toast.add({ title: 'Format email tidak valid', description: emailError.value, color: 'warning', icon: 'i-lucide-triangle-alert' })
   loading.value = true
   try {
     if (editing.value) {
@@ -48,7 +80,7 @@ async function save() {
     modalOpen.value = false
     await refresh()
   } catch (e: any) {
-    alert(e.message)
+    toast.add({ title: 'Gagal menyimpan', description: e.message, color: 'error', icon: 'i-lucide-circle-x' })
   } finally {
     loading.value = false
   }
@@ -68,19 +100,42 @@ async function executeDelete() {
   deleteLoading.value = true
   try {
     const { error } = await (client.from('members') as any).delete().eq('id' as any, selectedMember.value.id as any)
-    if (error) alert(error.message)
+    if (error) toast.add({ title: 'Gagal menghapus', description: error.message, color: 'error', icon: 'i-lucide-circle-x' })
     else {
       deleteModalOpen.value = false
       await refresh()
     }
   } catch (e: any) {
-    alert(e.message)
+    toast.add({ title: 'Gagal menghapus', description: e.message, color: 'error', icon: 'i-lucide-circle-x' })
   } finally {
     deleteLoading.value = false
   }
 }
 
 const statusOpts = ['aktif', 'tidak aktif', 'cuti'].map(s => ({ label: s, value: s }))
+
+// --- Upload foto profil ---
+function initials(name: string) {
+  return (name || '').split(' ').filter(Boolean).map(n => n[0]).join('').substring(0, 2).toUpperCase() || '?'
+}
+
+const fileInput = ref<HTMLInputElement | null>(null)
+const { upload: uploadAvatar, uploading: avatarUploading, error: avatarError } = useAvatarUpload()
+const { removeFromStorage } = useGalleryUpload()
+
+async function onPhotoChange(e: Event) {
+  const target = e.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (!file) return
+  const url = await uploadAvatar(file)
+  if (url) form.foto_url = url
+  target.value = ''
+}
+
+async function removePhoto() {
+  if (form.foto_url) await removeFromStorage(form.foto_url)
+  form.foto_url = ''
+}
 </script>
 
 <template>
@@ -108,7 +163,13 @@ const statusOpts = ['aktif', 'tidak aktif', 'cuti'].map(s => ({ label: s, value:
           <tbody>
             <tr v-for="m in items" :key="m.id" class="border-b border-default/50">
               <td class="py-2">{{ m.nim }}</td>
-              <td class="py-2">{{ m.nama }}</td>
+              <td class="py-2">
+                <div class="flex items-center gap-2">
+                  <img v-if="m.foto_url" :src="m.foto_url" :alt="m.nama" class="w-8 h-8 rounded-full object-cover shrink-0" />
+                  <div v-else class="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold text-white bg-linear-to-br from-slate-500 to-slate-700 shrink-0">{{ initials(m.nama) }}</div>
+                  <span class="truncate">{{ m.nama }}</span>
+                </div>
+              </td>
               <td class="py-2">{{ m.email }}</td>
               <td class="py-2">{{ m.status }}</td>
               <td class="py-2 text-right">
@@ -140,10 +201,41 @@ const statusOpts = ['aktif', 'tidak aktif', 'cuti'].map(s => ({ label: s, value:
 
           <!-- Form Fields -->
           <div class="space-y-4">
+            <!-- Foto Profil -->
+            <div class="flex items-center gap-4">
+              <div class="relative shrink-0">
+                <img v-if="form.foto_url" :src="form.foto_url" :alt="form.nama" class="w-20 h-20 rounded-full object-cover border-2 border-default/50" />
+                <div v-else class="w-20 h-20 rounded-full flex items-center justify-center font-display font-bold text-xl text-white bg-linear-to-br from-slate-500 to-slate-700 border-2 border-default/50">
+                  {{ initials(form.nama) }}
+                </div>
+                <div v-if="avatarUploading" class="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center">
+                  <UIcon name="i-lucide-loader-circle" class="animate-spin text-white text-xl" />
+                </div>
+              </div>
+              <div class="flex flex-col gap-2">
+                <input ref="fileInput" type="file" accept="image/*" class="hidden" @change="onPhotoChange" />
+                <UButton label="Unggah Foto" icon="i-lucide-upload" size="xs" variant="outline" :loading="avatarUploading" :disabled="avatarUploading" @click="fileInput?.click()" />
+                <UButton v-if="form.foto_url" label="Hapus Foto" icon="i-lucide-trash-2" size="xs" variant="ghost" color="error" @click="removePhoto" />
+                <p v-if="avatarError" class="text-xs text-error">{{ avatarError }}</p>
+                <p v-else class="text-xs text-muted">JPG, PNG, atau HEIC</p>
+              </div>
+            </div>
+
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">NIM</label>
-                <UInput v-model="form.nim" placeholder="Contoh: 2311521001" size="md" class="w-full shadow-sm" />
+                <UInput
+                  :model-value="form.nim"
+                  inputmode="numeric"
+                  maxlength="12"
+                  placeholder="Contoh: 4.33.23.0.00"
+                  size="md"
+                  class="w-full shadow-sm"
+                  :color="nimError ? 'error' : undefined"
+                  @update:model-value="onNimInput"
+                />
+                <p v-if="nimError" class="text-xs text-error mt-1">{{ nimError }}</p>
+                <p v-else class="text-xs text-muted mt-1">Hanya angka, otomatis diformat X.XX.XX.X.XX</p>
               </div>
               <div>
                 <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Nama Lengkap</label>
@@ -151,15 +243,18 @@ const statusOpts = ['aktif', 'tidak aktif', 'cuti'].map(s => ({ label: s, value:
               </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Email</label>
-                <UInput v-model="form.email" type="email" placeholder="nama@email.com" size="md" class="w-full shadow-sm" />
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">No. Telepon / WhatsApp</label>
-                <UInput v-model="form.no_telepon" placeholder="08xxxxxxxxxx" size="md" class="w-full shadow-sm" />
-              </div>
+            <div>
+              <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Email</label>
+              <UInput
+                v-model="form.email"
+                type="email"
+                placeholder="nama@email.com"
+                size="md"
+                class="w-full shadow-sm"
+                :color="emailError ? 'error' : undefined"
+              />
+              <p v-if="emailError" class="text-xs text-error mt-1">{{ emailError }}</p>
+              <p v-else class="text-xs text-muted mt-1">Opsional, contoh: nama@email.com</p>
             </div>
 
             <div>

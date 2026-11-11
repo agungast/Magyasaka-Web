@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useAnnouncements, useAssignments, useSchedules } from '~/composables/useData'
+import { useAnnouncements, useAssignments, useSchedules, useSemesters } from '~/composables/useData'
 import { parseDescription } from '~/utils/description'
 // Fase 1: Beranda Angkatan
 const { data: announcements } = useAnnouncements()
 const { data: assignments } = useAssignments()
 const { data: schedules } = useSchedules()
+const { data: semesters } = useSemesters()
 
 const pinnedAnnouncements = computed(() =>
   announcements.value?.filter((a: any) => a.is_pinned) || []
@@ -15,16 +16,47 @@ const latestAnnouncements = computed(() =>
   announcements.value?.slice(0, 5) || []
 )
 
+// Tanggal efektif tiap item: ujian -> hari pelaksanaan (tanggal_ujian),
+// tugas -> deadline. Setelah tanggal ini terlewati, item otomatis hilang
+// dari Beranda (tidak perlu checklist manual).
+function effectiveDate(a: any): string | null {
+  if (['uts', 'uas'].includes(a.tipe)) return a.tanggal_ujian || a.deadline || null
+  return a.deadline || a.tanggal_ujian || null
+}
+
 const upcomingAssignments = computed(() => {
-  return assignments.value
-    ?.filter((a: any) => !a.is_completed && (a.deadline || a.tanggal_ujian) && new Date(a.deadline || a.tanggal_ujian) > new Date())
-    .slice(0, 3) || []
+  const now = new Date()
+  return (assignments.value || [])
+    .filter((a: any) => {
+      const d = effectiveDate(a)
+      return d && new Date(d) > now
+    })
+    .slice(0, 3)
 })
 
+// Semester aktif = semester yang paling baru ditambahkan (created_at terbaru,
+// kemudian nomor terbesar). Beranda hanya menampilkan jadwal semester aktif,
+// sehingga jadwal semester lama tidak muncul meski harinya cocok. Bila semester
+// baru belum memiliki jadwal, "Jadwal Hari Ini" akan kosong.
+const sortedSemesters = computed(() => {
+  if (!semesters.value) return []
+  return [...semesters.value].sort((a: any, b: any) => {
+    const timeA = a.created_at ? new Date(a.created_at).getTime() : 0
+    const timeB = b.created_at ? new Date(b.created_at).getTime() : 0
+    if (timeA !== timeB) return timeB - timeA
+    return (b.nomor || 0) - (a.nomor || 0)
+  })
+})
+const currentSemester = computed(() => sortedSemesters.value[0] || null)
+const currentSemesterId = computed(() => currentSemester.value?.id ?? null)
+
 const todaySchedule = computed(() => {
-  const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', ]
+  const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat']
   const today = days[new Date().getDay()]
-  return schedules.value?.filter((s: any) => s.hari === today) || []
+  if (!currentSemesterId.value) return []
+  return (schedules.value || []).filter(
+    (s: any) => s.hari === today && s.semester_id === currentSemesterId.value
+  )
 })
 
 const quickLinks = [
@@ -32,7 +64,7 @@ const quickLinks = [
   { label: 'Tugas & Ujian', icon: 'i-lucide-clipboard-list', to: '/tugas', desc: 'Cek deadline tugas' },
   { label: 'Data Anggota', icon: 'i-lucide-users', to: '/anggota', desc: 'Cari teman sekelas' },
   { label: 'Galeri Foto', icon: 'i-lucide-image', to: '/galeri', desc: 'Kenangan bersama' },
-  { label: 'Proyek Kelas', icon: 'i-lucide-folder-code', to: '/proyek', desc: 'Karya angkatan' },
+  { label: 'Proyek Kelas', icon: 'i-lucide-folder-code', to: '/proyek', desc: 'Karya kelas' },
   { label: 'Pengurus', icon: 'i-lucide-shield', to: '/anggota/pengurus', desc: 'Struktur organisasi' }
 ]
 
@@ -69,15 +101,15 @@ const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = 
 <template>
   <div>
     <!-- Hero Section -->
-    <section class="hero-plate dark relative isolate overflow-hidden text-white">
+    <section class="hero-plate relative isolate overflow-hidden">
       <UContainer class="relative py-16 md:py-24">
         <div class="grid gap-12 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
           <div class="hero-enter">
-            <h1 class="font-display text-[2.75rem] md:text-6xl lg:text-7xl font-extrabold tracking-[-0.035em] leading-[1.02] text-balance">
+            <h1 class="font-display text-[2.75rem] md:text-6xl lg:text-7xl font-extrabold tracking-[-0.035em] leading-[1.02] text-balance text-highlighted">
               Portal Kelas<br>
-              <span class="text-azure-300">MAGYASAKA</span>
+              <span class="text-azure-500 dark:text-azure-300">MAGYASAKA</span>
             </h1>
-            <p class="mt-6 text-lg text-ink-200 leading-relaxed max-w-[58ch]">
+            <p class="mt-6 text-lg text-muted leading-relaxed max-w-[58ch]">
               Akses informasi akademik, jadwal kuliah, tugas, dan semua yang kamu butuhkan dalam satu tempat.
             </p>
             <div class="mt-8 flex flex-wrap gap-3">
@@ -96,14 +128,14 @@ const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = 
                 size="lg"
                 color="neutral"
                 variant="outline"
-                class="text-white ring-white/30 hover:bg-white/10"
+                class="ring-ink-950/30! hover:bg-ink-950/10! dark:ring-white/30! dark:hover:bg-white/10!"
               />
             </div>
           </div>
 
           <figure class="order-first lg:order-last flex flex-col items-center gap-4">
-            <MagyasakaCrest :size="200" class="text-white" />
-            <figcaption class="text-xs uppercase tracking-[0.2em] text-ink-300 text-center leading-relaxed max-w-60">
+            <MagyasakaCrest :size="200" class="text-highlighted" />
+            <figcaption class="text-xs uppercase tracking-[0.2em] text-muted text-center leading-relaxed max-w-60">
               MAHASISWA TEKNOLOGI REKAYASA KOMPUTER A<br>ANGKATAN 2023
             </figcaption>
           </figure>
@@ -112,11 +144,11 @@ const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = 
     </section>
 
     <UContainer class="py-14">
-      <!-- Sorotan Angkatan (Pinned) -->
+      <!-- Sorotan Kelas (Pinned) -->
       <section v-if="pinnedAnnouncements.length" class="mb-14">
         <div class="flex items-center gap-2 mb-5">
           <UIcon name="i-lucide-pin" class="text-primary text-lg" />
-          <h2 class="font-display text-xl md:text-2xl font-bold tracking-[-0.02em]">Sorotan Angkatan</h2>
+          <h2 class="font-display text-xl md:text-2xl font-bold tracking-[-0.02em]">Sorotan Kelas</h2>
         </div>
         <div class="divide-y divide-default">
           <article
@@ -188,6 +220,7 @@ const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = 
             <div class="flex items-center gap-2">
               <UIcon name="i-lucide-clock" class="text-primary text-lg" />
               <h2 class="font-display text-xl font-bold tracking-[-0.02em]">Jadwal Hari Ini</h2>
+              <span v-if="currentSemester" class="text-xs text-muted hidden sm:inline">· Semester {{ currentSemester.nomor }} {{ currentSemester.tipe }}</span>
             </div>
             <UButton to="/jadwal" label="Semua" variant="link" trailing-icon="i-lucide-arrow-right" size="sm" />
           </div>

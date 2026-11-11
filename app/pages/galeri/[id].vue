@@ -4,11 +4,16 @@ import { useRoute } from 'vue-router'
 import { useEventListener } from '@vueuse/core'
 import { useSeoMeta } from '#app'
 import { useAlbum } from '~/composables/useData'
+import { isVideoUrl } from '~/composables/useGalleryUpload'
 // Fase 3: Detail Album + Lightbox
 const route = useRoute()
 const albumId = route.params.id as string
 
-const { data: album } = useAlbum(albumId)
+const { data: album, status: albumStatus } = useAlbum(albumId)
+
+// Lazy: jangan tampilkan "Album ini tidak ditemukan" / "Belum ada foto"
+// selama data album masih dimuat.
+const loading = computed(() => albumStatus.value === 'pending' || albumStatus.value === 'idle')
 
 useSeoMeta({
   title: computed(() => `${album.value?.nama || 'Album'} - Galeri Magyasaka`)
@@ -69,7 +74,13 @@ if (import.meta.client) {
       class="mb-6"
     />
 
-    <div v-if="album" class="mb-8">
+    <div v-if="loading" class="mb-8 space-y-3">
+      <USkeleton class="h-8 w-1/2 rounded-lg" />
+      <USkeleton class="h-4 w-2/3" />
+      <USkeleton class="h-4 w-1/3" />
+    </div>
+
+    <div v-else-if="album" class="mb-8">
       <h1 class="text-2xl md:text-3xl font-bold">{{ album.nama }}</h1>
       <p class="text-muted mt-1">{{ album.deskripsi }}</p>
       <div class="flex items-center gap-4 mt-3 text-sm text-muted">
@@ -87,7 +98,11 @@ if (import.meta.client) {
     <div v-else class="py-20 text-center text-muted">Album ini tidak ditemukan.</div>
 
     <!-- Photo Grid -->
-    <div v-if="album?.photos?.length" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+    <div v-if="loading" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+      <USkeleton v-for="i in 8" :key="i" class="aspect-square rounded-lg" />
+    </div>
+
+    <div v-else-if="album?.photos?.length" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
       <button
         v-for="(photo, index) in album.photos"
         :key="photo.id"
@@ -96,7 +111,8 @@ if (import.meta.client) {
       >
         <Plate ratio="h-full w-full">
           <div v-if="photo.url" class="w-full h-full">
-            <img :src="photo.url" :alt="photo.caption || `Foto ${index + 1}`" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
+            <video v-if="isVideoUrl(photo.url)" :src="photo.url" class="w-full h-full object-cover" preload="metadata" muted />
+            <img v-else :src="photo.url" :alt="photo.caption || `Foto ${index + 1}`" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
           </div>
           <div v-else class="w-full h-full flex items-center justify-center">
             <UIcon name="i-lucide-image" class="text-2xl text-muted" />
@@ -146,7 +162,15 @@ if (import.meta.client) {
 
         <div class="max-w-4xl max-h-[80vh] flex items-center justify-center p-4">
           <div v-if="album && album.photos && album.photos[lightboxIndex]?.url">
+            <video
+              v-if="isVideoUrl(album?.photos?.[lightboxIndex]?.url || '')"
+              :src="album?.photos?.[lightboxIndex]?.url"
+              controls
+              autoplay
+              class="max-w-full max-h-[80vh] rounded-lg"
+            />
             <img
+              v-else
               :src="album?.photos?.[lightboxIndex]?.url"
               :alt="album?.photos?.[lightboxIndex]?.caption || ''"
               class="max-w-full max-h-[80vh] object-contain rounded-lg"

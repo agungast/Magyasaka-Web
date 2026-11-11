@@ -53,9 +53,11 @@ async function save() {
       tahun_ajaran: form.value.tahun_ajaran
     }
     if (editing.value) {
-      await client.from('semesters').update(payload).eq('id', editing.value.id)
+      const { error } = await client.from('semesters').update(payload).eq('id', editing.value.id)
+      if (error) throw error
     } else {
-      await client.from('semesters').insert(payload)
+      const { error } = await client.from('semesters').insert(payload)
+      if (error) throw error
     }
     modalOpen.value = false
     await refresh()

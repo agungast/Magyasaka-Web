@@ -17,7 +17,7 @@ export default defineNuxtConfig({
   fonts: {
     families: [
       { name: 'Outfit', provider: 'google', weights: [400, 500, 600, 700, 800] },
-      { name: 'Plus Jakarta Sans', provider: 'google', weights: [400, 500, 600, 700] },
+      { name: 'Schibsted Grotesk', provider: 'google', weights: [400, 500, 600, 700] },
       { name: 'Geist Mono', provider: 'google', weights: [400, 500] }
     ]
   },
@@ -51,6 +51,13 @@ export default defineNuxtConfig({
       htmlAttrs: {
         lang: 'id'
       }
+    }
+  },
+
+  vite: {
+    optimizeDeps: {
+      // Jangan pre-bundle: worker internal @ffmpeg/ffmpeg di-resolve Vite saat runtime.
+      exclude: ['@ffmpeg/ffmpeg', '@ffmpeg/util']
     }
   },
 

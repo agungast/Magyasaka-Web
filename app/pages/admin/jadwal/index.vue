@@ -44,13 +44,10 @@ const warnaOpts = [
 const hariOpts = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'].map(h => ({ label: h, value: h }))
 
 // Filter tabel berdasarkan semester & hari
-const filterSemesterId = ref('all')
+// "Semua Semester" dihilangkan agar jadwal dari berbagai semester tidak menumpuk
+// di tabel. Default: semester yang paling baru ditambahkan (created_at terbaru).
+const filterSemesterId = ref<string | null>(null)
 const filterHari = ref('all')
-
-const filterSemesterOpts = computed(() => [
-  { label: 'Semua Semester', value: 'all' },
-  ...semesterOpts.value
-])
 
 const filterHariOpts = [
   { label: 'Semua Hari', value: 'all' },
@@ -59,10 +56,16 @@ const filterHariOpts = [
 
 const filteredItems = computed(() =>
   (items.value || []).filter((s: any) =>
-    (filterSemesterId.value === 'all' || s.semester_id === filterSemesterId.value)
+    (filterSemesterId.value !== null && s.semester_id === filterSemesterId.value)
     && (filterHari.value === 'all' || s.hari === filterHari.value)
   )
 )
+
+// Pilih otomatis semester terbaru saat data semester tersedia
+watchEffect(() => {
+  if (filterSemesterId.value || !sortedSemesters.value.length) return
+  filterSemesterId.value = sortedSemesters.value[0]?.id || null
+})
 
 // Pengaturan waktu perkuliahan (Jam & Menit)
 const hourOptions = Array.from({ length: 16 }, (_, i) => {
@@ -215,22 +218,34 @@ async function executeDelete() {
       <UButton label="Tambah" icon="i-lucide-plus" @click="openCreate" />
     </div>
 
+    <!-- Tab filter semester: dari semester terbaru (kiri) ke lama (kanan) -->
+    <div v-if="sortedSemesters.length" class="flex gap-1 overflow-x-auto pb-2 mb-4">
+      <UButton
+        v-for="sem in sortedSemesters"
+        :key="sem.id"
+        :label="`Sem ${sem.nomor} ${sem.tipe}`"
+        :color="filterSemesterId === sem.id ? 'primary' : 'neutral'"
+        :variant="filterSemesterId === sem.id ? 'solid' : 'ghost'"
+        size="sm"
+        @click="filterSemesterId = sem.id"
+      />
+    </div>
+
     <UCard>
       <div class="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
         <div class="flex flex-col sm:flex-row gap-2 flex-1">
-          <USelect v-model="filterSemesterId" :items="filterSemesterOpts" size="sm" class="sm:w-60" />
           <USelect v-model="filterHari" :items="filterHariOpts" size="sm" class="sm:w-44" />
         </div>
         <div class="flex items-center gap-2">
           <span class="text-xs text-muted">{{ filteredItems.length }} jadwal</span>
           <UButton
-            v-if="filterSemesterId !== 'all' || filterHari !== 'all'"
+            v-if="filterHari !== 'all'"
             label="Reset"
             icon="i-lucide-x"
             size="xs"
             variant="ghost"
             color="neutral"
-            @click="filterSemesterId = 'all'; filterHari = 'all'"
+            @click="filterHari = 'all'"
           />
         </div>
       </div>

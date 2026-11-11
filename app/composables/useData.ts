@@ -33,7 +33,7 @@ const mockAnnouncements = [
 ]
 
 const mockSemesters = [
-  { id: '1', nomor: 1, tipe: 'GASAL', tahun_ajaran: '2023/2024', created_at: '2023-08-01T00:00:00.000Z' }
+  { id: '1', nomor: 1, tipe: 'Ganjil', tahun_ajaran: '2023/2024', created_at: '2023-08-01T00:00:00.000Z' }
 ]
 
 const mockSchedules = [
@@ -68,21 +68,24 @@ const mockMembers = [
 ]
 
 const mockOfficers = [
-  { id: '1', jabatan: 'Ketua Kelas', urutan: 1, member: mockMembers[0] },
-  { id: '2', jabatan: 'Wakil Ketua', urutan: 2, member: mockMembers[1] },
-  { id: '3', jabatan: 'Sekretaris', urutan: 3, member: mockMembers[2] },
-  { id: '4', jabatan: 'Bendahara', urutan: 4, member: mockMembers[3] },
-  { id: '5', jabatan: 'Koordinator Akademik', urutan: 5, member: mockMembers[4] }
+  { id: '1', jabatan: 'Ketua Kelas', urutan: 1, mata_kuliah: null, member: mockMembers[0] },
+  { id: '2', jabatan: 'Wakil Ketua', urutan: 2, mata_kuliah: null, member: mockMembers[1] },
+  { id: '3', jabatan: 'Sekretaris', urutan: 3, mata_kuliah: null, member: mockMembers[2] },
+  { id: '4', jabatan: 'Bendahara', urutan: 4, mata_kuliah: null, member: mockMembers[3] },
+  { id: '5', jabatan: 'Koordinator Akademik', urutan: 5, mata_kuliah: null, member: mockMembers[4] }
 ]
 
 function isSupabaseConfigured() {
+  let configured = false
   try {
-    const config = useRuntimeConfig()
-    const url = config.public?.supabase?.url
-    return !!url && typeof url === 'string' && !url.includes('your-project') && !url.includes('example')
-  } catch {
-    return false
-  }
+    const url = useRuntimeConfig().public?.supabase?.url
+    configured = !!url && typeof url === 'string' && !url.includes('your-project') && !url.includes('example')
+  } catch { /* runtime config belum tersedia */ }
+  if (configured) return true
+  // Mock data hanya untuk development; di produksi tanpa env harus error
+  // supaya halaman menampilkan state error, bukan data palsu.
+  if (import.meta.dev) return false
+  throw new Error('Supabase belum dikonfigurasi: set SUPABASE_URL dan SUPABASE_KEY.')
 }
 
 export function useAnnouncements() {
@@ -157,7 +160,7 @@ export function useMembers() {
       const client = useSupabaseClient()
       const { data, error } = await client
         .from('members')
-        .select('*')
+        .select('id, nim, nama, email, jurusan, angkatan, status, foto_url')
         .order('nim')
       if (error) throw error
       return data
@@ -172,7 +175,7 @@ export function useOfficers() {
       const client = useSupabaseClient()
       const { data, error } = await client
         .from('class_officers')
-        .select('*, member:members(*)')
+        .select('*, member:members(id, nim, nama, jurusan, angkatan, status, foto_url)')
         .order('urutan')
       if (error) throw error
       return data

@@ -28,10 +28,6 @@ const filteredMembers = computed(() => {
 })
 
 const totalMembers = computed(() => members.value?.length || 0)
-
-function getInitials(name: string) {
-  return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
-}
 </script>
 
 <template>
@@ -65,7 +61,7 @@ function getInitials(name: string) {
           size="md"
         />
       </div>
-      <UButtonGroup>
+      <div class="flex">
         <UButton
           :color="sortBy === 'nim' ? 'primary' : 'neutral'"
           :variant="sortBy === 'nim' ? 'solid' : 'outline'"
@@ -82,36 +78,16 @@ function getInitials(name: string) {
           size="sm"
           @click="sortBy = 'nama'"
         />
-      </UButtonGroup>
+      </div>
     </div>
 
     <!-- Members Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-      <UCard
+      <MemberCard
         v-for="member in filteredMembers"
         :key="member.id"
-        class="card-hover"
-      >
-        <div class="flex items-center gap-3">
-          <!-- Avatar -->
-          <div
-            class="w-12 h-12 rounded-full bg-elevated border border-default flex items-center justify-center shrink-0 font-display font-bold text-sm"
-          >
-            {{ getInitials(member.nama) }}
-          </div>
-          <div class="flex-1 min-w-0">
-            <h2 class="font-semibold text-sm truncate">{{ member.nama }}</h2>
-            <p class="text-xs text-muted">NIM: {{ member.nim }}</p>
-            <p v-if="member.email" class="text-xs text-muted break-all">{{ member.email }}</p>
-          </div>
-          <UBadge
-            :label="member.status || 'aktif'"
-            :color="member.status === 'aktif' ? 'success' : 'warning'"
-            variant="subtle"
-            size="xs"
-          />
-        </div>
-      </UCard>
+        :member="member"
+      />
     </div>
 
     <div v-if="filteredMembers.length === 0" class="text-center py-16">

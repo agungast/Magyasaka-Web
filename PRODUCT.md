@@ -53,7 +53,7 @@ Mekanisme pembeda yang tidak bisa disalin apa adanya oleh produk lain: satu pane
 - **Tidak ada alur unggah file.** Entri galeri lewat URL; bucket `gallery`, `avatars`, `projects` baru dideklarasikan di komentar SQL, belum dibuat.
 - **Penyelesaian tugas bersifat per-perangkat.** Key `localStorage` `trk2023_completed_tasks`. Kolom `is_completed` di tabel `assignments` ada tapi tidak terpakai, jadi status selesai tidak pernah terlihat oleh teman sekelas lain.
 - **Tidak ada pendaftaran, reset password, verifikasi email, maupun penanganan kedaluwarsa sesi.**
-- **Stack:** Nuxt 4 + Vue 3, `@nuxt/ui` v4 sebagai sistem komponen (tidak ada direktori `app/ui/`; komponen lokal tinggal di `app/components/`), Tailwind CSS 4 dengan konfigurasi CSS-first (tanpa `tailwind.config.js`), TypeScript, `@nuxtjs/supabase`, `fuse.js`, `@vueuse/nuxt`, ikon Iconify (Lucide + Simple Icons). Font: Plus Jakarta Sans + Inter (Google Fonts).
+- **Stack:** Nuxt 4 + Vue 3, `@nuxt/ui` v4 sebagai sistem komponen (tidak ada direktori `app/ui/`; komponen lokal tinggal di `app/components/`), Tailwind CSS 4 dengan konfigurasi CSS-first (tanpa `tailwind.config.js`), TypeScript, `@nuxtjs/supabase`, `fuse.js`, `@vueuse/nuxt`, ikon Iconify (Lucide + Simple Icons). Font: Outfit, Schibsted Grotesk, Geist Mono (self-hosted via `@nuxt/fonts`).
 - **Tidak ada test runner dan tidak ada test.** Perintah verifikasi yang ada justru rusak: `typecheck` gagal karena `app/composables/useData.ts` mengimpor `~/types/database` yang tidak ada, dan `lint` gagal karena `eslint-plugin-better-tailwindcss` tidak terpasang di `package.json`.
 - **Lockfile dan CI tidak sinkron:** repo memakai `package-lock.json` (npm) sementara CI `ubuntu-latest` + Node 24 menjalankan pnpm, dan README juga menyebut pnpm. Manajer paket yang benar belum ditetapkan.
 - **Tidak ada server API.** `server/` kosong; semua query berjalan dari klien.
@@ -79,13 +79,13 @@ Mekanisme pembeda yang tidak bisa disalin apa adanya oleh produk lain: satu pane
 - **Nuansa:** ramah antar teman sebaya, bukan sistem enterprise. Kelas yang pegang kendali atas portalnya sendiri.
 - **Identitas visual (v2 — crest-centered):**
   - **Warna:** ink (#05080c) / paper (#fbfcfe) sebagai dasar; **azure-400 #5b9ae8** sebagai satu-satunya warna aksi (CTA, link aktif, highlight). Semantic colors dijaga: error #b42318, warning #a16207, success #15803d, info #1d4ed8 (500 shades stepped down agar lulus AA di 11px). Tidak ada indigo/violet/pink/emerald/cyan sebagai warna dekoratif; `schedule.warna` (per-mata kuliah) dipertahankan sebagai data di badge.
-  - **Tipografi:** `--font-display` **Outfit** (400–800) untuk heading/logo; `--font-sans` **Plus Jakarta Sans** (400–700) untuk body/UI; `--font-mono` **Geist Mono** (400–500) untuk kode/tabular-nums. Self-hosted via `@nuxt/fonts` (Google Fonts `<link>` dihapus).
+  - **Tipografi:** `--font-display` **Outfit** (400–800) untuk heading/logo; `--font-sans` **Schibsted Grotesk** (400–700) untuk body/UI; `--font-mono` **Geist Mono** (400–500) untuk kode/tabular-nums. Self-hosted via `@nuxt/fonts` (Google Fonts `<link>` dihapus).
   - **Crest:** Lambang kelas (hitam di mode terang, putih di mode gelap) ditempatkan di header, hero, login, admin, footer, favicon, apple-touch-icon. Ditetapkan via CSS mask (`currentColor` tint) — satu aset melayani kedua mode.
   - **Tekstur:** halftone dot (radial 8px grid) di `.hero-plate`, `.plate`, card hover — cetak, bukan kaca.
   - **Nol blur/kaca:** `backdrop-filter: none` di header; tidak ada `.glass`, `.glass-light`, gradient text, atau colored `border-l` >1px.
   - **Gerak:** satu momen yang diantisipasi — `.hero-enter` (900ms ease-out) + `halftone-drift` (24s loop, `prefers-reduced-motion` guard). Tanpa `animate-float`, `animate-pulse-glow`, bounce.
   - **Browser surfaces:** `::selection` azure, caret azure, scrollbar ink, page/layout transitions.
-- **Aset:** `public/favicon-64.png`, `public/apple-touch-icon.png`, `public/favicon.ico` (PNG-in-ICO), `app/assets/images/magyasaka-crest-ink.png`, `app/assets/images/magyasaka-crest-light.png`. `AppLogo.vue` (wordmark SVG inline, dua huruf `var(--ui-primary)`) **belum pernah dirender di halaman mana pun** — keputusan keep-vs-retire masih terbuka.
+- **Aset:** `public/favicon-64.png`, `public/apple-touch-icon.png`, `public/favicon.ico` (PNG-in-ICO), `app/assets/images/magyasaka-crest-ink.png`, `app/assets/images/magyasaka-crest-light.png`.
 
 ## Evidence on Hand
 
@@ -95,7 +95,7 @@ Mekanisme pembeda yang tidak bisa disalin apa adanya oleh produk lain: satu pane
 - Konten seed identik dengan mock: 3 pengumuman, 8 jadwal, 4 tugas, 10 anggota (NIM 2023001–2023010), 5 pengurus, 3 album, 3 proyek — di `supabase/migration.sql` dan `app/composables/useData.ts`.
 - `PRD Kelas TRK 2023.md` (85 baris, bahasa Indonesia, status draft) — 4 fase yang dipetakan 1:1 ke kode (`// Fase 1: Beranda Angkatan` … `// Fase 4: Login Pengurus`), termasuk NFR: SSR + Vercel Edge, RLS untuk pembatasan pengelola, responsif penuh.
 - Konfigurasi Supabase ada di `.env.example`; kredensial proyek nyata tidak ada di repo.
-- Font: Plus Jakarta Sans + Inter (Google Fonts, dimuat di `nuxt.config.ts`).
+- Font: Outfit, Schibsted Grotesk, Geist Mono (self-hosted via `@nuxt/fonts`, didaftarkan di `nuxt.config.ts`).
 
 **Yang tidak ada — dan tidak boleh dikarang**
 

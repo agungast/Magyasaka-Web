@@ -12,6 +12,7 @@ const router = useRouter()
 
 const email = ref('')
 const password = ref('')
+const showPassword = ref(false)
 const loading = ref(false)
 const errorMsg = ref('')
 
@@ -85,13 +86,25 @@ async function handleLogin() {
             <label class="text-sm font-medium mb-1.5 block">Password</label>
             <UInput
               v-model="password"
-              type="password"
+              :type="showPassword ? 'text' : 'password'"
               placeholder="••••••••"
               icon="i-lucide-lock"
               required
               size="md"
               class="w-full"
-            />
+            >
+              <template #trailing>
+                <UButton
+                  color="neutral"
+                  variant="link"
+                  size="sm"
+                  :icon="showPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+                  :aria-label="showPassword ? 'Sembunyikan password' : 'Tampilkan password'"
+                  :aria-pressed="showPassword"
+                  @click="showPassword = !showPassword"
+                />
+              </template>
+            </UInput>
           </div>
           <UButton
             type="submit"
