@@ -249,7 +249,47 @@ async function executeDelete() {
           />
         </div>
       </div>
-      <div class="overflow-x-auto">
+      <!-- Mobile: kartu per jadwal -->
+      <div class="space-y-3 md:hidden">
+        <div v-for="s in filteredItems" :key="s.id" class="rounded-lg border border-default p-3">
+          <div class="flex items-start justify-between gap-2">
+            <div class="min-w-0">
+              <p class="font-medium break-words">{{ s.mata_kuliah }}</p>
+              <p class="text-xs text-muted break-words">{{ s.dosen }}</p>
+            </div>
+            <div class="flex shrink-0">
+              <UButton size="xs" variant="ghost" icon="i-lucide-edit" aria-label="Edit" @click="openEdit(s)" />
+              <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" aria-label="Hapus" @click="confirmDelete(s)" />
+            </div>
+          </div>
+          <dl class="mt-2 space-y-1 text-xs">
+            <div class="flex items-center justify-between gap-3">
+              <dt class="shrink-0 text-muted">Semester</dt>
+              <dd class="text-right">{{ semesterName(s.semester_id) }}</dd>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+              <dt class="shrink-0 text-muted">Hari</dt>
+              <dd class="text-right">{{ s.hari }}</dd>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+              <dt class="shrink-0 text-muted">Jam</dt>
+              <dd class="text-right">{{ s.jam_mulai.slice(0, 5) }} - {{ s.jam_selesai.slice(0, 5) }}</dd>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+              <dt class="shrink-0 text-muted">Ruangan</dt>
+              <dd class="text-right break-words">{{ s.ruangan }}</dd>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+              <dt class="shrink-0 text-muted">Warna</dt>
+              <dd><span class="inline-block w-3 h-3 rounded-full" :style="{ backgroundColor: s.warna }" aria-label="warna" /></dd>
+            </div>
+          </dl>
+        </div>
+        <p v-if="!filteredItems.length" class="py-6 text-center text-sm text-muted">Tidak ada jadwal untuk filter ini.</p>
+      </div>
+
+      <!-- Desktop: tabel -->
+      <div class="hidden overflow-x-auto md:block">
         <table class="w-full text-sm">
           <thead>
             <tr class="border-b border-default">

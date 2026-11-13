@@ -116,7 +116,39 @@ function formatDateTime(value: string | null | undefined) {
     </div>
 
     <UCard>
-      <div class="overflow-x-auto">
+      <!-- Mobile: kartu per tugas/ujian -->
+      <div class="space-y-3 md:hidden">
+        <div v-for="a in items" :key="a.id" class="rounded-lg border border-default p-3">
+          <div class="flex items-start justify-between gap-2">
+            <div class="min-w-0">
+              <p class="font-medium break-words">{{ a.judul }}</p>
+              <p class="text-xs text-muted break-words">{{ a.mata_kuliah }}</p>
+            </div>
+            <div class="flex shrink-0">
+              <UButton size="xs" variant="ghost" icon="i-lucide-edit" aria-label="Edit" @click="openEdit(a)" />
+              <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" aria-label="Hapus" @click="confirmDelete(a)" />
+            </div>
+          </div>
+          <dl class="mt-2 space-y-1 text-xs">
+            <div class="flex items-center justify-between gap-3">
+              <dt class="shrink-0 text-muted">Tipe</dt>
+              <dd class="text-right">{{ a.tipe }}</dd>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+              <dt class="shrink-0 text-muted">Deadline</dt>
+              <dd class="text-right">{{ formatDateTime(a.deadline) }}</dd>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+              <dt class="shrink-0 text-muted">Pelaksanaan</dt>
+              <dd class="text-right">{{ formatDateTime(a.tanggal_ujian) }}</dd>
+            </div>
+          </dl>
+        </div>
+        <p v-if="!items.length" class="py-6 text-center text-sm text-muted">Belum ada tugas atau ujian.</p>
+      </div>
+
+      <!-- Desktop: tabel -->
+      <div class="hidden overflow-x-auto md:block">
         <table class="w-full text-sm">
           <thead>
             <tr class="border-b border-default">

@@ -71,7 +71,7 @@ const tipeIcon: Record<string, string> = {
   tugas: 'i-lucide-file-text',
   uts: 'i-lucide-file-warning',
   uas: 'i-lucide-file-warning',
-  tubes: 'i-lucide-help-circle',
+  tubes: 'i-lucide-file-text',
   praktikum: 'i-lucide-flask-conical'
 }
 
@@ -174,7 +174,10 @@ const tipeColor: Record<string, string> = {
               </template>
             </div>
             <div class="flex items-center gap-2 mt-2">
-              <UBadge :label="tipeLabel(task.tipe)" variant="subtle" size="xs" />
+              <span
+                class="accent inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium"
+                :style="{ '--accent': tipeColor[task.tipe || 'tugas'] || '#6366f1' }"
+              >{{ tipeLabel(task.tipe) }}</span>
               <span v-if="task.deadline" class="text-xs text-muted flex items-center gap-1">
                 <UIcon name="i-lucide-clock" />
                 {{ formatDate(task.deadline) }}

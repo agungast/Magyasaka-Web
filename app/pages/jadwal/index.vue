@@ -154,14 +154,15 @@ const totalSKS = computed(() =>
       <div v-if="viewMode === 'week'">
       <!-- Mobile: Tab view -->
       <div class="lg:hidden mb-4">
-        <div class="flex gap-1 overflow-x-auto pb-2">
+        <div class="flex gap-1.5 overflow-x-auto pb-2">
           <UButton
             v-for="day in days"
             :key="day"
-            :label="day.substring(0, 3)"
+            :label="day"
             :color="currentDay === day ? 'primary' : 'neutral'"
             :variant="currentDay === day ? 'solid' : 'ghost'"
-            size="sm"
+            size="lg"
+            class="shrink-0"
             @click="currentDay = day"
           />
         </div>
@@ -187,7 +188,7 @@ const totalSKS = computed(() =>
                 <div class="flex-1 min-w-0">
                   <p class="font-semibold text-sm">{{ s.mata_kuliah }}</p>
                   <p class="text-xs text-muted">{{ s.dosen }}</p>
-                  <div class="flex items-center gap-3 mt-1">
+                  <div class="flex flex-col items-start gap-1 mt-1">
                     <span class="text-xs flex items-center gap-1">
                       <UIcon name="i-lucide-clock" class="text-xs" />
                       {{ s.jam_mulai.slice(0, 5) }} - {{ s.jam_selesai.slice(0, 5) }}
@@ -196,7 +197,7 @@ const totalSKS = computed(() =>
                       <UIcon name="i-lucide-map-pin" class="text-xs" />
                       {{ s.ruangan }}
                     </span>
-<UBadge :label="`${s.sks} SKS`" variant="outline" size="xs" />
+                    <UBadge :label="`${s.sks} SKS`" variant="outline" size="xs" />
                   </div>
                 </div>
               </div>
@@ -270,22 +271,22 @@ const totalSKS = computed(() =>
           >
             <!-- Timeline connector -->
             <div v-if="index < todaySchedules.length - 1" class="absolute left-8 top-full w-0.5 h-4 bg-default/30" />
-            <div class="flex items-start gap-4">
+            <div class="flex items-center gap-4">
               <div
-                class="accent w-14 h-14 rounded-xl flex flex-col items-center justify-center shrink-0"
+                class="accent w-14 h-14 rounded-xl flex items-center justify-center shrink-0"
                 :style="{ '--accent': s.warna || '#6366f1' }"
               >
-                <span class="text-xs font-bold">{{ s.jam_mulai.slice(0, 5) }}</span>
+                <UIcon name="i-lucide-book-open" class="text-xl" />
               </div>
               <div class="flex-1">
                 <h3 class="font-bold text-base">{{ s.mata_kuliah }}</h3>
-                <p class="text-sm text-muted">{{ s.dosen }}</p>
+                <p class="text-base text-default">{{ s.dosen }}</p>
                 <div class="flex flex-wrap items-center gap-3 mt-2">
-                  <span class="text-xs text-muted flex items-center gap-1">
+                  <span class="text-sm text-default flex items-center gap-1">
                     <UIcon name="i-lucide-clock" />
                     {{ s.jam_mulai.slice(0, 5) }} - {{ s.jam_selesai.slice(0, 5) }}
                   </span>
-                  <span class="text-xs text-muted flex items-center gap-1">
+                  <span class="text-sm text-default flex items-center gap-1">
                     <UIcon name="i-lucide-map-pin" />
                     {{ s.ruangan }}
                   </span>
