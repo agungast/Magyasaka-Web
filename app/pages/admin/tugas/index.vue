@@ -121,8 +121,8 @@ function formatDateTime(value: string | null | undefined) {
         <div v-for="a in items" :key="a.id" class="rounded-lg border border-default p-3">
           <div class="flex items-start justify-between gap-2">
             <div class="min-w-0">
-              <p class="font-medium break-words">{{ a.judul }}</p>
-              <p class="text-xs text-muted break-words">{{ a.mata_kuliah }}</p>
+              <p class="font-medium wrap-break-words">{{ a.judul }}</p>
+              <p class="text-xs text-muted wrap-break-words">{{ a.mata_kuliah }}</p>
             </div>
             <div class="flex shrink-0">
               <UButton size="xs" variant="ghost" icon="i-lucide-edit" aria-label="Edit" @click="openEdit(a)" />
@@ -144,7 +144,7 @@ function formatDateTime(value: string | null | undefined) {
             </div>
           </dl>
         </div>
-        <p v-if="!items.length" class="py-6 text-center text-sm text-muted">Belum ada tugas atau ujian.</p>
+        <p v-if="!items?.length" class="py-6 text-center text-sm text-muted">Belum ada tugas atau ujian.</p>
       </div>
 
       <!-- Desktop: tabel -->

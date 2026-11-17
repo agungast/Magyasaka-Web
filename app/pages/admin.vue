@@ -71,13 +71,14 @@ const menuItems = [
       <UButton label="Keluar" icon="i-lucide-log-out" variant="outline" @click="logout" />
     </div>
 
-    <nav class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 mb-8">
+    <!-- Mobile: grid 3 kolom (ikon di atas, label di bawah) supaya semua menu terlihat tanpa scroll -->
+    <nav class="grid grid-cols-3 gap-2 mb-6 md:grid-cols-2 md:gap-2.5 md:mb-8 lg:grid-cols-3">
       <NuxtLink
         v-for="item in menuItems"
         :key="item.to"
         :to="item.to"
         :class="[
-          'group flex items-center gap-3 px-3.5 py-2.5 rounded-xl border transition-all duration-200',
+          'group flex flex-col items-center gap-1.5 px-2 py-3 rounded-xl border text-center transition-all duration-200 md:flex-row md:gap-3 md:px-3.5 md:py-2.5 md:text-left',
           isActive(item.to)
             ? 'bg-primary/15 border-primary/40 text-primary shadow-sm font-semibold'
             : 'bg-elevated/40 hover:bg-elevated/80 border-default/30 text-muted hover:text-default'
@@ -93,11 +94,11 @@ const menuItems = [
         >
           <UIcon :name="item.icon" class="text-base" />
         </div>
-        <span class="font-display text-sm truncate">{{ item.label }}</span>
+        <span class="font-display text-xs leading-tight md:text-sm md:truncate">{{ item.label }}</span>
         <UIcon
           name="i-lucide-chevron-right"
           :class="[
-            'ml-auto text-sm transition-transform duration-200 shrink-0',
+            'ml-auto hidden text-sm transition-transform duration-200 shrink-0 md:block',
             isActive(item.to)
               ? 'text-primary translate-x-0.5'
               : 'text-muted/40 group-hover:text-muted group-hover:translate-x-0.5'

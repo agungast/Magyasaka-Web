@@ -128,6 +128,19 @@ function openPhotos(a: any) {
   photoModal.value = true
 }
 
+// Kartu album hanya menampilkan sebagian foto; sisanya lewat tombol "Lihat semua".
+const PHOTO_PREVIEW_LIMIT = 6
+const expandedAlbums = ref<string[]>([])
+function previewPhotos(album: any) {
+  const photos = album.photos || []
+  return expandedAlbums.value.includes(album.id) ? photos : photos.slice(0, PHOTO_PREVIEW_LIMIT)
+}
+function toggleExpand(id: string) {
+  expandedAlbums.value = expandedAlbums.value.includes(id)
+    ? expandedAlbums.value.filter(x => x !== id)
+    : [...expandedAlbums.value, id]
+}
+
 function addFiles(files: FileList | File[] | null) {
   if (!files) return
   for (const f of Array.from(files)) {
@@ -250,7 +263,9 @@ if (import.meta.client) {
         <div class="flex items-start justify-between gap-3 mb-3">
           <div>
             <h3 class="font-semibold">{{ album.nama }}</h3>
-            <p class="text-xs text-muted">{{ album.tanggal_kegiatan }}</p>
+            <p class="text-xs text-muted">
+              <span v-if="album.tanggal_kegiatan">{{ album.tanggal_kegiatan }} · </span>{{ album.photos?.length || 0 }} foto/video
+            </p>
             <p class="text-sm text-muted">{{ album.deskripsi }}</p>
           </div>
           <div class="flex gap-1">
@@ -260,16 +275,25 @@ if (import.meta.client) {
           </div>
         </div>
         <div class="flex flex-wrap gap-2">
-          <div v-for="(p, pi) in album.photos" :key="p.id" class="relative group">
+          <div v-for="(p, pi) in previewPhotos(album)" :key="p.id" class="relative group">
             <video v-if="isVideoUrl(p.url)" :src="p.url" class="w-20 h-20 object-cover rounded cursor-zoom-in" preload="metadata" muted @click="openLightbox(album.photos, pi)" />
             <img v-else :src="p.url" class="w-20 h-20 object-cover rounded cursor-zoom-in" @click="openLightbox(album.photos, pi)" />
-            <button v-if="!isVideoUrl(p.url)" class="absolute bottom-0 left-0 bg-primary/80 text-white rounded-full px-1.5 py-0.5 text-[10px] hidden group-hover:block" @click="setCover(album.id, p.url)">✦ Thumbnail</button>
-            <button class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 text-xs hidden group-hover:flex items-center justify-center" @click="confirmDeletePhoto(p)">×</button>
+            <button v-if="!isVideoUrl(p.url)" class="absolute bottom-0 left-0 bg-primary/80 text-white rounded-full px-1.5 py-0.5 text-[10px] opacity-100 md:opacity-0 md:group-hover:opacity-100" @click="setCover(album.id, p.url)">✦ Thumbnail</button>
+            <button class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 md:w-4 md:h-4 text-xs flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100" aria-label="Hapus foto" @click="confirmDeletePhoto(p)">×</button>
           </div>
-          <button class="w-20 h-20 border border-dashed border-default rounded flex items-center justify-center" @click="openPhotos(album)">
+          <button class="w-20 h-20 border border-dashed border-default rounded flex items-center justify-center" aria-label="Tambah foto/video" @click="openPhotos(album)">
             <UIcon name="i-lucide-plus" />
           </button>
         </div>
+        <UButton
+          v-if="(album.photos?.length || 0) > PHOTO_PREVIEW_LIMIT"
+          size="xs"
+          variant="ghost"
+          class="mt-2"
+          :trailing-icon="expandedAlbums.includes(album.id) ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
+          :label="expandedAlbums.includes(album.id) ? 'Sembunyikan' : `Lihat semua ${album.photos.length} foto/video`"
+          @click="toggleExpand(album.id)"
+        />
       </UCard>
     </div>
 

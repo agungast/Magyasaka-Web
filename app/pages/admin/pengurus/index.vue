@@ -147,7 +147,37 @@ const memberOpts = computed(() => members.value?.map(m => ({
     </div>
 
     <UCard>
-      <div class="overflow-x-auto">
+      <!-- Mobile: kartu per pengurus -->
+      <div class="space-y-3 md:hidden">
+        <div v-for="o in officers" :key="o.id" class="rounded-lg border border-default p-3">
+          <div class="flex items-start justify-between gap-2">
+            <div class="min-w-0">
+              <p class="font-medium break-words">{{ o.member?.nama }}</p>
+              <p class="text-xs text-muted break-words">
+                {{ o.jabatan }}<span v-if="o.mata_kuliah"> · {{ o.mata_kuliah }}</span>
+              </p>
+            </div>
+            <div class="flex shrink-0">
+              <UButton size="xs" variant="ghost" icon="i-lucide-edit" aria-label="Edit" @click="openEdit(o)" />
+              <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" aria-label="Hapus" @click="confirmDelete(o)" />
+            </div>
+          </div>
+          <dl class="mt-2 space-y-1 text-xs">
+            <div class="flex items-center justify-between gap-3">
+              <dt class="shrink-0 text-muted">Urutan</dt>
+              <dd class="text-right">{{ o.urutan }}</dd>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+              <dt class="shrink-0 text-muted">Periode</dt>
+              <dd class="text-right break-words">{{ o.periode }}</dd>
+            </div>
+          </dl>
+        </div>
+        <p v-if="!officers?.length" class="py-6 text-center text-sm text-muted">Belum ada pengurus.</p>
+      </div>
+
+      <!-- Desktop: tabel -->
+      <div class="hidden overflow-x-auto md:block">
         <table class="w-full text-sm">
           <thead>
             <tr class="border-b border-default">
@@ -163,10 +193,10 @@ const memberOpts = computed(() => members.value?.map(m => ({
               <td class="py-2">{{ o.urutan }}</td>
               <td class="py-2">{{ o.member?.nama }}</td>
               <td class="py-2">{{ o.jabatan }}<span v-if="o.mata_kuliah" class="text-muted"> · {{ o.mata_kuliah }}</span></td>
-              <td class="py-2">{{ o.periode }}</td>
-              <td class="py-2 text-right">
-                <UButton size="xs" variant="ghost" icon="i-lucide-edit" @click="openEdit(o)" />
-                <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" @click="confirmDelete(o)" />
+              <td class="py-2 whitespace-nowrap">{{ o.periode }}</td>
+              <td class="py-2 text-right whitespace-nowrap">
+                <UButton size="xs" variant="ghost" icon="i-lucide-edit" aria-label="Edit" @click="openEdit(o)" />
+                <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" aria-label="Hapus" @click="confirmDelete(o)" />
               </td>
             </tr>
           </tbody>

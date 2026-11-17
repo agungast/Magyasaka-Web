@@ -150,7 +150,39 @@ async function removePhoto() {
     </div>
 
     <UCard>
-      <div class="overflow-x-auto">
+      <!-- Mobile: kartu per anggota -->
+      <div class="space-y-3 md:hidden">
+        <div v-for="m in items" :key="m.id" class="rounded-lg border border-default p-3">
+          <div class="flex items-start justify-between gap-2">
+            <div class="flex min-w-0 items-center gap-2">
+              <img v-if="m.foto_url" :src="m.foto_url" :alt="m.nama" class="w-9 h-9 rounded-full object-cover shrink-0" />
+              <div v-else class="w-9 h-9 rounded-full flex items-center justify-center text-[10px] font-bold text-white bg-linear-to-br from-slate-500 to-slate-700 shrink-0">{{ initials(m.nama) }}</div>
+              <div class="min-w-0">
+                <p class="font-medium break-words">{{ m.nama }}</p>
+                <p class="text-xs text-muted">{{ m.nim }}</p>
+              </div>
+            </div>
+            <div class="flex shrink-0">
+              <UButton size="xs" variant="ghost" icon="i-lucide-edit" aria-label="Edit" @click="openEdit(m)" />
+              <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" aria-label="Hapus" @click="confirmDelete(m)" />
+            </div>
+          </div>
+          <dl class="mt-2 space-y-1 text-xs">
+            <div class="flex items-center justify-between gap-3">
+              <dt class="shrink-0 text-muted">Email</dt>
+              <dd class="text-right break-all">{{ m.email }}</dd>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+              <dt class="shrink-0 text-muted">Status</dt>
+              <dd class="text-right">{{ m.status }}</dd>
+            </div>
+          </dl>
+        </div>
+        <p v-if="!items?.length" class="py-6 text-center text-sm text-muted">Belum ada anggota.</p>
+      </div>
+
+      <!-- Desktop: tabel -->
+      <div class="hidden overflow-x-auto md:block">
         <table class="w-full text-sm">
           <thead>
             <tr class="border-b border-default">
@@ -163,7 +195,7 @@ async function removePhoto() {
           </thead>
           <tbody>
             <tr v-for="m in items" :key="m.id" class="border-b border-default/50">
-              <td class="py-2">{{ m.nim }}</td>
+              <td class="py-2 whitespace-nowrap">{{ m.nim }}</td>
               <td class="py-2">
                 <div class="flex items-center gap-2">
                   <img v-if="m.foto_url" :src="m.foto_url" :alt="m.nama" class="w-8 h-8 rounded-full object-cover shrink-0" />
@@ -172,10 +204,10 @@ async function removePhoto() {
                 </div>
               </td>
               <td class="py-2">{{ m.email }}</td>
-              <td class="py-2">{{ m.status }}</td>
-              <td class="py-2 text-right">
-                <UButton size="xs" variant="ghost" icon="i-lucide-edit" @click="openEdit(m)" />
-                <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" @click="confirmDelete(m)" />
+              <td class="py-2 whitespace-nowrap">{{ m.status }}</td>
+              <td class="py-2 text-right whitespace-nowrap">
+                <UButton size="xs" variant="ghost" icon="i-lucide-edit" aria-label="Edit" @click="openEdit(m)" />
+                <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" aria-label="Hapus" @click="confirmDelete(m)" />
               </td>
             </tr>
           </tbody>
