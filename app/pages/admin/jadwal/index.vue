@@ -254,8 +254,8 @@ async function executeDelete() {
         <div v-for="s in filteredItems" :key="s.id" class="rounded-lg border border-default p-3">
           <div class="flex items-start justify-between gap-2">
             <div class="min-w-0">
-              <p class="font-medium break-words">{{ s.mata_kuliah }}</p>
-              <p class="text-xs text-muted break-words">{{ s.dosen }}</p>
+              <p class="font-medium wrap-break-words">{{ s.mata_kuliah }}</p>
+              <p class="text-xs text-muted wrap-break-words">{{ s.dosen }}</p>
             </div>
             <div class="flex shrink-0">
               <UButton size="xs" variant="ghost" icon="i-lucide-edit" aria-label="Edit" @click="openEdit(s)" />
@@ -277,7 +277,7 @@ async function executeDelete() {
             </div>
             <div class="flex items-center justify-between gap-3">
               <dt class="shrink-0 text-muted">Ruangan</dt>
-              <dd class="text-right break-words">{{ s.ruangan }}</dd>
+              <dd class="text-right wrap-break-words">{{ s.ruangan }}</dd>
             </div>
             <div class="flex items-center justify-between gap-3">
               <dt class="shrink-0 text-muted">Warna</dt>

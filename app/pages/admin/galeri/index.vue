@@ -129,7 +129,8 @@ function openPhotos(a: any) {
 }
 
 // Kartu album hanya menampilkan sebagian foto; sisanya lewat tombol "Lihat semua".
-const PHOTO_PREVIEW_LIMIT = 6
+// 7 preview + 1 kotak "tambah" = 2 baris penuh pada grid 4 kolom di mobile.
+const PHOTO_PREVIEW_LIMIT = 7
 const expandedAlbums = ref<string[]>([])
 function previewPhotos(album: any) {
   const photos = album.photos || []
@@ -274,14 +275,24 @@ if (import.meta.client) {
             <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" @click="confirmDeleteAlbum(album)" />
           </div>
         </div>
-        <div class="flex flex-wrap gap-2">
-          <div v-for="(p, pi) in previewPhotos(album)" :key="p.id" class="relative group">
-            <video v-if="isVideoUrl(p.url)" :src="p.url" class="w-20 h-20 object-cover rounded cursor-zoom-in" preload="metadata" muted @click="openLightbox(album.photos, pi)" />
-            <img v-else :src="p.url" class="w-20 h-20 object-cover rounded cursor-zoom-in" @click="openLightbox(album.photos, pi)" />
-            <button v-if="!isVideoUrl(p.url)" class="absolute bottom-0 left-0 bg-primary/80 text-white rounded-full px-1.5 py-0.5 text-[10px] opacity-100 md:opacity-0 md:group-hover:opacity-100" @click="setCover(album.id, p.url)">✦ Thumbnail</button>
+        <div class="grid grid-cols-4 gap-2 lg:grid-cols-8">
+          <div v-for="(p, pi) in previewPhotos(album)" :key="p.id" class="relative group aspect-square">
+            <video v-if="isVideoUrl(p.url)" :src="p.url" class="w-full h-full object-cover rounded cursor-zoom-in" preload="metadata" muted @click="openLightbox(album.photos, pi)" />
+            <img v-else :src="p.url" class="w-full h-full object-cover rounded cursor-zoom-in" @click="openLightbox(album.photos, pi)" />
+            <!-- Hanya ditampilkan pada gambar yang belum jadi thumbnail; yang aktif diberi badge Cover. -->
+            <button
+              v-if="!isVideoUrl(p.url) && p.url !== album.cover_url"
+              class="absolute top-1 left-1 bg-primary/80 hover:bg-primary text-white rounded-full p-1 text-[10px] opacity-100 md:opacity-0 md:group-hover:opacity-100"
+              title="Jadikan thumbnail album"
+              aria-label="Jadikan thumbnail album"
+              @click="setCover(album.id, p.url)"
+            >
+              <UIcon name="i-lucide-star" class="text-[10px]" />
+            </button>
+            <span v-if="p.url === album.cover_url" class="absolute top-1 left-1 bg-primary text-white rounded-full px-1.5 py-0.5 text-[10px]">Cover</span>
             <button class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 md:w-4 md:h-4 text-xs flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100" aria-label="Hapus foto" @click="confirmDeletePhoto(p)">×</button>
           </div>
-          <button class="w-20 h-20 border border-dashed border-default rounded flex items-center justify-center" aria-label="Tambah foto/video" @click="openPhotos(album)">
+          <button class="aspect-square border border-dashed border-default rounded flex items-center justify-center" aria-label="Tambah foto/video" @click="openPhotos(album)">
             <UIcon name="i-lucide-plus" />
           </button>
         </div>

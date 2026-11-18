@@ -12,12 +12,29 @@ useSeoMeta({ title: 'Dashboard Admin - Magyasaka' })
 
 const { data: members, status: membersStatus } = useMembers()
 const { data: schedules } = useSchedules()
+const { data: semesters } = useSemesters()
 const { data: assignments } = useAssignments()
 const { data: announcements } = useAnnouncements()
 
+// Sama dengan halaman jadwal publik: semester aktif = yang terbaru (created_at lalu nomor).
+const latestSemester = computed(() => {
+  if (!semesters.value) return null
+  return [...semesters.value].sort((a: any, b: any) => {
+    const timeA = a.created_at ? new Date(a.created_at).getTime() : 0
+    const timeB = b.created_at ? new Date(b.created_at).getTime() : 0
+    if (timeA !== timeB) return timeB - timeA
+    return (b.nomor || 0) - (a.nomor || 0)
+  })[0] || null
+})
+
+// Semester 7 = periode Magang Kerja (MBKM), tidak ada jadwal kuliah reguler.
+const activeSchedules = computed(() =>
+  (schedules.value || []).filter((s: any) => s.semester_id === latestSemester.value?.id)
+)
+
 const stats = computed(() => [
   { label: 'Anggota', value: members.value?.length ?? 0, to: '/admin/anggota', icon: 'i-lucide-users', color: '#6366f1', loading: membersStatus.value === 'pending' },
-  { label: 'Jadwal', value: schedules.value?.length ?? 0, to: '/admin/jadwal', icon: 'i-lucide-calendar', color: '#0ea5e9', loading: false },
+  { label: 'Jadwal', value: activeSchedules.value.length, to: '/admin/jadwal', icon: 'i-lucide-calendar', color: '#0ea5e9', loading: false },
   { label: 'Tugas & Ujian', value: assignments.value?.length ?? 0, to: '/admin/tugas', icon: 'i-lucide-clipboard-list', color: '#f59e0b', loading: false },
   { label: 'Pengumuman', value: announcements.value?.length ?? 0, to: '/admin/pengumuman', icon: 'i-lucide-megaphone', color: '#10b981', loading: false }
 ])
@@ -31,9 +48,7 @@ const upcoming = computed(() =>
 )
 
 const today = new Date().toLocaleDateString('id-ID', { weekday: 'long' })
-const todaySchedules = computed(() =>
-  (schedules.value || []).filter((s: any) => s.hari === today)
-)
+const todaySchedules = computed(() => activeSchedules.value.filter((s: any) => s.hari === today))
 
 function formatDateTime(value: string | null | undefined) {
   if (!value) return '-'
@@ -89,10 +104,15 @@ function formatDateTime(value: string | null | undefined) {
       <UCard>
         <template #header>
           <div class="flex items-center justify-between gap-2">
-            <h2 class="font-semibold flex items-center gap-2">
-              <UIcon name="i-lucide-calendar-clock" class="text-primary" />
-              Jadwal Hari {{ today }}
-            </h2>
+            <div>
+              <h2 class="font-semibold flex items-center gap-2">
+                <UIcon name="i-lucide-calendar-clock" class="text-primary" />
+                Jadwal Hari {{ today }}
+              </h2>
+              <p v-if="latestSemester" class="text-xs text-muted mt-0.5">
+                {{ latestSemester.nomor === 7 ? 'Semester 7 · Magang Kerja' : semesterLabel(latestSemester) }}
+              </p>
+            </div>
             <UButton to="/admin/jadwal" label="Kelola" variant="ghost" color="neutral" size="xs" />
           </div>
         </template>
@@ -106,7 +126,9 @@ function formatDateTime(value: string | null | undefined) {
             <span class="text-xs text-muted whitespace-nowrap">{{ s.jam_mulai.slice(0, 5) }} - {{ s.jam_selesai.slice(0, 5) }}</span>
           </div>
         </div>
-        <p v-else class="text-sm text-muted">Tidak ada kuliah hari ini.</p>
+        <p v-else class="text-sm text-muted">
+          {{ latestSemester?.nomor === 7 ? 'Semester ini periode magang, tidak ada jadwal kuliah.' : 'Tidak ada kuliah hari ini.' }}
+        </p>
       </UCard>
     </div>
   </div>
