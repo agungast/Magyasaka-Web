@@ -115,7 +115,7 @@ const tipeColor: Record<string, string> = {
     </div>
 
     <!-- Filter -->
-    <div class="flex gap-1 flex-wrap mb-6">
+    <div class="flex gap-2 flex-wrap mb-6">
       <UButton
         v-for="opt in filterOptions"
         :key="opt.value"

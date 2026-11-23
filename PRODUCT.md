@@ -55,7 +55,7 @@ Mekanisme pembeda yang tidak bisa disalin apa adanya oleh produk lain: satu pane
 - **Tidak ada pendaftaran, reset password, verifikasi email, maupun penanganan kedaluwarsa sesi.**
 - **Stack:** Nuxt 4 + Vue 3, `@nuxt/ui` v4 sebagai sistem komponen (tidak ada direktori `app/ui/`; komponen lokal tinggal di `app/components/`), Tailwind CSS 4 dengan konfigurasi CSS-first (tanpa `tailwind.config.js`), TypeScript, `@nuxtjs/supabase`, `fuse.js`, `@vueuse/nuxt`, ikon Iconify (Lucide + Simple Icons). Font: Outfit, Schibsted Grotesk, Geist Mono (self-hosted via `@nuxt/fonts`).
 - **Tidak ada test runner dan tidak ada test.** Perintah verifikasi yang ada justru rusak: `typecheck` gagal karena `app/composables/useData.ts` mengimpor `~/types/database` yang tidak ada, dan `lint` gagal karena `eslint-plugin-better-tailwindcss` tidak terpasang di `package.json`.
-- **Lockfile dan CI tidak sinkron:** repo memakai `package-lock.json` (npm) sementara CI `ubuntu-latest` + Node 24 menjalankan pnpm, dan README juga menyebut pnpm. Manajer paket yang benar belum ditetapkan.
+- **Manajer paket:** npm (`package-lock.json`, CI `npm ci`). Tetapkan satu lockfile; jangan campur pnpm.
 - **Tidak ada server API.** `server/` kosong; semua query berjalan dari klien.
 - **Aplikasi jatuh ke data mock bila Supabase belum dikonfigurasi** (`isSupabaseConfigured()` di `app/composables/useData.ts` memeriksa apakah `.env` masih berisi placeholder `your-project`). Data mock itu adalah data contoh, bukan isi portal yang sebenarnya.
 
@@ -63,12 +63,15 @@ Mekanisme pembeda yang tidak bisa disalin apa adanya oleh produk lain: satu pane
 
 `hari` Senin–Sabtu · `jabatan` Ketua Kelas/Wakil Ketua/Sekretaris/Bendahara/Koordinator Akademik · `kategori` pengumuman umum/akademik/kegiatan/penting · `tipe` tugas tugas/uts/uas/tubes/praktikum · `status` anggota aktif/tidak aktif/cuti.
 
+**Keputusan produk yang sudah ditetapkan**
+
+- Manajer paket kanonik: npm (`package-lock.json`).
+- Hak tulis: semua pengurus setara (tidak dibatasi per jabatan).
+
 **Keputusan produk yang masih terbuka**
 
-- Apakah hak tulis dibatasi per jabatan (hanya Ketua yang boleh menerbitkan pengumuman penting), atau semua pengurus setara.
 - Apakah mahasiswa perlu akun (saat ini seluruh pembacaan bersifat anonim).
 - Apakah foto galeri perlu alur persetujuan sebelum tampil publik.
-- Manajer paket kanonik: npm atau pnpm.
 - Target deploy aktual (PRD menyebut Vercel + Supabase Cloud; belum ada konfigurasi deploy di repo).
 
 ## Brand Commitments

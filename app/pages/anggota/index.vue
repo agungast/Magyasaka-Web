@@ -64,7 +64,7 @@ const totalMembers = computed(() => members.value?.length || 0)
           size="md"
         />
       </div>
-      <div class="flex">
+      <div class="flex gap-2">
         <UButton
           :color="sortBy === 'nim' ? 'primary' : 'neutral'"
           :variant="sortBy === 'nim' ? 'solid' : 'outline'"

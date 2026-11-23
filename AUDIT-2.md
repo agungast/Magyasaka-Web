@@ -117,3 +117,21 @@ Konsekuensinya: Sprint 2 menjadi satu-satunya jaring pengaman terhadap data yang
 | 5 | 14, 15, 17, 18, 19 | CI menjaga tes, UX konsisten | 1 jam |
 
 **Tidak dikerjakan di sprint mana pun (keputusan):** batasan akses/menu per jabatan pengurus (akses penuh untuk semua pengurus, cukup allowlist email di Sprint 3), view publik terpisah untuk `members` (cukup cabut kolom), dan uji perangkat fisik — semuanya tidak sepadan untuk 6 akun pengurus.
+
+---
+
+## Prosedur sinkronisasi email pengurus
+
+Daftar email pengurus disimpan di **dua tempat yang harus selalu sinkron**:
+
+1. `app/utils/pengurus.ts` — konstanta `namaPengurus` (digunakan middleware `auth.ts` dan halaman admin).
+2. `supabase/fix_write_policies.sql` — fungsi `public.is_pengurus()` (digunakan RLS di database).
+
+Setiap kali menambah atau menghapus pengurus:
+
+1. Tambah/hapus baris email di `namaPengurus` di `app/utils/pengurus.ts`.
+2. Tambah/hapus baris email di dalam fungsi `public.is_pengurus()` di `supabase/fix_write_policies.sql`.
+3. Jalankan `fix_write_policies.sql` di Supabase Dashboard → SQL Editor.
+4. Verifikasi: login akun non-pengurus → `/admin` harus ditolak; halaman publik tetap tampil.
+
+Jangan mengubah salah satu tempat saja — akan menyebabkan ketidaksesuaian akses antara frontend dan database.

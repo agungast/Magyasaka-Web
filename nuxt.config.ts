@@ -32,7 +32,7 @@ export default defineNuxtConfig({
         detectSessionInUrl: true
       }
     },
-    types: '~/types/database.ts'
+
   },
 
   app: {

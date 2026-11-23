@@ -24,6 +24,8 @@ const customClasses = [
   'plate',
   'hero-plate',
   'hero-enter',
+  'hero-stagger',
+  'link-draw',
   'lightbox-overlay',
   'dark',
   // Editor menganggap ini valid, tapi plugin ESLint tidak mengenalinya.

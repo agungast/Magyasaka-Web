@@ -78,6 +78,15 @@ const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = 
   Kegiatan: 'success',
   Umum: 'neutral'
 }
+
+// Sapaan mengikuti jam lokal: portal terasa ditulis untuk hari ini.
+const greeting = computed(() => {
+  const h = new Date().getHours()
+  if (h < 11) return 'Selamat pagi'
+  if (h < 15) return 'Selamat siang'
+  if (h < 19) return 'Selamat sore'
+  return 'Selamat malam'
+})
 </script>
 
 <template>
@@ -86,13 +95,13 @@ const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = 
     <section class="hero-plate relative isolate overflow-hidden">
       <UContainer class="relative py-16 md:py-24">
         <div class="grid gap-12 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
-          <div class="hero-enter">
+          <div class="hero-stagger">
             <h1 class="font-display text-[2.75rem] md:text-6xl lg:text-7xl font-extrabold tracking-[-0.035em] leading-[1.02] text-balance text-highlighted">
               Portal Kelas<br>
               <span class="text-azure-500 dark:text-azure-300">MAGYASAKA</span>
             </h1>
             <p class="mt-6 text-lg text-muted leading-relaxed max-w-[58ch]">
-              Akses informasi akademik, jadwal kuliah, tugas, dan semua yang kamu butuhkan dalam satu tempat.
+              {{ greeting }}! Akses informasi akademik, jadwal kuliah, tugas, dan semua yang kamu butuhkan dalam satu tempat.
             </p>
             <div class="mt-8 flex flex-wrap gap-3">
               <UButton
@@ -115,7 +124,7 @@ const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = 
             </div>
           </div>
 
-          <figure class="order-first lg:order-last flex flex-col items-center gap-4">
+          <figure class="hero-enter flex flex-col items-center gap-4" style="animation-delay: 160ms">
             <MagyasakaCrest :size="200" class="text-highlighted" />
             <figcaption class="text-xs uppercase tracking-[0.2em] text-muted text-center leading-relaxed max-w-60">
               MAHASISWA TEKNOLOGI REKAYASA KOMPUTER A<br>ANGKATAN 2023
@@ -269,7 +278,11 @@ const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = 
           <UIcon name="i-lucide-megaphone" class="text-primary text-lg" />
           <h2 class="font-display text-xl md:text-2xl font-bold tracking-[-0.02em]">Pengumuman Terbaru</h2>
         </div>
-        <div class="divide-y divide-default">
+        <div v-if="latestAnnouncements.length === 0" class="text-center py-10 border-y border-default">
+          <UIcon name="i-lucide-megaphone" class="text-3xl text-muted mb-2" />
+          <p class="text-muted text-sm">Belum ada pengumuman terbaru.</p>
+        </div>
+        <div v-else class="divide-y divide-default">
           <article
             v-for="announcement in latestAnnouncements"
             :key="announcement.id"

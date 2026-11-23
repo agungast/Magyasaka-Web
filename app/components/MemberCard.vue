@@ -75,7 +75,7 @@ const statusLabel = computed(() => (props.member.status || 'aktif').toLowerCase(
       </div>
 
       <div class="flex-1 min-w-0">
-        <h2 class="font-semibold text-sm truncate">{{ member.nama }}</h2>
+        <h2 class="font-semibold text-sm line-clamp-2" :title="member.nama">{{ member.nama }}</h2>
         <!-- NIM tersensor, klik untuk reveal -->
         <button
           type="button"
@@ -100,20 +100,18 @@ const statusLabel = computed(() => (props.member.status || 'aktif').toLowerCase(
         :icon="copied ? 'i-lucide-check-check' : 'i-lucide-mail'"
         :color="copied ? 'success' : 'neutral'"
         :variant="copied ? 'soft' : 'ghost'"
-        size="xs"
+        size="sm"
         @click="copyEmail"
       />
       <span v-else class="text-xs text-muted/60">Email tidak tersedia</span>
 
-      <!-- Badge status "aktif": emerald subtle + dot indikator berkedip -->
+      <!-- Badge status "aktif": chip success statis, tanpa kedip -->
       <span
         v-if="isActive"
-        class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 text-[11px] font-medium ring-1 ring-emerald-500/20"
+        class="accent inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-medium"
+        :style="{ '--accent': 'var(--ui-color-success-500)' }"
       >
-        <span class="relative flex h-1.5 w-1.5">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-          <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
-        </span>
+        <span class="inline-flex rounded-full h-1.5 w-1.5" :style="{ backgroundColor: 'var(--ui-color-success-500)' }" />
         Aktif
       </span>
       <UBadge

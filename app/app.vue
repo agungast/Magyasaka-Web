@@ -47,6 +47,17 @@ if (import.meta.client) {
   <UApp>
     <!-- Header / Navbar -->
     <UHeader :ui="{ root: 'bg-default' }" mode="slideover" :menu="{ side: 'right' }">
+      <template #toggle="{ open, toggle, ui }">
+        <UButton
+          color="neutral"
+          variant="ghost"
+          :aria-label="open ? 'Tutup menu' : 'Buka menu'"
+          :aria-expanded="open"
+          :icon="open ? 'i-lucide-x' : 'i-lucide-menu'"
+          :class="ui.toggle({ toggleSide: 'right' })"
+          @click="toggle"
+        />
+      </template>
       <template #left>
         <NuxtLink
           to="/"
@@ -64,7 +75,7 @@ if (import.meta.client) {
             v-for="item in navItems"
             :key="item.to"
             :to="item.to"
-            class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-muted rounded-md transition-colors duration-200 hover:bg-elevated/60"
+            class="link-draw flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-muted rounded-md transition-colors duration-200 hover:bg-elevated/60"
             active-class="text-primary!"
           >
             <UIcon :name="item.icon" class="text-base" />
@@ -140,7 +151,7 @@ if (import.meta.client) {
               v-model="searchQuery"
               type="text"
               placeholder="Cari jadwal, tugas, anggota, proyek..."
-              class="w-full bg-transparent border-none outline-none text-lg placeholder:text-muted"
+              class="w-full bg-transparent border-none outline-none focus-visible:outline-2 text-lg placeholder:text-muted"
               autofocus
             >
             <UKbd>ESC</UKbd>
@@ -197,7 +208,7 @@ if (import.meta.client) {
                 v-for="item in navItems"
                 :key="item.to"
                 :to="item.to"
-                class="text-sm text-muted hover:text-primary transition-colors"
+                class="text-sm text-muted hover:text-primary transition-colors py-3"
               >
                 {{ item.label }}
               </NuxtLink>

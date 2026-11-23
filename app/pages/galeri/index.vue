@@ -18,6 +18,9 @@ const featuredAlbums = computed(() =>
 
 const allAlbums = computed(() => albums.value || [])
 
+// Album unggulan sudah tampil di atas; jangan ulang foto yang sama di bawah.
+const otherAlbums = computed(() => allAlbums.value.filter((a: any) => !a.is_featured))
+
 function formatDate(dateStr: string) {
   if (!dateStr) return ''
   return new Date(dateStr).toLocaleDateString('id-ID', {
@@ -63,7 +66,7 @@ function coverOf(album: any) {
     <!-- Album Terbaru / Featured -->
     <section v-if="featuredAlbums.length > 0" class="mb-12">
       <div class="flex items-center gap-2 mb-6">
-        <UIcon name="i-lucide-sparkles" class="text-amber-500 text-xl" />
+        <UIcon name="i-lucide-sparkles" class="text-primary text-xl" />
         <h2 class="text-lg font-semibold">Album Pilihan</h2>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -105,15 +108,15 @@ function coverOf(album: any) {
       </div>
     </section>
 
-    <!-- Semua Album -->
-    <section>
+    <!-- Semua Album (selain unggulan) -->
+    <section v-if="otherAlbums.length">
       <div class="flex items-center gap-2 mb-6">
         <UIcon name="i-lucide-folder" class="text-primary text-xl" />
-        <h2 class="text-lg font-semibold">Semua Album</h2>
+        <h2 class="text-lg font-semibold">{{ featuredAlbums.length ? 'Album Lainnya' : 'Semua Album' }}</h2>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <NuxtLink
-          v-for="album in allAlbums"
+          v-for="album in otherAlbums"
           :key="album.id"
           :to="`/galeri/${album.id}`"
           class="group"

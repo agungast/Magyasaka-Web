@@ -116,7 +116,7 @@ const totalSKS = computed(() =>
     </div>
 
     <!-- Semester tabs -->
-    <div v-if="sortedSemesters.length" class="flex gap-1 overflow-x-auto pb-2 mb-6">
+    <div v-if="sortedSemesters.length" class="flex gap-2 overflow-x-auto pb-2 mb-6">
       <UButton
         v-for="sem in sortedSemesters"
         :key="sem.id"
