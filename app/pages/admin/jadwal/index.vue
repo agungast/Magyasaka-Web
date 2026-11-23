@@ -151,6 +151,7 @@ function openEdit(s: any) {
 }
 
 async function save() {
+  if (!durationText.value) return alert('Jam selesai harus lebih lambat dari jam mulai.')
   loading.value = true
   try {
     // Jangan kirim id/created_at/updated_at bawaan baris yang sedang diedit.

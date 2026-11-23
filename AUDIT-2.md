@@ -85,13 +85,13 @@
 
 **File:** `.github/workflows/ci.yml`, `README.md`, `app/error.vue`, `app/pages/admin/jadwal/index.vue`, `app/pages/admin/proyek/index.vue`.
 
-- [ ] CI: tambah `- run: npm test` setelah typecheck.
-- [ ] README: "Node.js 20+" → "Node.js 22.22+" (samakan dengan CI 24).
-- [ ] `error.vue`: tampilkan pesan sesuai `error.statusCode` (404 vs lainnya) dan sediakan tombol "Coba lagi".
-- [ ] Jadwal: validasi `jam_selesai > jam_mulai` sebelum simpan.
-- [ ] Proyek/anggota/galeri: hapus objek storage lama setelah simpan berhasil (thumbnail diganti, screenshot dihapus dari form).
-- [ ] Hapus kode mati: kategori `'galeri'` di `useSearch`; cabang edit semester (bila tidak dipakai).
-- [ ] (Opsional) Samakan feedback: ganti `alert()` di admin jadwal/semester/proyek/galeri ke `useToast()` seperti halaman anggota.
+- [x] CI: `- run: npm test` setelah typecheck.
+- [x] README: "Node.js 20+" → "Node.js 22.22+ (CI memakai 24)".
+- [x] `error.vue`: pesan 404 vs umum memakai `error.statusCode`, tombol "Coba lagi" lewat `reloadNuxtApp()` (404 tetap punya "Lihat Galeri").
+- [x] Jadwal: `save()` ditolak bila `jam_selesai <= jam_mulai` (memakai `durationText` yang sudah ada).
+- [x] Proyek: `oldMediaUrls` dihapus dari storage hanya setelah update berhasil — mencakup thumbnail/demo yang diganti dan screenshot yang dihapus dari form. Anggota & galeri sudah memenuhi dari Sprint 2 (foto lama dihapus setelah simpan; file dihapus saat row foto dihapus).
+- [x] Hapus kode mati: kategori `'galeri'` di `useSearch` + `categoryIcons` `app.vue`; cabang edit semester (tabel memang tidak punya tombol edit) beserta state `editing`.
+- [ ] **(Opsional, sengaja dilewati)** Ganti `alert()` di admin jadwal/semester/proyek/galeri ke `useToast()` — tidak mengubah perilaku, hanya kosmetik feedback.
 
 **Definisi selesai (manual):** push ke GitHub → run CI menjalankan 4 step dan hijau; buka URL acak → halaman 404 yang benar; simpan jadwal 10:00–08:00 → ditolak.
 **Risiko:** rendah.

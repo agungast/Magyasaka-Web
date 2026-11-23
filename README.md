@@ -3,7 +3,7 @@
 Portal akademik kelas: pengumuman, jadwal, tugas/ujian, pengurus, galeri, dan proyek.
 
 ## Prasyarat
-- Node.js 20+
+- Node.js 22.22+ (CI memakai 24)
 - Akun Supabase (project `vwfwnsrplkfolmgehxbb` atau ganti `.env`)
 
 ## Setup

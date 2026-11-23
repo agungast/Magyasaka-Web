@@ -6,7 +6,7 @@ import { useAnnouncements, useSchedules, useAssignments, useMembers, useProjects
 interface SearchItem {
   title: string
   description: string
-  category: 'jadwal' | 'tugas' | 'anggota' | 'pengumuman' | 'proyek' | 'galeri'
+  category: 'jadwal' | 'tugas' | 'anggota' | 'pengumuman' | 'proyek'
   url: string
   icon: string
 }

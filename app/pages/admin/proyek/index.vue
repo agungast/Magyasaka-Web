@@ -15,15 +15,19 @@ const modalOpen = ref(false)
 const editing = ref<any>(null)
 const form = ref({ nama: '', deskripsi: '', detail: '', thumbnail_url: '', screenshots: [] as string[], repo_url: '', website_url: '', demo_url: '', teknologi: '', anggota: '', is_highlighted: false, kategori: 'akademik' })
 const loading = ref(false)
+// URL media lama dihapus dari storage hanya setelah update berhasil.
+const oldMediaUrls = ref<string[]>([])
 
 function openCreate() {
   editing.value = null
+  oldMediaUrls.value = []
   form.value = { nama: '', deskripsi: '', detail: '', thumbnail_url: '', screenshots: [], repo_url: '', website_url: '', demo_url: '', teknologi: '', anggota: '', is_highlighted: false, kategori: 'akademik' }
   modalOpen.value = true
 }
 
 function openEdit(p: any) {
   editing.value = p
+  oldMediaUrls.value = [p.thumbnail_url, p.demo_url, ...(Array.isArray(p.screenshots) ? p.screenshots : [])].filter(Boolean) as string[]
   form.value = {
     nama: p.nama,
     deskripsi: p.deskripsi,
@@ -61,6 +65,10 @@ async function save() {
     if (editing.value) {
       const { error } = await client.from('projects').update(payload).eq('id', editing.value.id)
       if (error) throw error
+      const newUrls = [payload.thumbnail_url, payload.demo_url, ...payload.screenshots].filter(Boolean) as string[]
+      for (const url of oldMediaUrls.value) {
+        if (!newUrls.includes(url)) await removeFromStorage(url)
+      }
     } else {
       const { error } = await client.from('projects').insert(payload)
       if (error) throw error

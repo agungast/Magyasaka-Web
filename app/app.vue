@@ -26,8 +26,7 @@ const categoryIcons: Record<string, string> = {
   tugas: 'i-lucide-clipboard-list',
   anggota: 'i-lucide-user',
   pengumuman: 'i-lucide-megaphone',
-  proyek: 'i-lucide-folder-code',
-  galeri: 'i-lucide-image'
+  proyek: 'i-lucide-folder-code'
 }
 
 // Keyboard shortcut for search

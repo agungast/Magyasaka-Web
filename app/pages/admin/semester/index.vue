@@ -13,7 +13,6 @@ const { data: semesters, refresh } = useAsyncData('admin-semesters', async () =>
 }, { lazy: true })
 
 const modalOpen = ref(false)
-const editing = ref<any>(null)
 const form = ref<{ nomor?: number; tipe: string; tahun_ajaran: string }>({
   nomor: 1,
   tipe: 'Ganjil',
@@ -34,7 +33,6 @@ function nomorToTip(nomor: number): string {
 }
 
 function openCreate() {
-  editing.value = null
   form.value = {
     nomor: 1,
     tipe: nomorToTip(1),
@@ -52,13 +50,8 @@ async function save() {
       tipe: form.value.tipe,
       tahun_ajaran: form.value.tahun_ajaran
     }
-    if (editing.value) {
-      const { error } = await client.from('semesters').update(payload).eq('id', editing.value.id)
-      if (error) throw error
-    } else {
-      const { error } = await client.from('semesters').insert(payload)
-      if (error) throw error
-    }
+    const { error } = await client.from('semesters').insert(payload)
+    if (error) throw error
     modalOpen.value = false
     await refresh()
   } catch {
@@ -150,10 +143,10 @@ async function executeDelete() {
           <div class="flex items-center justify-between pb-4 border-b border-default/30">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0 shadow-sm">
-                <UIcon :name="editing ? 'i-lucide-calendar-cog' : 'i-lucide-calendar-plus'" class="text-xl" />
+                <UIcon name="i-lucide-calendar-plus" class="text-xl" />
               </div>
               <div>
-                <h3 class="font-bold text-lg text-default leading-snug">{{ editing ? 'Edit' : 'Tambah' }} Semester</h3>
+                <h3 class="font-bold text-lg text-default leading-snug">Tambah Semester</h3>
                 <p class="text-xs text-muted">Kelola data periode semester perkuliahan dan tahun ajaran</p>
               </div>
             </div>
