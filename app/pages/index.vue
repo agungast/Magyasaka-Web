@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useActiveSemester, useAnnouncements, useAssignments, useSchedules } from '~/composables/useData'
 import { parseDescription } from '~/utils/description'
-import { deadlineInfo, effectiveDate } from '~/utils/date'
+import { deadlineInfo, effectiveDate, formatDateTime } from '~/utils/date'
 // Fase 1: Beranda Angkatan
 const { data: announcements } = useAnnouncements()
 const { data: assignments } = useAssignments()
@@ -255,6 +255,7 @@ const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = 
               <div class="flex-1 min-w-0">
                 <p class="font-semibold text-sm truncate">{{ task.judul }}</p>
                 <p class="text-xs text-muted">{{ task.mata_kuliah }}</p>
+                <p class="text-xs text-muted tabular-nums">{{ formatDateTime(effectiveDate(task)) }}</p>
               </div>
               <UBadge :label="dueLabel(task)" :color="dueTone(task)" variant="outline" size="sm" />
             </div>

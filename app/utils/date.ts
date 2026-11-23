@@ -21,6 +21,34 @@ export function daysUntil(dateStr: string | null | undefined, now: Date = new Da
   return Math.round((startOfDay(target) - startOfDay(now)) / 86400000)
 }
 
+// Item arsip: punya tanggal acuan dan instant-nya sudah berlalu. Tanpa tanggal
+// tidak dianggap lewat, supaya item tanpa tenggat tetap bisa dibaca.
+export function isPastDue(a: {
+  tipe?: string | null
+  deadline?: string | null
+  tanggal_ujian?: string | null
+}, now: Date = new Date()): boolean {
+  const d = effectiveDate(a)
+  return !!d && new Date(d) <= now
+}
+
+// Jam ditampilkan dalam WIB secara eksplisit: Server SSR (UTC) dan browser
+// harus menghasilkan string yang sama, dan semua input admin dalam WIB.
+export function formatDateTime(dateStr: string | null | undefined): string {
+  if (!dateStr) return '-'
+  const d = new Date(dateStr)
+  if (Number.isNaN(d.getTime())) return '-'
+  return d.toLocaleString('id-ID', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+    timeZone: 'Asia/Jakarta'
+  })
+}
+
 // Label + warna badge tenggat. Satu sumber agar badge di Beranda dan halaman
 // Tugas tidak pernah berbeda.
 export function deadlineInfo(

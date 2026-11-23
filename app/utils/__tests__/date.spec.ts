@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { daysUntil, deadlineInfo, effectiveDate } from '../date'
+import { daysUntil, deadlineInfo, effectiveDate, formatDateTime, isPastDue } from '../date'
 
 // 19 Nov 2026, 19:00 waktu lokal — sengaja "sore" supaya tenggat hari ini
 // tidak bisa lolos hanya karena selisihnya kurang dari sehari.
@@ -43,5 +43,22 @@ describe('effectiveDate', () => {
     expect(effectiveDate({ tipe: 'uts', tanggal_ujian: null, deadline: '2026-11-19' }))
       .toBe('2026-11-19')
     expect(effectiveDate({ tipe: 'tugas' })).toBeNull()
+  })
+})
+
+describe('isPastDue', () => {
+  it('memakai tanggal efektif dan hanya mengarsipkan yang sudah berlalu', () => {
+    expect(isPastDue({ tipe: 'tugas', deadline: '2026-11-18T08:00:00' }, now)).toBe(true)
+    expect(isPastDue({ tipe: 'tugas', deadline: '2026-11-20T08:00:00' }, now)).toBe(false)
+    expect(isPastDue({ tipe: 'uas', tanggal_ujian: '2026-11-18T08:00:00', deadline: '2026-11-25T08:00:00' }, now)).toBe(true)
+    expect(isPastDue({ tipe: 'tugas' }, now)).toBe(false)
+  })
+})
+
+describe('formatDateTime', () => {
+  it('menampilkan jam WIB dan sama untuk SSR maupun browser', () => {
+    expect(formatDateTime('2026-11-20T07:00:00Z')).toBe('20 Nov 2026, 14.00')
+    expect(formatDateTime('2026-11-20T17:00:00Z')).toBe('21 Nov 2026, 00.00')
+    expect(formatDateTime(null)).toBe('-')
   })
 })
