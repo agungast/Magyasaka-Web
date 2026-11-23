@@ -26,10 +26,11 @@ function openCreate() {
 
 function openEdit(a: any) {
   editing.value = a
+  // Kirim nilai apa adanya (ISO UTC); DateTimeField yang mengubahnya ke jam lokal.
   form.value = {
     ...a,
-    deadline: a.deadline ? a.deadline.slice(0, 16) : '',
-    tanggal_ujian: a.tanggal_ujian ? a.tanggal_ujian.slice(0, 16) : '',
+    deadline: a.deadline || '',
+    tanggal_ujian: a.tanggal_ujian || '',
     ruangan_ujian: a.ruangan_ujian || ''
   }
   modalOpen.value = true

@@ -18,11 +18,12 @@
 
 **File:** `app/components/DateTimeField.vue`, `app/pages/tugas/index.vue`, `app/pages/index.vue`, `app/utils/date.ts` (baru), `app/composables/__tests__/upload.spec.ts` (tambah blok) atau `date.spec.ts` (baru).
 
-- [ ] `DateTimeField`: `buildValue()` mengirim ISO UTC dari waktu lokal (`new Date(y, m-1, d, h, min).toISOString()`), `syncFromModel()` mengubah balik ISO → tanggal+jam lokal.
-- [ ] Buat `app/utils/date.ts`: `daysUntil(dateStr)` berbasis selisih awal hari lokal (bukan `Math.ceil` durasi) dan `deadlineColor(dateStr)` memakainya.
-- [ ] Pakai helper itu di `pages/tugas/index.vue` (hapus 2 salinan lokal) dan `pages/index.vue`.
-- [ ] Beranda "Tugas Mendatang": filter `is_completed`, urutkan pakai `effectiveDate(a)`, dan badge memakai tanggal efektif (bukan `task.deadline` saja).
-- [ ] Test: `daysUntil` hari ini jam 23:00 saat 19:00 → "Hari ini"; kemarin → "Terlewat"; besok → "Besok"; lusa → "2 hari lagi".
+- [x] `DateTimeField`: `buildValue()` mengirim ISO UTC dari waktu lokal (`new Date(y, m-1, d, h, min).toISOString()`), `syncFromModel()` mengubah balik ISO → tanggal+jam lokal.
+- [x] Buat `app/utils/date.ts`: `daysUntil(dateStr)` berbasis selisih awal hari lokal (bukan `Math.ceil` durasi), `deadlineInfo()` untuk label+warna, dan `effectiveDate()` (dimiliki bersama halaman Tugas & Beranda).
+- [x] Pakai helper itu di `pages/tugas/index.vue` (hapus 2 salinan lokal) dan `pages/index.vue`.
+- [x] Beranda "Tugas Mendatang": filter `is_completed`, urutkan pakai `effectiveDate(a)`, dan badge memakai tanggal efektif (bukan `task.deadline` saja).
+- [x] Test: `app/utils/__tests__/date.spec.ts` — 19 Nov 19:00 + tenggat hari ini 23:00 → "Hari ini"; kemarin → "Terlewat"; besok → "Besok"; +5 hari → "5 hari lagi".
+- [x] Bonus (memblokir gerbang): `wrap-break-words` bukan kelas Tailwind → `break-words` di `admin/jadwal` & `admin/tugas` (5 error lint).
 
 **Definisi selesai (manual):** buat tugas deadline hari ini 14:00 → tabel admin menampilkan 14:00 (bukan 21:00), badge "Hari ini", dan tanggal tidak bergeser saat diedit ulang.
 **Risiko:** data lama di DB masih tersimpan sebagai UTC-salah. Setelah fix, deadline lama tetap tampil +7 jam. Cek 3–5 baris `assignments` dan koreksi manual bila perlu.

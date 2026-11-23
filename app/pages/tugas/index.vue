@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { useSeoMeta } from '#app'
 import { useAssignments } from '~/composables/useData'
 import { parseDescription } from '~/utils/description'
+import { deadlineInfo, effectiveDate } from '~/utils/date'
 // Fase 2: Daftar Tugas & Ujian
 useSeoMeta({ title: 'Tugas & Ujian - Magyasaka' })
 
@@ -34,7 +35,10 @@ const filteredAssignments = computed(() => {
 })
 
 const upcomingExams = computed(() =>
-  assignments.value?.filter((a: any) => ['uts', 'uas'].includes(a.tipe) && (a.deadline || a.tanggal_ujian) && new Date(a.deadline || a.tanggal_ujian) > new Date()) || []
+  (assignments.value || []).filter((a: any) => {
+    const d = effectiveDate(a)
+    return ['uts', 'uas'].includes(a.tipe) && !!d && new Date(d) > new Date()
+  })
 )
 
 function formatDate(dateStr: string) {
@@ -47,25 +51,9 @@ function formatDate(dateStr: string) {
   })
 }
 
-function daysUntil(dateStr: string) {
-  if (!dateStr) return ''
-  const diff = new Date(dateStr).getTime() - Date.now()
-  const days = Math.ceil(diff / 86400000)
-  if (days < 0) return 'Terlewat'
-  if (days === 0) return 'Hari ini!'
-  if (days === 1) return 'Besok'
-  return `${days} hari lagi`
-}
-
-function deadlineColor(dateStr: string) {
-  if (!dateStr) return 'neutral'
-  const diff = new Date(dateStr).getTime() - Date.now()
-  const days = Math.ceil(diff / 86400000)
-  if (days < 0) return 'error'
-  if (days <= 2) return 'error'
-  if (days <= 7) return 'warning'
-  return 'success'
-}
+// Satu sumber label/warna badge tenggat, dibandingkan per hari kalender.
+const deadlineLabel = (a: any) => deadlineInfo(effectiveDate(a)).label
+const deadlineColor = (a: any) => deadlineInfo(effectiveDate(a)).color
 
 const tipeIcon: Record<string, string> = {
   tugas: 'i-lucide-file-text',
@@ -118,8 +106,8 @@ const tipeColor: Record<string, string> = {
               <p class="font-bold text-sm">{{ exam.judul }}</p>
               <p class="text-xs text-muted">{{ exam.mata_kuliah }}</p>
               <div class="flex items-center gap-2 mt-1">
-                <UBadge :label="daysUntil((exam.deadline || exam.tanggal_ujian) ?? '')" :color="deadlineColor((exam.deadline || exam.tanggal_ujian) ?? '')" variant="subtle" size="xs" />
-                <span class="text-xs text-muted">{{ formatDate((exam.deadline || exam.tanggal_ujian) ?? '') }}</span>
+                <UBadge :label="deadlineLabel(exam)" :color="deadlineColor(exam)" variant="subtle" size="xs" />
+                <span class="text-xs text-muted">{{ formatDate(effectiveDate(exam) ?? '') }}</span>
               </div>
             </div>
           </div>
@@ -187,9 +175,9 @@ const tipeColor: Record<string, string> = {
 
           <!-- Deadline badge -->
           <UBadge
-            v-if="task.deadline"
-            :label="daysUntil(task.deadline)"
-            :color="deadlineColor(task.deadline)"
+            v-if="effectiveDate(task)"
+            :label="deadlineLabel(task)"
+            :color="deadlineColor(task)"
             variant="subtle"
             size="xs"
             class="shrink-0"

@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useAnnouncements, useAssignments, useSchedules, useSemesters } from '~/composables/useData'
 import { parseDescription } from '~/utils/description'
+import { deadlineInfo, effectiveDate } from '~/utils/date'
 // Fase 1: Beranda Angkatan
 const { data: announcements } = useAnnouncements()
 const { data: assignments } = useAssignments()
@@ -16,23 +17,20 @@ const latestAnnouncements = computed(() =>
   announcements.value?.slice(0, 5) || []
 )
 
-// Tanggal efektif tiap item: ujian -> hari pelaksanaan (tanggal_ujian),
-// tugas -> deadline. Setelah tanggal ini terlewati, item otomatis hilang
-// dari Beranda (tidak perlu checklist manual).
-function effectiveDate(a: any): string | null {
-  if (['uts', 'uas'].includes(a.tipe)) return a.tanggal_ujian || a.deadline || null
-  return a.deadline || a.tanggal_ujian || null
-}
-
-const upcomingAssignments = computed(() => {
-  const now = new Date()
-  return (assignments.value || [])
+// Tugas Mendatang: hanya yang belum selesai, urut tanggal efektif terdekat
+// (ujian memakai tanggal pelaksanaan, tugas memakai deadline). Setelah
+// tanggalnya terlewati item hilang sendiri dari Beranda.
+const upcomingAssignments = computed(() =>
+  (assignments.value || [])
     .filter((a: any) => {
       const d = effectiveDate(a)
-      return d && new Date(d) > now
+      return !a.is_completed && !!d && new Date(d) > new Date()
     })
+    .sort((a: any, b: any) =>
+      new Date(effectiveDate(a)!).getTime() - new Date(effectiveDate(b)!).getTime()
+    )
     .slice(0, 3)
-})
+)
 
 // Semester aktif = semester yang paling baru ditambahkan (created_at terbaru,
 // kemudian nomor terbesar). Beranda hanya menampilkan jadwal semester aktif,
@@ -77,14 +75,9 @@ function formatDate(dateStr?: string | null) {
   })
 }
 
-function daysUntil(dateStr?: string | null) {
-  if (!dateStr) return 'Tanpa tenggat'
-  const diff = new Date(dateStr).getTime() - Date.now()
-  const days = Math.ceil(diff / 86400000)
-  if (days === 0) return 'Hari ini'
-  if (days === 1) return 'Besok'
-  return `${days} hari lagi`
-}
+// Badge tenggat: satu sumber dengan halaman Tugas.
+const dueLabel = (a: any) => deadlineInfo(effectiveDate(a)).label
+const dueTone = (a: any) => deadlineInfo(effectiveDate(a)).color
 
 const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = {
   penting: 'error',
@@ -274,7 +267,7 @@ const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = 
                 <p class="font-semibold text-sm truncate">{{ task.judul }}</p>
                 <p class="text-xs text-muted">{{ task.mata_kuliah }}</p>
               </div>
-              <UBadge :label="daysUntil(task.deadline)" color="warning" variant="outline" size="sm" />
+              <UBadge :label="dueLabel(task)" :color="dueTone(task)" variant="outline" size="sm" />
             </div>
           </div>
         </section>
