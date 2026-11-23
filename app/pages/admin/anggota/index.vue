@@ -24,6 +24,8 @@ const modalOpen = ref(false)
 const editing = ref<any>(null)
 const form = reactive({ nim: '', nama: '', email: '', no_telepon: '', jurusan: 'Teknologi Rekayasa Komputer', angkatan: 2023, status: 'aktif', foto_url: '' as string | null })
 const loading = ref(false)
+// Foto lama hanya dihapus dari storage setelah perubahan berhasil disimpan.
+const oldFotoUrl = ref<string | null>(null)
 
 // NIM: hanya angka, otomatis diformat X.XX.XX.X.XX (8 digit).
 const NIM_GROUPS = [1, 2, 2, 1, 2]
@@ -53,12 +55,14 @@ const emailError = computed(() =>
 
 function openCreate() {
   editing.value = null
+  oldFotoUrl.value = null
   Object.assign(form, { nim: '', nama: '', email: '', no_telepon: '', jurusan: 'Teknologi Rekayasa Komputer', angkatan: 2023, status: 'aktif', foto_url: '' })
   modalOpen.value = true
 }
 
 function openEdit(m: any) {
   editing.value = m
+  oldFotoUrl.value = m.foto_url || null
   Object.assign(form, { ...m })
   modalOpen.value = true
 }
@@ -71,12 +75,28 @@ async function save() {
   if (emailError.value) return toast.add({ title: 'Format email tidak valid', description: emailError.value, color: 'warning', icon: 'i-lucide-triangle-alert' })
   loading.value = true
   try {
+    // Kirim hanya kolom yang diedit: `id`/`created_at` dari baris lama tidak
+    // boleh ikut tertulis lagi (updated_at di database yang akan berubah).
+    const payload = {
+      nim: form.nim,
+      nama: form.nama,
+      email: form.email,
+      no_telepon: form.no_telepon,
+      jurusan: form.jurusan,
+      angkatan: form.angkatan,
+      status: form.status,
+      foto_url: form.foto_url || null
+    }
     if (editing.value) {
-        const { error } = await (client.from('members') as any).update(form as any).eq('id' as any, editing.value!.id as any)
-        if (error) throw error
-      } else {
-        const { error } = await (client.from('members') as any).insert(form as any)
-        if (error) throw error
+      const { error } = await (client.from('members') as any).update(payload).eq('id', editing.value.id)
+      if (error) throw error
+      // File lama dihapus hanya setelah perubahan berhasil disimpan.
+      if (oldFotoUrl.value && payload.foto_url !== oldFotoUrl.value) {
+        await removeFromStorage(oldFotoUrl.value)
+      }
+    } else {
+      const { error } = await (client.from('members') as any).insert(payload)
+      if (error) throw error
     }
     modalOpen.value = false
     await refresh()
@@ -133,8 +153,9 @@ async function onPhotoChange(e: Event) {
   target.value = ''
 }
 
-async function removePhoto() {
-  if (form.foto_url) await removeFromStorage(form.foto_url)
+// Hapus dari form saja. Batal = tidak ada yang berubah di database/storage;
+// file lama dihapus di save() setelah URL baru berhasil disimpan.
+function removePhoto() {
   form.foto_url = ''
 }
 </script>

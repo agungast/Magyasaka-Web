@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useAnnouncements, useAssignments, useSchedules, useSemesters } from '~/composables/useData'
+import { useActiveSemester, useAnnouncements, useAssignments, useSchedules } from '~/composables/useData'
 import { parseDescription } from '~/utils/description'
 import { deadlineInfo, effectiveDate } from '~/utils/date'
 // Fase 1: Beranda Angkatan
 const { data: announcements } = useAnnouncements()
 const { data: assignments } = useAssignments()
 const { data: schedules } = useSchedules()
-const { data: semesters } = useSemesters()
+const { activeSemester: currentSemester } = useActiveSemester()
 
 const pinnedAnnouncements = computed(() =>
   announcements.value?.filter((a: any) => a.is_pinned) || []
@@ -32,20 +32,9 @@ const upcomingAssignments = computed(() =>
     .slice(0, 3)
 )
 
-// Semester aktif = semester yang paling baru ditambahkan (created_at terbaru,
-// kemudian nomor terbesar). Beranda hanya menampilkan jadwal semester aktif,
-// sehingga jadwal semester lama tidak muncul meski harinya cocok. Bila semester
-// baru belum memiliki jadwal, "Jadwal Hari Ini" akan kosong.
-const sortedSemesters = computed(() => {
-  if (!semesters.value) return []
-  return [...semesters.value].sort((a: any, b: any) => {
-    const timeA = a.created_at ? new Date(a.created_at).getTime() : 0
-    const timeB = b.created_at ? new Date(b.created_at).getTime() : 0
-    if (timeA !== timeB) return timeB - timeA
-    return (b.nomor || 0) - (a.nomor || 0)
-  })
-})
-const currentSemester = computed(() => sortedSemesters.value[0] || null)
+// Beranda hanya menampilkan jadwal semester aktif, sehingga jadwal semester lama
+// tidak muncul meski harinya cocok. Bila semester baru belum punya jadwal,
+// "Jadwal Hari Ini" akan kosong.
 const currentSemesterId = computed(() => currentSemester.value?.id ?? null)
 
 const todaySchedule = computed(() => {

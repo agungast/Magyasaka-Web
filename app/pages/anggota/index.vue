@@ -6,7 +6,7 @@ import { useMembers } from '~/composables/useData'
 // Fase 2: Daftar Anggota + Pencarian
 useSeoMeta({ title: 'Anggota Kelas - Magyasaka' })
 
-const { data: members } = useMembers()
+const { data: members, error, refresh } = useMembers()
 
 const searchQuery = ref('')
 const sortBy = ref('nim')
@@ -51,6 +51,9 @@ const totalMembers = computed(() => members.value?.length || 0)
       </div>
     </div>
 
+    <DataError v-if="error" @retry="refresh()" />
+
+    <template v-else>
     <!-- Search & Filter -->
     <div class="flex flex-col sm:flex-row gap-3 mb-6">
       <div class="flex-1">
@@ -95,5 +98,6 @@ const totalMembers = computed(() => members.value?.length || 0)
       <h2 class="font-semibold text-lg mb-1">Tidak ditemukan</h2>
       <p class="text-muted text-sm">Tidak ada anggota dengan pencarian "{{ searchQuery }}"</p>
     </div>
+    </template>
   </UContainer>
 </template>

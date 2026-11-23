@@ -1,5 +1,6 @@
 // Composable untuk mengambil data dari Supabase
 // Jika Supabase belum terkonfigurasi, menggunakan mock data
+import { computed } from 'vue'
 
 // Mock data untuk development tanpa Supabase
 const mockAnnouncements = [
@@ -88,7 +89,7 @@ function isSupabaseConfigured() {
   throw new Error('Supabase belum dikonfigurasi: set SUPABASE_URL dan SUPABASE_KEY.')
 }
 
-export function useAnnouncements() {
+export function useAnnouncements(immediate = true) {
   return useAsyncData('announcements', async () => {
     if (isSupabaseConfigured()) {
       const client = useSupabaseClient()
@@ -101,10 +102,10 @@ export function useAnnouncements() {
       return data
     }
     return mockAnnouncements
-  }, { lazy: true })
+  }, { lazy: true, immediate })
 }
 
-export function useSchedules() {
+export function useSchedules(immediate = true) {
   return useAsyncData('schedules', async () => {
     if (isSupabaseConfigured()) {
       const client = useSupabaseClient()
@@ -117,7 +118,7 @@ export function useSchedules() {
       return data
     }
     return mockSchedules
-  }, { lazy: true })
+  }, { lazy: true, immediate })
 }
 
 export function useSemesters() {
@@ -139,7 +140,23 @@ export function semesterLabel(semester: { nomor: number; tipe: string; tahun_aja
   return `Semester ${semester.nomor} ${semester.tipe} ${semester.tahun_ajaran}`
 }
 
-export function useAssignments() {
+// Semester aktif = yang terakhir ditambahkan (created_at terbaru, then nomor terbesar).
+export function useActiveSemester() {
+  const { data: semesters, status: semestersStatus } = useSemesters()
+  const sortedSemesters = computed(() => {
+    if (!semesters.value) return []
+    return [...semesters.value].sort((a: any, b: any) => {
+      const timeA = a.created_at ? new Date(a.created_at).getTime() : 0
+      const timeB = b.created_at ? new Date(b.created_at).getTime() : 0
+      if (timeA !== timeB) return timeB - timeA
+      return (b.nomor || 0) - (a.nomor || 0)
+    })
+  })
+  const activeSemester = computed(() => sortedSemesters.value[0] || null)
+  return { semesters, sortedSemesters, activeSemester, semestersStatus }
+}
+
+export function useAssignments(immediate = true) {
   return useAsyncData('assignments', async () => {
     if (isSupabaseConfigured()) {
       const client = useSupabaseClient()
@@ -151,10 +168,10 @@ export function useAssignments() {
       return data
     }
     return mockAssignments
-  }, { lazy: true })
+  }, { lazy: true, immediate })
 }
 
-export function useMembers() {
+export function useMembers(immediate = true) {
   return useAsyncData('members', async () => {
     if (isSupabaseConfigured()) {
       const client = useSupabaseClient()
@@ -166,7 +183,7 @@ export function useMembers() {
       return data
     }
     return mockMembers
-  }, { lazy: true })
+  }, { lazy: true, immediate })
 }
 
 export function useOfficers() {
@@ -190,7 +207,7 @@ export function useAlbums() {
       const client = useSupabaseClient()
       const { data, error } = await client
         .from('albums')
-        .select('*, photos(*)')
+        .select('*, photos(id, url)')
         .order('tanggal_kegiatan', { ascending: false })
       if (error) throw error
       return data
@@ -215,7 +232,7 @@ export function useAlbum(id: string) {
   }, { lazy: true })
 }
 
-export function useProjects() {
+export function useProjects(immediate = true) {
   return useAsyncData('projects', async () => {
     if (isSupabaseConfigured()) {
       const client = useSupabaseClient()
@@ -228,7 +245,7 @@ export function useProjects() {
       return data
     }
     return []
-  }, { lazy: true })
+  }, { lazy: true, immediate })
 }
 
 export function useProject(id: string) {

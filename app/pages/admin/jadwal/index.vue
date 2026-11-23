@@ -9,18 +9,7 @@ const { data: items, refresh } = useAsyncData('admin-schedules', async () => {
   return (data || []) as any[]
 })
 
-const { data: semesters } = useSemesters()
-
-// Urutkan semester terbaru di paling atas, semester lama di paling bawah
-const sortedSemesters = computed(() => {
-  if (!semesters.value) return []
-  return [...semesters.value].sort((a: any, b: any) => {
-    const timeA = a.created_at ? new Date(a.created_at).getTime() : 0
-    const timeB = b.created_at ? new Date(b.created_at).getTime() : 0
-    if (timeA !== timeB) return timeB - timeA
-    return (b.nomor || 0) - (a.nomor || 0)
-  })
-})
+const { semesters, sortedSemesters } = useActiveSemester()
 
 const semesterOpts = computed(() =>
   sortedSemesters.value.map((s: any) => ({ label: semesterLabel(s), value: s.id }))
@@ -164,11 +153,24 @@ function openEdit(s: any) {
 async function save() {
   loading.value = true
   try {
+    // Jangan kirim id/created_at/updated_at bawaan baris yang sedang diedit.
+    const payload = {
+      semester_id: form.value.semester_id,
+      mata_kuliah: form.value.mata_kuliah,
+      dosen: form.value.dosen,
+      hari: form.value.hari,
+      jam_mulai: form.value.jam_mulai,
+      jam_selesai: form.value.jam_selesai,
+      ruangan: form.value.ruangan,
+      kode_mk: form.value.kode_mk,
+      sks: form.value.sks,
+      warna: form.value.warna
+    }
     if (editing.value) {
-      const { error } = await client.from('schedules').update(form.value as any).eq('id', editing.value.id)
+      const { error } = await client.from('schedules').update(payload as any).eq('id', editing.value.id)
       if (error) throw error
     } else {
-      const { error } = await client.from('schedules').insert(form.value as any)
+      const { error } = await client.from('schedules').insert(payload as any)
       if (error) throw error
     }
     modalOpen.value = false
@@ -254,8 +256,8 @@ async function executeDelete() {
         <div v-for="s in filteredItems" :key="s.id" class="rounded-lg border border-default p-3">
           <div class="flex items-start justify-between gap-2">
             <div class="min-w-0">
-              <p class="font-medium break-words">{{ s.mata_kuliah }}</p>
-              <p class="text-xs text-muted break-words">{{ s.dosen }}</p>
+              <p class="font-medium wrap-break-words">{{ s.mata_kuliah }}</p>
+              <p class="text-xs text-muted wrap-break-words">{{ s.dosen }}</p>
             </div>
             <div class="flex shrink-0">
               <UButton size="xs" variant="ghost" icon="i-lucide-edit" aria-label="Edit" @click="openEdit(s)" />
@@ -277,7 +279,7 @@ async function executeDelete() {
             </div>
             <div class="flex items-center justify-between gap-3">
               <dt class="shrink-0 text-muted">Ruangan</dt>
-              <dd class="text-right break-words">{{ s.ruangan }}</dd>
+              <dd class="text-right wrap-break-words">{{ s.ruangan }}</dd>
             </div>
             <div class="flex items-center justify-between gap-3">
               <dt class="shrink-0 text-muted">Warna</dt>

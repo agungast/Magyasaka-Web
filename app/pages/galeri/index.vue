@@ -6,7 +6,7 @@ import { isVideoUrl } from '~/composables/useGalleryUpload'
 // Fase 3: Galeri Kegiatan
 useSeoMeta({ title: 'Galeri - Magyasaka' })
 
-const { data: albums, status: albumsStatus } = useAlbums()
+const { data: albums, status: albumsStatus, error, refresh } = useAlbums()
 
 // Lazy: data album belum ada saat pindah halaman — tampilkan skeleton, bukan
 // state "Belum ada album".
@@ -34,7 +34,7 @@ function getPhotoCount(album: any) {
 // Cover album: pakai cover_url, atau foto (gambar) pertama yang bukan video.
 function coverOf(album: any) {
   if (album.cover_url) return album.cover_url
-  return album.photos?.find((p: any) => !isVideoUrl(p.url))?.url || album.photos?.[0]?.url || null
+  return album.photos?.find((p: any) => !isVideoUrl(p.url))?.url || null
 }
 </script>
 
@@ -56,6 +56,8 @@ function coverOf(album: any) {
         <USkeleton class="h-3 w-full" />
       </UCard>
     </div>
+
+    <DataError v-else-if="error" @retry="refresh()" />
 
     <template v-else>
     <!-- Album Terbaru / Featured -->

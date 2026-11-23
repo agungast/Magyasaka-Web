@@ -12,20 +12,9 @@ useSeoMeta({ title: 'Dashboard Admin - Magyasaka' })
 
 const { data: members, status: membersStatus } = useMembers()
 const { data: schedules } = useSchedules()
-const { data: semesters } = useSemesters()
+const { activeSemester: latestSemester } = useActiveSemester()
 const { data: assignments } = useAssignments()
 const { data: announcements } = useAnnouncements()
-
-// Sama dengan halaman jadwal publik: semester aktif = yang terbaru (created_at lalu nomor).
-const latestSemester = computed(() => {
-  if (!semesters.value) return null
-  return [...semesters.value].sort((a: any, b: any) => {
-    const timeA = a.created_at ? new Date(a.created_at).getTime() : 0
-    const timeB = b.created_at ? new Date(b.created_at).getTime() : 0
-    if (timeA !== timeB) return timeB - timeA
-    return (b.nomor || 0) - (a.nomor || 0)
-  })[0] || null
-})
 
 // Semester 7 = periode Magang Kerja (MBKM), tidak ada jadwal kuliah reguler.
 const activeSchedules = computed(() =>

@@ -23,7 +23,7 @@
 - [x] Pakai helper itu di `pages/tugas/index.vue` (hapus 2 salinan lokal) dan `pages/index.vue`.
 - [x] Beranda "Tugas Mendatang": filter `is_completed`, urutkan pakai `effectiveDate(a)`, dan badge memakai tanggal efektif (bukan `task.deadline` saja).
 - [x] Test: `app/utils/__tests__/date.spec.ts` — 19 Nov 19:00 + tenggat hari ini 23:00 → "Hari ini"; kemarin → "Terlewat"; besok → "Besok"; +5 hari → "5 hari lagi".
-- [x] Bonus (memblokir gerbang): `wrap-break-words` bukan kelas Tailwind → `break-words` di `admin/jadwal` & `admin/tugas` (5 error lint).
+- [x] Bonus (keputusan 23 Nov): `wrap-break-words` **didiasiarkan** di `admin/jadwal` & `admin/tugas` karena valid di editor; `eslint.config.mjs` menambahkannya ke `ignore` plugin Tailwind. Kelas `break-words` di halaman lain tidak diubah.
 
 **Definisi selesai (manual):** buat tugas deadline hari ini 14:00 → tabel admin menampilkan 14:00 (bukan 21:00), badge "Hari ini", dan tanggal tidak bergeser saat diedit ulang.
 **Risiko:** data lama di DB masih tersimpan sebagai UTC-salah. Setelah fix, deadline lama tetap tampil +7 jam. Cek 3–5 baris `assignments` dan koreksi manual bila perlu.
@@ -36,11 +36,12 @@
 
 **File:** `app/pages/admin/galeri/index.vue`, `app/pages/admin/anggota/index.vue`, `app/pages/admin/jadwal/index.vue`, `app/pages/admin/semester/index.vue`, `app/composables/useGalleryUpload.ts` (bila perlu).
 
-- [ ] Galeri: `confirmDeletePhoto` mencari album dari `albums.value` (bukan `activeAlbum`), lalu hitung `cover_url` baru dari sisa foto album itu — termasuk saat dihapus dari kartu album.
-- [ ] Anggota: `removePhoto()` tidak lagi menghapus storage; file lama dihapus hanya setelah `save()` berhasil, dan hanya jika URL-nya berubah.
-- [ ] Anggota & Jadwal: payload `save()` berisi field eksplisit (tanpa `id`, `created_at`, `updated_at`).
-- [ ] Semester: `executeDelete` menolak hapus bila masih ada `schedules` dengan `semester_id` itu; teks konfirmasi disesuaikan ("hapus/ubah jadwalnya dulu").
-- [ ] (Opsional, 1 baris) Hapus cabang `editing` yang tidak pernah aktif **atau** tambahkan tombol Edit — pilih salah satu.
+- [x] Galeri: `confirmDeletePhoto` mencari album dari `albums.value` berdasarkan `p.album_id` (bukan `activeAlbum`), lalu hitung `cover_url` baru dari sisa foto gambar — termasuk saat dihapus dari kartu album.
+- [x] Anggota: `removePhoto()` hanya mengosongkan form; file lama dihapus di `save()` setelah update berhasil dan URL berubah. `oldFotoUrl` diisi di `openEdit`, dikosongkan di `openCreate`.
+- [x] Anggota & Jadwal: payload `save()` berisi field eksplisit (tanpa `id`, `created_at`, `updated_at`).
+- [x] Semester: `executeDelete` mengecek `count` schedules lebih dulu; teks konfirmasi tidak lagi menjanjikan jadwal "tetap tersimpan".
+- [x] Bonus (keputusan 23 Nov): `wrap-break-words` tidak dikembalikan ke `break-words` — sudah diabaikan plugin ESLint di Sprint 1.
+- [ ] Opsional — cabang edit semester mati: sengaja tidak dikerjakan di sini, sudah masuk Sprint 5 (temuan 19).
 
 **Definisi selesai (manual):** (a) hapus foto cover dari kartu album → cover pindah ke foto lain, bukan gambar rusak; (b) klik hapus foto anggota lalu Batal → avatar masih tampil; (c) hapus semester yang punya jadwal → ditolak dengan pesan jelas.
 **Risiko:** rendah. Satu-satunya perubahan perilaku: hapus semester sekarang bisa gagal (disengaja).
@@ -53,10 +54,10 @@
 
 **File:** `supabase/fix_public_members_columns.sql` (baru), `app/middleware/auth.ts`, `app/utils/pengurus.ts` (baru), `app/pages/admin.vue`.
 
-- [ ] SQL: cabut akses kolom `no_telepon` untuk `anon` (`REVOKE SELECT ON public.members FROM anon;` lalu `GRANT SELECT (id, nim, nama, foto_url, jurusan, angkatan, status, email) ... TO anon;`). Putuskan: email tetap publik (dipakai tombol "Kontak Email") atau ikut dicabut + hapus tombolnya.
-- [ ] `app/utils/pengurus.ts`: satu map `email → nama` (pindahkan dari `admin.vue`).
-- [ ] `middleware/auth.ts`: setelah sesi ada, tolak + `signOut()` bila email tidak ada di map; `admin.vue` memakai map yang sama.
-- [ ] Jalankan SQL di dashboard, catat di komentar file kapan dijalankan.
+- [x] SQL: file `supabase/fix_public_members_columns.sql` — `REVOKE SELECT ON public.members FROM anon` + `GRANT SELECT (id, nim, nama, email, jurusan, angkatan, status, foto_url)`. Keputusan: **email tetap publik** (dipakai tombol "Kontak Email" di `MemberCard`); hanya `no_telepon` dicabut.
+- [x] `app/utils/pengurus.ts`: satu map `email → nama` (dipindahkan dari `admin.vue`) + `isPengurusEmail()`, dengan test.
+- [x] `middleware/auth.ts`: tolak + `signOut()` bila email di luar allowlist. Bug lama juga ditutup: dulu pemulihan sesi client melakukan `return` lebih awal sehingga never sampai ke pengecekan. `admin.vue` memakai map yang sama.
+- [x] **SUDAH DILAKUKAN USER (23 Nov):** SQL dijalankan di Supabase Dashboard → SQL Editor. Verifikasi akhir (anon tidak bisa select `no_telepon`, login non-pengurus ditolak) masih perlu dicek manual di dashboard.
 
 **Definisi selesai (manual):** (a) login akun uji non-pengurus → langsung ditolak keluar dari `/admin`; (b) `curl` dengan anon key ke `members?select=no_telepon` → gagal; (c) halaman `/anggota` & `/anggota/pengurus` tetap normal.
 **Risiko:** kalau SQL dijalankan sebelum migrasi kolom dipastikan, halaman publik bisa error 401 pada `select`. Jalankan SQL dulu, baru deploy frontend — atau tambahkan kolom secara eksplisit di `useMembers` sebelum deploy.
@@ -69,11 +70,11 @@
 
 **File:** `app/composables/useData.ts`, `app/composables/useSearch.ts`, `app/app.vue`, `app/pages/galeri/index.vue`, `app/pages/index.vue`, `app/pages/jadwal/index.vue`, `app/pages/admin/jadwal/index.vue`, `app/pages/admin/index.vue`.
 
-- [ ] `useAlbums`: ganti `select('*, photos(*)')` → `select('*, photos(id, url)')` minimal; idealnya `cover_url` + jumlah foto saja. Detail album tetap `photos(*)`.
-- [ ] `coverOf()`: return `null` bila album hanya berisi video (jangan kirim URL `.mp4` ke `<img>`).
-- [ ] `useData`: teruskan `error`/`status`; halaman daftar (`anggota`, `galeri`, `proyek`) menampilkan blok "Gagal memuat data" + tombol coba lagi, bukan state kosong.
-- [ ] `useSearch`: pindahkan 5 pemanggilan data ke dalam `openSearch()` (muat sekali, cache setelahnya).
-- [ ] Satu helper `useActiveSemester()` di `useData.ts`; pakai di `pages/index.vue`, `pages/jadwal/index.vue`, `admin/jadwal/index.vue`, `admin/index.vue`; hapus 4 salinan sort.
+- [x] `useAlbums`: `select('*, photos(id, url)')` — cukup untuk cover & jumlah foto; detail album (`useAlbum`) tetap `photos(*)`.
+- [x] `coverOf()`: return `null` bila album hanya berisi video (tidak ada fallback ke `photos[0].url`).
+- [x] Komponen `DataError.vue` dipakai di `anggota`, `galeri`, `proyek`: pesan "Gagal memuat data" + tombol "Coba lagi" (`refresh()`), bukan state kosong. `error`/`status` sudah diteruskan `useAsyncData`.
+- [x] `useSearch`: 5 composables dipanggil dengan `immediate: false` (bukan dipanggil ulang di handler — `useAsyncData` harus dipanggil saat setup), lalu `refresh()` sekali dari `openSearch()` bila status belum `success`.
+- [x] Satu helper `useActiveSemester()` di `useData.ts` (mengembalikan `activeSemester`, `sortedSemesters`, `semesters`, `semestersStatus`); dipakai di `pages/index.vue`, `pages/jadwal/index.vue`, `admin/jadwal/index.vue`, `admin/index.vue`; 4 salinan sort dihapus.
 
 **Definisi selesai (manual):** (a) matikan network → halaman anggota menampilkan pesan error, bukan "Tidak ditemukan"; (b) buka `/galeri` → Network tab tidak memuat foto semua album; (c) buka `/` → 4 request tabrakan hilang dari tab Network.
 **Risiko:** sedang — menyentuh 4 halaman. Kerjakan per file, commit sekali, dan cek ulang pilihan semester aktif di beranda & jadwal setelah refactor.

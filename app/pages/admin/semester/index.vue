@@ -81,6 +81,16 @@ async function executeDelete() {
   if (!selectedSemester.value) return
   deleteLoading.value = true
   try {
+    // FK schedules.semester_id memakai ON DELETE SET NULL. Jadwal yang
+    // "tersimpan" tanpa semester tidak muncul di filter mana pun, jadi tolak.
+    const { count, error: countError } = await client.from('schedules')
+      .select('id', { count: 'exact', head: true })
+      .eq('semester_id', selectedSemester.value.id)
+    if (countError) throw countError
+    if (count) {
+      alert(`Semester ini masih punya ${count} jadwal. Pindahkan atau hapus jadwalnya dulu.`)
+      return
+    }
     const { error } = await client.from('semesters').delete().eq('id', selectedSemester.value.id)
     if (error) alert(error.message)
     else {
@@ -183,7 +193,7 @@ async function executeDelete() {
     <ConfirmModal
       v-model:open="deleteModalOpen"
       title="Hapus Semester"
-      :description="`Apakah Anda yakin ingin menghapus data Semester ${selectedSemester?.nomor || ''} ${selectedSemester?.tipe || ''} (${selectedSemester?.tahun_ajaran || ''})? Jadwal kuliah yang terkait akan tetap tersimpan.`"
+      :description="`Apakah Anda yakin ingin menghapus data Semester ${selectedSemester?.nomor || ''} ${selectedSemester?.tipe || ''} (${selectedSemester?.tahun_ajaran || ''})? Semester yang masih memiliki jadwal tidak bisa dihapus.`"
       :loading="deleteLoading"
       @confirm="executeDelete"
     />

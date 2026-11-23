@@ -3,6 +3,7 @@ import { useSeoMeta } from '#app'
 import { computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useSupabaseClient, useSupabaseUser } from '#imports'
+import { namaPengurus } from '~/utils/pengurus'
 
 declare const definePageMeta: (meta: any) => void
 
@@ -29,18 +30,8 @@ async function logout() {
   router.push('/')
 }
 
-// shortcut: nama login di-map dari email; tambah pengurus baru = 1 baris di sini + allowlist SQL
-const namaPengurus: Record<string, string> = {
-  'admin1@magyasaka.co.id': 'Admin 1',
-  'ketua@magyasaka.co.id': 'Ketua',
-  'sekretaris1@magyasaka.co.id': 'Sekretaris 1',
-  'sekretaris2@magyasaka.co.id': 'Sekretaris 2',
-  'bendahara1@magyasaka.co.id': 'Bendahara 1',
-  'bendahara2@magyasaka.co.id': 'Bendahara 2'
-}
-
 const namaLogin = computed(() => {
-  const email = user.value?.email?.toLowerCase()
+  const email = user.value?.email?.trim().toLowerCase()
   return email ? namaPengurus[email] ?? email : null
 })
 

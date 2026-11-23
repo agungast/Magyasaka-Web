@@ -80,18 +80,22 @@ function confirmDeletePhoto(p: any) {
   deleteTitle.value = 'Hapus Foto'
   deleteDesc.value = 'Apakah Anda yakin ingin menghapus foto ini dari album? Tindakan ini bersifat permanen.'
   pendingDeleteAction = async () => {
+    // activeAlbum hanya diisi saat modal unggah dibuka. Saat menghapus dari
+    // kartu album, ambil albumnya dari data yang sudah dimuat.
+    const album = albums.value?.find((a: any) => a.id === p.album_id)
     const { error } = await client.from('photos').delete().eq('id', p.id)
-    if (error) alert(error.message)
-    else {
-      await removeFromStorage(p.url)
-      await refresh()
-      if (activeAlbum.value?.cover_url === p.url) {
-        const remaining = activeAlbum.value.photos?.filter((x: any) => x.id !== p.id) || []
-        const newCover = remaining[0]?.url || null
-        await client.from('albums').update({ cover_url: newCover } as any).eq('id', activeAlbum.value.id)
-        await refresh()
-      }
+    if (error) {
+      alert(error.message)
+      return
     }
+    await removeFromStorage(p.url)
+    if (album?.cover_url === p.url) {
+      const sisa = (album.photos || []).filter((x: any) => x.id !== p.id && !isVideoUrl(x.url))
+      const { error: coverError } = await client.from('albums')
+        .update({ cover_url: sisa[0]?.url || null } as any).eq('id', album.id)
+      if (coverError) alert(coverError.message)
+    }
+    await refresh()
   }
   deleteModalOpen.value = true
 }

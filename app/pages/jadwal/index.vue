@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed, ref, watchEffect } from 'vue'
 import { useSeoMeta } from '#app'
-import { useSchedules, useSemesters, semesterLabel } from '~/composables/useData'
+import { useActiveSemester, useSchedules, semesterLabel } from '~/composables/useData'
 // Fase 2: Jadwal Kuliah — Tampilan Mingguan
 useSeoMeta({ title: 'Jadwal Kuliah - Magyasaka' })
 
 const { data: schedules, status: scheduleStatus } = useSchedules()
-const { data: semesters, status: semesterStatus } = useSemesters()
+const { sortedSemesters, semestersStatus: semesterStatus } = useActiveSemester()
 
 // Lazy: saat pindah halaman, data semester/jadwal belum ada → jangan render
 // jadwal mentah (semua semester) sebelum semester aktif ditentukan.
@@ -15,17 +15,6 @@ const loadingData = computed(() =>
 )
 
 const activeSemesterId = ref('')
-
-// Urutkan semester terbaru di paling kiri (depan), semester lama di paling kanan (belakang)
-const sortedSemesters = computed(() => {
-  if (!semesters.value) return []
-  return [...semesters.value].sort((a: any, b: any) => {
-    const timeA = a.created_at ? new Date(a.created_at).getTime() : 0
-    const timeB = b.created_at ? new Date(b.created_at).getTime() : 0
-    if (timeA !== timeB) return timeB - timeA
-    return (b.nomor || 0) - (a.nomor || 0)
-  })
-})
 
 watchEffect(() => {
   if (activeSemesterId.value || !sortedSemesters.value.length) return

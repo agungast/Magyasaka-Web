@@ -35,7 +35,7 @@ async function handleLogin() {
 
     if (error) {
       errorMsg.value = error.message === 'Invalid login credentials'
-        ? 'Email atau password salah. Pastikan akun sudah terdaftar di Supabase.'
+        ? 'Email atau password salah. Pastikan akun sudah terdaftar dengan menghubungi admin.'
         : error.message
     } else {
       router.push('/admin')
