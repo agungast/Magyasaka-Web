@@ -3,7 +3,7 @@ import { useSeoMeta } from '#app'
 import { useOfficers } from '~/composables/useData'
 
 // Fase 2: Struktur Pengurus Kelas
-useSeoMeta({ title: 'Pengurus Kelas — Magyasaka' })
+useSeoMeta({ title: 'Pengurus Kelas - Magyasaka' })
 
 const { data: officers } = useOfficers()
 
@@ -23,8 +23,8 @@ const jabatanIcon: Record<string, string> = {
 const jabatanColor: Record<string, string> = {
   'Ketua Kelas': '#f59e0b',
   'Wakil Ketua': '#6366f1',
-  'Sekretaris': '#10b981',
-  'Bendahara': '#ec4899',
+  'Sekretaris': '#ec4899',
+  'Bendahara': '#10b981',
   'Koordinator Akademik': '#0ea5e9',
   'PJ': '#a855f7'
 }
@@ -85,7 +85,8 @@ const jabatanColor: Record<string, string> = {
         <UCard
           v-for="officer in officers?.slice(1)"
           :key="officer.id"
-          class="card-hover text-center"
+          class="card-hover text-center border-2"
+          :style="{ borderColor: (jabatanColor[officer.jabatan] || '#6366f1') + '4D' }"
         >
           <div class="flex flex-col items-center">
             <img

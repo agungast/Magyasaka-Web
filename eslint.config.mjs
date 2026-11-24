@@ -24,8 +24,12 @@ const customClasses = [
   'plate',
   'hero-plate',
   'hero-enter',
+  'hero-stagger',
+  'link-draw',
   'lightbox-overlay',
-  'dark'
+  'dark',
+  // Editor menganggap ini valid, tapi plugin ESLint tidak mengenalinya.
+  'wrap-break-words'
 ]
 
 export default withNuxt(

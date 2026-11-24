@@ -5,7 +5,7 @@ import { useProjects } from '~/composables/useData'
 // Fase 3: Katalog Proyek Kelas
 useSeoMeta({ title: 'Proyek Kelas - Magyasaka' })
 
-const { data: projects } = useProjects()
+const { data: projects, error, refresh } = useProjects()
 
 const highlightedProjects = computed(() =>
   projects.value?.filter((p: any) => p.is_highlighted) || []
@@ -33,6 +33,9 @@ const kategoriColors: Record<string, string> = {
       <p class="text-muted mt-1">Karya dan proyek akademik mahasiswa Magyasaka</p>
     </div>
 
+    <DataError v-if="error" @retry="refresh()" />
+
+    <template v-else>
     <!-- Sorotan Terbaik -->
     <section v-if="highlightedProjects.length > 0" class="mb-12">
       <div class="flex items-center gap-2 mb-6">
@@ -150,5 +153,6 @@ const kategoriColors: Record<string, string> = {
       <h3 class="font-semibold text-lg mb-1">Belum ada proyek</h3>
       <p class="text-muted text-sm">Proyek kelas akan ditampilkan di sini</p>
     </div>
+    </template>
   </UContainer>
 </template>

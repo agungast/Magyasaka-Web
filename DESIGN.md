@@ -171,7 +171,7 @@ This document captures the visual language rebuilt around the class crest (Lamba
 3. **No glass/blur.** `backdrop-filter: none` on header; no `.glass`, `.glass-light`.
 4. **No colored `border-l` > 1px.** Use hairline rows or accent dots.
 5. **No same-size icon + heading + text card grid as page structure.**
-6. **One authored motion moment:** `.hero-enter` + `halftone-drift`. No `animate-float`, `animate-pulse-glow`, `bounce`.
+6. **Gerak penulis, bukan loop dekoratif:** `.hero-enter` / `.hero-stagger` (entrance sekali saat load, stagger 110ms), halftone hero mengikuti pointer (`--hx/--hy`, mouse saja, guard reduced-motion), `.link-draw` (underline tergambar saat hover), `.card-hover` (lift 2px). Tanpa `animate-float`, `animate-pulse-glow`, bounce, ping.
 7. **Themed browser surfaces:** `::selection` (azure), `caret-color` (azure), scrollbar (ink), caret (azure), page/layout transitions (opacity 160ms).
 8. **Halftone texture is printed paper.** Not a gradient, not a photo filter.
 9. **One action ink:** Azure only. Rainbow quick-links / search category colours collapsed.
@@ -219,7 +219,7 @@ This document captures the visual language rebuilt around the class crest (Lamba
 ## Accessibility
 
 - `color-scheme` declared → UA form controls follow mode.
-- Focus visible: `outline-3 outline-primary/25` (Nuxt UI default).
+- Focus visible: `outline-3` full `--ui-primary` (override unlayered di `main.css`; default 25% terlalu faint, <3:1).
 - Skip link: none (single-page simplicity, header sticky).
 - `::selection` azure/ink — no ghost highlights.
 - `prefers-reduced-motion` respected on all authored animations.

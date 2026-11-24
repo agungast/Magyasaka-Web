@@ -1,13 +1,14 @@
+<script setup lang="ts">
 // ------------------------------------------------------------
 //  IMPORTS – semua simbol yang dipakai dalam script setup
 //  Nuxt‑4 menyediakan auto‑imports, tetapi TypeScript/Volar
 //  memerlukan deklarasi eksplisit agar diagnostics berfungsi.
 // ------------------------------------------------------------
 import { ref, reactive } from 'vue'
-import { useSeoMeta, useSupabaseClient, useAsyncData } from '#app'
+import { useSeoMeta, useAsyncData } from '#app'
 import { UButton, UCard, UModal, UInput, USelect, UIcon } from '#components'
-
-<script setup lang="ts">
+import { useAvatarUpload } from '~/composables/useAvatarUpload'
+import { useGalleryUpload } from '~/composables/useGalleryUpload'
 
 useSeoMeta({ title: 'Kelola Anggota - Admin Magyasaka' })
 
@@ -23,6 +24,8 @@ const modalOpen = ref(false)
 const editing = ref<any>(null)
 const form = reactive({ nim: '', nama: '', email: '', no_telepon: '', jurusan: 'Teknologi Rekayasa Komputer', angkatan: 2023, status: 'aktif', foto_url: '' as string | null })
 const loading = ref(false)
+// Foto lama hanya dihapus dari storage setelah perubahan berhasil disimpan.
+const oldFotoUrl = ref<string | null>(null)
 
 // NIM: hanya angka, otomatis diformat X.XX.XX.X.XX (8 digit).
 const NIM_GROUPS = [1, 2, 2, 1, 2]
@@ -52,12 +55,14 @@ const emailError = computed(() =>
 
 function openCreate() {
   editing.value = null
+  oldFotoUrl.value = null
   Object.assign(form, { nim: '', nama: '', email: '', no_telepon: '', jurusan: 'Teknologi Rekayasa Komputer', angkatan: 2023, status: 'aktif', foto_url: '' })
   modalOpen.value = true
 }
 
 function openEdit(m: any) {
   editing.value = m
+  oldFotoUrl.value = m.foto_url || null
   Object.assign(form, { ...m })
   modalOpen.value = true
 }
@@ -70,12 +75,28 @@ async function save() {
   if (emailError.value) return toast.add({ title: 'Format email tidak valid', description: emailError.value, color: 'warning', icon: 'i-lucide-triangle-alert' })
   loading.value = true
   try {
+    // Kirim hanya kolom yang diedit: `id`/`created_at` dari baris lama tidak
+    // boleh ikut tertulis lagi (updated_at di database yang akan berubah).
+    const payload = {
+      nim: form.nim,
+      nama: form.nama,
+      email: form.email,
+      no_telepon: form.no_telepon,
+      jurusan: form.jurusan,
+      angkatan: form.angkatan,
+      status: form.status,
+      foto_url: form.foto_url || null
+    }
     if (editing.value) {
-        const { error } = await (client.from('members') as any).update(form as any).eq('id' as any, editing.value!.id as any)
-        if (error) throw error
-      } else {
-        const { error } = await (client.from('members') as any).insert(form as any)
-        if (error) throw error
+      const { error } = await (client.from('members') as any).update(payload).eq('id', editing.value.id)
+      if (error) throw error
+      // File lama dihapus hanya setelah perubahan berhasil disimpan.
+      if (oldFotoUrl.value && payload.foto_url !== oldFotoUrl.value) {
+        await removeFromStorage(oldFotoUrl.value)
+      }
+    } else {
+      const { error } = await (client.from('members') as any).insert(payload)
+      if (error) throw error
     }
     modalOpen.value = false
     await refresh()
@@ -132,8 +153,9 @@ async function onPhotoChange(e: Event) {
   target.value = ''
 }
 
-async function removePhoto() {
-  if (form.foto_url) await removeFromStorage(form.foto_url)
+// Hapus dari form saja. Batal = tidak ada yang berubah di database/storage;
+// file lama dihapus di save() setelah URL baru berhasil disimpan.
+function removePhoto() {
   form.foto_url = ''
 }
 </script>
@@ -149,7 +171,39 @@ async function removePhoto() {
     </div>
 
     <UCard>
-      <div class="overflow-x-auto">
+      <!-- Mobile: kartu per anggota -->
+      <div class="space-y-3 md:hidden">
+        <div v-for="m in items" :key="m.id" class="rounded-lg border border-default p-3">
+          <div class="flex items-start justify-between gap-2">
+            <div class="flex min-w-0 items-center gap-2">
+              <img v-if="m.foto_url" :src="m.foto_url" :alt="m.nama" class="w-9 h-9 rounded-full object-cover shrink-0" />
+              <div v-else class="w-9 h-9 rounded-full flex items-center justify-center text-[10px] font-bold text-white bg-linear-to-br from-slate-500 to-slate-700 shrink-0">{{ initials(m.nama) }}</div>
+              <div class="min-w-0">
+                <p class="font-medium break-words">{{ m.nama }}</p>
+                <p class="text-xs text-muted">{{ m.nim }}</p>
+              </div>
+            </div>
+            <div class="flex shrink-0">
+              <UButton size="xs" variant="ghost" icon="i-lucide-edit" aria-label="Edit" @click="openEdit(m)" />
+              <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" aria-label="Hapus" @click="confirmDelete(m)" />
+            </div>
+          </div>
+          <dl class="mt-2 space-y-1 text-xs">
+            <div class="flex items-center justify-between gap-3">
+              <dt class="shrink-0 text-muted">Email</dt>
+              <dd class="text-right break-all">{{ m.email }}</dd>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+              <dt class="shrink-0 text-muted">Status</dt>
+              <dd class="text-right">{{ m.status }}</dd>
+            </div>
+          </dl>
+        </div>
+        <p v-if="!items?.length" class="py-6 text-center text-sm text-muted">Belum ada anggota.</p>
+      </div>
+
+      <!-- Desktop: tabel -->
+      <div class="hidden overflow-x-auto md:block">
         <table class="w-full text-sm">
           <thead>
             <tr class="border-b border-default">
@@ -162,7 +216,7 @@ async function removePhoto() {
           </thead>
           <tbody>
             <tr v-for="m in items" :key="m.id" class="border-b border-default/50">
-              <td class="py-2">{{ m.nim }}</td>
+              <td class="py-2 whitespace-nowrap">{{ m.nim }}</td>
               <td class="py-2">
                 <div class="flex items-center gap-2">
                   <img v-if="m.foto_url" :src="m.foto_url" :alt="m.nama" class="w-8 h-8 rounded-full object-cover shrink-0" />
@@ -171,10 +225,10 @@ async function removePhoto() {
                 </div>
               </td>
               <td class="py-2">{{ m.email }}</td>
-              <td class="py-2">{{ m.status }}</td>
-              <td class="py-2 text-right">
-                <UButton size="xs" variant="ghost" icon="i-lucide-edit" @click="openEdit(m)" />
-                <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" @click="confirmDelete(m)" />
+              <td class="py-2 whitespace-nowrap">{{ m.status }}</td>
+              <td class="py-2 text-right whitespace-nowrap">
+                <UButton size="xs" variant="ghost" icon="i-lucide-edit" aria-label="Edit" @click="openEdit(m)" />
+                <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" aria-label="Hapus" @click="confirmDelete(m)" />
               </td>
             </tr>
           </tbody>

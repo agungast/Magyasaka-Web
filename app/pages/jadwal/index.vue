@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed, ref, watchEffect } from 'vue'
 import { useSeoMeta } from '#app'
-import { useSchedules, useSemesters, semesterLabel } from '~/composables/useData'
+import { useActiveSemester, useSchedules, semesterLabel } from '~/composables/useData'
 // Fase 2: Jadwal Kuliah — Tampilan Mingguan
 useSeoMeta({ title: 'Jadwal Kuliah - Magyasaka' })
 
 const { data: schedules, status: scheduleStatus } = useSchedules()
-const { data: semesters, status: semesterStatus } = useSemesters()
+const { sortedSemesters, semestersStatus: semesterStatus } = useActiveSemester()
 
 // Lazy: saat pindah halaman, data semester/jadwal belum ada → jangan render
 // jadwal mentah (semua semester) sebelum semester aktif ditentukan.
@@ -15,17 +15,6 @@ const loadingData = computed(() =>
 )
 
 const activeSemesterId = ref('')
-
-// Urutkan semester terbaru di paling kiri (depan), semester lama di paling kanan (belakang)
-const sortedSemesters = computed(() => {
-  if (!semesters.value) return []
-  return [...semesters.value].sort((a: any, b: any) => {
-    const timeA = a.created_at ? new Date(a.created_at).getTime() : 0
-    const timeB = b.created_at ? new Date(b.created_at).getTime() : 0
-    if (timeA !== timeB) return timeB - timeA
-    return (b.nomor || 0) - (a.nomor || 0)
-  })
-})
 
 watchEffect(() => {
   if (activeSemesterId.value || !sortedSemesters.value.length) return
@@ -127,7 +116,7 @@ const totalSKS = computed(() =>
     </div>
 
     <!-- Semester tabs -->
-    <div v-if="sortedSemesters.length" class="flex gap-1 overflow-x-auto pb-2 mb-6">
+    <div v-if="sortedSemesters.length" class="flex gap-2 overflow-x-auto pb-2 mb-6">
       <UButton
         v-for="sem in sortedSemesters"
         :key="sem.id"
@@ -154,14 +143,15 @@ const totalSKS = computed(() =>
       <div v-if="viewMode === 'week'">
       <!-- Mobile: Tab view -->
       <div class="lg:hidden mb-4">
-        <div class="flex gap-1 overflow-x-auto pb-2">
+        <div class="flex gap-1.5 overflow-x-auto pb-2">
           <UButton
             v-for="day in days"
             :key="day"
-            :label="day.substring(0, 3)"
+            :label="day"
             :color="currentDay === day ? 'primary' : 'neutral'"
             :variant="currentDay === day ? 'solid' : 'ghost'"
-            size="sm"
+            size="lg"
+            class="shrink-0"
             @click="currentDay = day"
           />
         </div>
@@ -187,7 +177,7 @@ const totalSKS = computed(() =>
                 <div class="flex-1 min-w-0">
                   <p class="font-semibold text-sm">{{ s.mata_kuliah }}</p>
                   <p class="text-xs text-muted">{{ s.dosen }}</p>
-                  <div class="flex items-center gap-3 mt-1">
+                  <div class="flex flex-col items-start gap-1 mt-1">
                     <span class="text-xs flex items-center gap-1">
                       <UIcon name="i-lucide-clock" class="text-xs" />
                       {{ s.jam_mulai.slice(0, 5) }} - {{ s.jam_selesai.slice(0, 5) }}
@@ -196,7 +186,7 @@ const totalSKS = computed(() =>
                       <UIcon name="i-lucide-map-pin" class="text-xs" />
                       {{ s.ruangan }}
                     </span>
-<UBadge :label="`${s.sks} SKS`" variant="outline" size="xs" />
+                    <UBadge :label="`${s.sks} SKS`" variant="outline" size="xs" />
                   </div>
                 </div>
               </div>
@@ -270,22 +260,22 @@ const totalSKS = computed(() =>
           >
             <!-- Timeline connector -->
             <div v-if="index < todaySchedules.length - 1" class="absolute left-8 top-full w-0.5 h-4 bg-default/30" />
-            <div class="flex items-start gap-4">
+            <div class="flex items-center gap-4">
               <div
-                class="accent w-14 h-14 rounded-xl flex flex-col items-center justify-center shrink-0"
+                class="accent w-14 h-14 rounded-xl flex items-center justify-center shrink-0"
                 :style="{ '--accent': s.warna || '#6366f1' }"
               >
-                <span class="text-xs font-bold">{{ s.jam_mulai.slice(0, 5) }}</span>
+                <UIcon name="i-lucide-book-open" class="text-xl" />
               </div>
               <div class="flex-1">
                 <h3 class="font-bold text-base">{{ s.mata_kuliah }}</h3>
-                <p class="text-sm text-muted">{{ s.dosen }}</p>
+                <p class="text-base text-default">{{ s.dosen }}</p>
                 <div class="flex flex-wrap items-center gap-3 mt-2">
-                  <span class="text-xs text-muted flex items-center gap-1">
+                  <span class="text-sm text-default flex items-center gap-1">
                     <UIcon name="i-lucide-clock" />
                     {{ s.jam_mulai.slice(0, 5) }} - {{ s.jam_selesai.slice(0, 5) }}
                   </span>
-                  <span class="text-xs text-muted flex items-center gap-1">
+                  <span class="text-sm text-default flex items-center gap-1">
                     <UIcon name="i-lucide-map-pin" />
                     {{ s.ruangan }}
                   </span>

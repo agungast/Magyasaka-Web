@@ -39,12 +39,10 @@ defineProps<{ semester: Semester | null }>()
         <!-- Status badge: periode magang aktif -->
         <div class="mt-6">
           <span
-            class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-3 py-1 text-xs font-medium ring-1 ring-emerald-500/20"
+            class="accent inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium"
+            :style="{ '--accent': 'var(--ui-color-success-500)' }"
           >
-            <span class="relative flex h-1.5 w-1.5">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
-            </span>
+            <span class="inline-flex rounded-full h-1.5 w-1.5" :style="{ backgroundColor: 'var(--ui-color-success-500)' }" />
             Periode Magang Aktif
           </span>
         </div>

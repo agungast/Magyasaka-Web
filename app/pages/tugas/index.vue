@@ -3,12 +3,14 @@ import { computed, ref } from 'vue'
 import { useSeoMeta } from '#app'
 import { useAssignments } from '~/composables/useData'
 import { parseDescription } from '~/utils/description'
+import { deadlineInfo, effectiveDate, formatDateTime, isPastDue } from '~/utils/date'
 // Fase 2: Daftar Tugas & Ujian
 useSeoMeta({ title: 'Tugas & Ujian - Magyasaka' })
 
 const { data: assignments } = useAssignments()
 
 const filterType = ref('semua')
+const showHistory = ref(false)
 // Stored `tipe` values are lowercase (tugas/uts/uas/tubes/praktikum), so the
 // filter compares against lowercase values. Labels are cased for display only.
 const filterOptions = [
@@ -25,8 +27,17 @@ function tipeLabel(tipe: string | null | undefined) {
     ?? (tipe ? tipe.charAt(0).toUpperCase() + tipe.slice(1) : 'Tugas')
 }
 
+// Sama seperti Beranda: yang sudah lewat disembunyikan, tetapi masih bisa
+// dibuka lewat toggle riwayat tanpa menghapus datanya.
+const archivedCount = computed(() =>
+  (assignments.value || []).filter((a) => isPastDue(a)).length
+)
+
 const filteredAssignments = computed(() => {
   let items = (assignments.value || []) as any[]
+  if (!showHistory.value) {
+    items = items.filter((a) => !isPastDue(a))
+  }
   if (filterType.value !== 'semua') {
     items = items.filter((a: any) => a.tipe === filterType.value)
   }
@@ -34,44 +45,20 @@ const filteredAssignments = computed(() => {
 })
 
 const upcomingExams = computed(() =>
-  assignments.value?.filter((a: any) => ['uts', 'uas'].includes(a.tipe) && (a.deadline || a.tanggal_ujian) && new Date(a.deadline || a.tanggal_ujian) > new Date()) || []
+  (assignments.value || []).filter((a: any) =>
+    ['uts', 'uas'].includes(a.tipe) && !!effectiveDate(a) && !isPastDue(a)
+  )
 )
 
-function formatDate(dateStr: string) {
-  if (!dateStr) return '-'
-  return new Date(dateStr).toLocaleDateString('id-ID', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
-  })
-}
-
-function daysUntil(dateStr: string) {
-  if (!dateStr) return ''
-  const diff = new Date(dateStr).getTime() - Date.now()
-  const days = Math.ceil(diff / 86400000)
-  if (days < 0) return 'Terlewat'
-  if (days === 0) return 'Hari ini!'
-  if (days === 1) return 'Besok'
-  return `${days} hari lagi`
-}
-
-function deadlineColor(dateStr: string) {
-  if (!dateStr) return 'neutral'
-  const diff = new Date(dateStr).getTime() - Date.now()
-  const days = Math.ceil(diff / 86400000)
-  if (days < 0) return 'error'
-  if (days <= 2) return 'error'
-  if (days <= 7) return 'warning'
-  return 'success'
-}
+// Satu sumber label/warna badge tenggat, dibandingkan per hari kalender.
+const deadlineLabel = (a: any) => deadlineInfo(effectiveDate(a)).label
+const deadlineColor = (a: any) => deadlineInfo(effectiveDate(a)).color
 
 const tipeIcon: Record<string, string> = {
   tugas: 'i-lucide-file-text',
   uts: 'i-lucide-file-warning',
   uas: 'i-lucide-file-warning',
-  tubes: 'i-lucide-help-circle',
+  tubes: 'i-lucide-file-text',
   praktikum: 'i-lucide-flask-conical'
 }
 
@@ -118,8 +105,8 @@ const tipeColor: Record<string, string> = {
               <p class="font-bold text-sm">{{ exam.judul }}</p>
               <p class="text-xs text-muted">{{ exam.mata_kuliah }}</p>
               <div class="flex items-center gap-2 mt-1">
-                <UBadge :label="daysUntil((exam.deadline || exam.tanggal_ujian) ?? '')" :color="deadlineColor((exam.deadline || exam.tanggal_ujian) ?? '')" variant="subtle" size="xs" />
-                <span class="text-xs text-muted">{{ formatDate((exam.deadline || exam.tanggal_ujian) ?? '') }}</span>
+                <UBadge :label="deadlineLabel(exam)" :color="deadlineColor(exam)" variant="subtle" size="xs" />
+                <span class="text-xs text-muted">{{ formatDateTime(effectiveDate(exam)) }}</span>
               </div>
             </div>
           </div>
@@ -128,7 +115,7 @@ const tipeColor: Record<string, string> = {
     </div>
 
     <!-- Filter -->
-    <div class="flex gap-1 flex-wrap mb-6">
+    <div class="flex gap-2 flex-wrap mb-6">
       <UButton
         v-for="opt in filterOptions"
         :key="opt.value"
@@ -137,6 +124,15 @@ const tipeColor: Record<string, string> = {
         :variant="filterType === opt.value ? 'solid' : 'ghost'"
         size="sm"
         @click="filterType = opt.value"
+      />
+      <UButton
+        :label="showHistory ? 'Sembunyikan riwayat' : `Tampilkan riwayat (${archivedCount})`"
+        :icon="showHistory ? 'i-lucide-eye-off' : 'i-lucide-history'"
+        color="neutral"
+        variant="outline"
+        size="sm"
+        class="ml-auto"
+        @click="showHistory = !showHistory"
       />
     </div>
 
@@ -174,19 +170,22 @@ const tipeColor: Record<string, string> = {
               </template>
             </div>
             <div class="flex items-center gap-2 mt-2">
-              <UBadge :label="tipeLabel(task.tipe)" variant="subtle" size="xs" />
-              <span v-if="task.deadline" class="text-xs text-muted flex items-center gap-1">
+              <span
+                class="accent inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium"
+                :style="{ '--accent': tipeColor[task.tipe || 'tugas'] || '#6366f1' }"
+              >{{ tipeLabel(task.tipe) }}</span>
+              <span v-if="effectiveDate(task)" class="text-xs text-muted flex items-center gap-1">
                 <UIcon name="i-lucide-clock" />
-                {{ formatDate(task.deadline) }}
+                {{ formatDateTime(effectiveDate(task)) }}
               </span>
             </div>
           </div>
 
           <!-- Deadline badge -->
           <UBadge
-            v-if="task.deadline"
-            :label="daysUntil(task.deadline)"
-            :color="deadlineColor(task.deadline)"
+            v-if="effectiveDate(task)"
+            :label="deadlineLabel(task)"
+            :color="deadlineColor(task)"
             variant="subtle"
             size="xs"
             class="shrink-0"

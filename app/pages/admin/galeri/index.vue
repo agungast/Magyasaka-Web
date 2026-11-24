@@ -80,18 +80,22 @@ function confirmDeletePhoto(p: any) {
   deleteTitle.value = 'Hapus Foto'
   deleteDesc.value = 'Apakah Anda yakin ingin menghapus foto ini dari album? Tindakan ini bersifat permanen.'
   pendingDeleteAction = async () => {
+    // activeAlbum hanya diisi saat modal unggah dibuka. Saat menghapus dari
+    // kartu album, ambil albumnya dari data yang sudah dimuat.
+    const album = albums.value?.find((a: any) => a.id === p.album_id)
     const { error } = await client.from('photos').delete().eq('id', p.id)
-    if (error) alert(error.message)
-    else {
-      await removeFromStorage(p.url)
-      await refresh()
-      if (activeAlbum.value?.cover_url === p.url) {
-        const remaining = activeAlbum.value.photos?.filter((x: any) => x.id !== p.id) || []
-        const newCover = remaining[0]?.url || null
-        await client.from('albums').update({ cover_url: newCover } as any).eq('id', activeAlbum.value.id)
-        await refresh()
-      }
+    if (error) {
+      alert(error.message)
+      return
     }
+    await removeFromStorage(p.url)
+    if (album?.cover_url === p.url) {
+      const sisa = (album.photos || []).filter((x: any) => x.id !== p.id && !isVideoUrl(x.url))
+      const { error: coverError } = await client.from('albums')
+        .update({ cover_url: sisa[0]?.url || null } as any).eq('id', album.id)
+      if (coverError) alert(coverError.message)
+    }
+    await refresh()
   }
   deleteModalOpen.value = true
 }
@@ -126,6 +130,20 @@ function openPhotos(a: any) {
   uploadItems.value = []
   uploading.value = false
   photoModal.value = true
+}
+
+// Kartu album hanya menampilkan sebagian foto; sisanya lewat tombol "Lihat semua".
+// 7 preview + 1 kotak "tambah" = 2 baris penuh pada grid 4 kolom di mobile.
+const PHOTO_PREVIEW_LIMIT = 7
+const expandedAlbums = ref<string[]>([])
+function previewPhotos(album: any) {
+  const photos = album.photos || []
+  return expandedAlbums.value.includes(album.id) ? photos : photos.slice(0, PHOTO_PREVIEW_LIMIT)
+}
+function toggleExpand(id: string) {
+  expandedAlbums.value = expandedAlbums.value.includes(id)
+    ? expandedAlbums.value.filter(x => x !== id)
+    : [...expandedAlbums.value, id]
 }
 
 function addFiles(files: FileList | File[] | null) {
@@ -250,7 +268,9 @@ if (import.meta.client) {
         <div class="flex items-start justify-between gap-3 mb-3">
           <div>
             <h3 class="font-semibold">{{ album.nama }}</h3>
-            <p class="text-xs text-muted">{{ album.tanggal_kegiatan }}</p>
+            <p class="text-xs text-muted">
+              <span v-if="album.tanggal_kegiatan">{{ album.tanggal_kegiatan }} · </span>{{ album.photos?.length || 0 }} foto/video
+            </p>
             <p class="text-sm text-muted">{{ album.deskripsi }}</p>
           </div>
           <div class="flex gap-1">
@@ -259,17 +279,36 @@ if (import.meta.client) {
             <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" @click="confirmDeleteAlbum(album)" />
           </div>
         </div>
-        <div class="flex flex-wrap gap-2">
-          <div v-for="(p, pi) in album.photos" :key="p.id" class="relative group">
-            <video v-if="isVideoUrl(p.url)" :src="p.url" class="w-20 h-20 object-cover rounded cursor-zoom-in" preload="metadata" muted @click="openLightbox(album.photos, pi)" />
-            <img v-else :src="p.url" class="w-20 h-20 object-cover rounded cursor-zoom-in" @click="openLightbox(album.photos, pi)" />
-            <button v-if="!isVideoUrl(p.url)" class="absolute bottom-0 left-0 bg-primary/80 text-white rounded-full px-1.5 py-0.5 text-[10px] hidden group-hover:block" @click="setCover(album.id, p.url)">✦ Thumbnail</button>
-            <button class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 text-xs hidden group-hover:flex items-center justify-center" @click="confirmDeletePhoto(p)">×</button>
+        <div class="grid grid-cols-4 gap-2 lg:grid-cols-8">
+          <div v-for="(p, pi) in previewPhotos(album)" :key="p.id" class="relative group aspect-square">
+            <video v-if="isVideoUrl(p.url)" :src="p.url" class="w-full h-full object-cover rounded cursor-zoom-in" preload="metadata" muted @click="openLightbox(album.photos, pi)" />
+            <img v-else :src="p.url" class="w-full h-full object-cover rounded cursor-zoom-in" @click="openLightbox(album.photos, pi)" />
+            <!-- Hanya ditampilkan pada gambar yang belum jadi thumbnail; yang aktif diberi badge Cover. -->
+            <button
+              v-if="!isVideoUrl(p.url) && p.url !== album.cover_url"
+              class="absolute top-1 left-1 bg-primary/80 hover:bg-primary text-white rounded-full p-1 text-[10px] opacity-100 md:opacity-0 md:group-hover:opacity-100"
+              title="Jadikan thumbnail album"
+              aria-label="Jadikan thumbnail album"
+              @click="setCover(album.id, p.url)"
+            >
+              <UIcon name="i-lucide-star" class="text-[10px]" />
+            </button>
+            <span v-if="p.url === album.cover_url" class="absolute top-1 left-1 bg-primary text-white rounded-full px-1.5 py-0.5 text-[10px]">Cover</span>
+            <button class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 md:w-4 md:h-4 text-xs flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100" aria-label="Hapus foto" @click="confirmDeletePhoto(p)">×</button>
           </div>
-          <button class="w-20 h-20 border border-dashed border-default rounded flex items-center justify-center" @click="openPhotos(album)">
+          <button class="aspect-square border border-dashed border-default rounded flex items-center justify-center" aria-label="Tambah foto/video" @click="openPhotos(album)">
             <UIcon name="i-lucide-plus" />
           </button>
         </div>
+        <UButton
+          v-if="(album.photos?.length || 0) > PHOTO_PREVIEW_LIMIT"
+          size="xs"
+          variant="ghost"
+          class="mt-2"
+          :trailing-icon="expandedAlbums.includes(album.id) ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
+          :label="expandedAlbums.includes(album.id) ? 'Sembunyikan' : `Lihat semua ${album.photos.length} foto/video`"
+          @click="toggleExpand(album.id)"
+        />
       </UCard>
     </div>
 

@@ -1,0 +1,144 @@
+import { createHotContext as __vite__createHotContext } from "/_nuxt/@vite/client";import.meta.hot = __vite__createHotContext("/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/@nuxt/ui/dist/runtime/components/Separator.vue");import { useAppConfig } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/nuxt/dist/app/config.js?v=0c9a12b5";
+import { recordPosition as _tracerRecordPosition } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/vite-plugin-vue-tracer/dist/client/record.mjs?v=0c9a12b5"
+import { useSlots as _useSlots } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/vue/dist/vue.runtime.esm-bundler.js?v=0c9a12b5"
+import { computed } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/vue/dist/vue.runtime.esm-bundler.js?v=0c9a12b5";
+import { Separator } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/reka-ui/dist/index.js?v=0c9a12b5";
+import { reactivePick, createReusableTemplate } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/@vueuse/core/dist/index.js?v=0c9a12b5";
+
+import { useComponentProps } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/@nuxt/ui/dist/runtime/composables/useComponentProps.js?v=0c9a12b5";
+import { useForwardProps } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/@nuxt/ui/dist/runtime/composables/useForwardProps.js?v=0c9a12b5";
+import { tv } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/@nuxt/ui/dist/runtime/utils/tv.js?v=0c9a12b5";
+import UIcon from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/@nuxt/ui/dist/runtime/components/Icon.vue";
+import UAvatar from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/@nuxt/ui/dist/runtime/components/Avatar.vue";
+
+import theme from "/_nuxt/@id/virtual:nuxt:.nuxt%2Fui%2Fseparator.ts";
+
+const _sfc_main = /*@__PURE__*/Object.assign({ inheritAttrs: false }, {
+  __name: "USeparator",
+  props: {
+  as: { type: null, required: false },
+  label: { type: String, required: false },
+  icon: { type: null, required: false },
+  avatar: { type: Object, required: false },
+  color: { type: null, required: false },
+  size: { type: null, required: false },
+  type: { type: null, required: false },
+  orientation: { type: null, required: false, default: "horizontal" },
+  position: { type: null, required: false, default: "center" },
+  class: { type: null, required: false },
+  ui: { type: null, required: false },
+  decorative: { type: Boolean, required: false }
+},
+  setup(__props, { expose: __expose }) {
+  __expose();
+
+
+const _props = __props;
+const slots = _useSlots();
+const props = useComponentProps("separator", _props);
+const appConfig = useAppConfig();
+const rootProps = useForwardProps(reactivePick(props, "as", "decorative", "orientation"));
+const [DefineContainer, ReuseContainer] = createReusableTemplate();
+const hasContent = computed(() => !!(props.label || props.icon || props.avatar || slots.default));
+const ui = computed(() => tv({ extend: theme, ...appConfig.ui?.separator || {} })({
+  color: props.color,
+  orientation: props.orientation,
+  size: props.size,
+  position: props.position,
+  type: props.type
+}));
+
+const __returned__ = { _props, slots, props, appConfig, rootProps, DefineContainer, ReuseContainer, hasContent, ui, get theme() { return theme }, computed, get Separator() { return Separator }, get reactivePick() { return reactivePick }, get createReusableTemplate() { return createReusableTemplate }, get useAppConfig() { return useAppConfig }, get useComponentProps() { return useComponentProps }, get useForwardProps() { return useForwardProps }, get tv() { return tv }, UIcon, UAvatar }
+Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true })
+return __returned__
+}
+
+})
+import { renderSlot as _renderSlot, toDisplayString as _toDisplayString, normalizeClass as _normalizeClass, openBlock as _openBlock, createElementBlock as _createElementBlock, createCommentVNode as _createCommentVNode, createBlock as _createBlock, mergeProps as _mergeProps, createElementVNode as _createElementVNode, withCtx as _withCtx, createVNode as _createVNode, Fragment as _Fragment } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/vue/dist/vue.runtime.esm-bundler.js?v=0c9a12b5"
+
+function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+  return (_openBlock(), _createElementBlock(_Fragment, null, [
+    _tracer(46,2,_createVNode($setup["DefineContainer"], null, {
+      default: _withCtx(() => [
+        _tracer(47,4,_createElementVNode("div", {
+          "data-slot": "container",
+          class: _normalizeClass($setup.ui.container({ class: $setup.props.ui?.container }))
+        }, [
+          _renderSlot(_ctx.$slots, "default", { ui: $setup.ui }, () => [
+            ($setup.props.label)
+              ? (_openBlock(), _tracer(49,8,_createElementBlock("span", {
+                  key: 0,
+                  "data-slot": "label",
+                  class: _normalizeClass($setup.ui.label({ class: $setup.props.ui?.label }))
+                }, _toDisplayString($setup.props.label), 3 /* TEXT, CLASS */)))
+              : ($setup.props.icon)
+                ? (_openBlock(), _tracer(50,8,_createBlock($setup["UIcon"], {
+                    key: 1,
+                    name: $setup.props.icon,
+                    "data-slot": "icon",
+                    class: _normalizeClass($setup.ui.icon({ class: $setup.props.ui?.icon }))
+                  }, null, 8 /* PROPS */, ["name", "class"])))
+                : ($setup.props.avatar)
+                  ? (_openBlock(), _tracer(51,8,_createBlock($setup["UAvatar"], _mergeProps({
+                      key: 2,
+                      size: $setup.props.ui?.avatarSize || $setup.ui.avatarSize()
+                    }, $setup.props.avatar, {
+                      "data-slot": "avatar",
+                      class: $setup.ui.avatar({ class: $setup.props.ui?.avatar })
+                    }), null, 16 /* FULL_PROPS */, ["size", "class"])))
+                  : _createCommentVNode("v-if", true)
+          ])
+        ], 2 /* CLASS */))
+      ]),
+      _: 3 /* FORWARDED */
+    })),
+    _tracer(56,2,_createVNode($setup["Separator"], _mergeProps({ "data-slot": "root" }, { ...$setup.rootProps, ..._ctx.$attrs }, {
+      class: $setup.ui.root({ class: [$setup.props.ui?.root, $setup.props.class] })
+    }), {
+      default: _withCtx(() => [
+        ($setup.hasContent && $setup.props.position === 'start')
+          ? (_openBlock(), _tracer(57,4,_createBlock($setup["ReuseContainer"], { key: 0 })))
+          : _createCommentVNode("v-if", true),
+        _tracer(59,4,_createElementVNode("div", {
+          "data-slot": "border",
+          class: _normalizeClass($setup.ui.border({ class: $setup.props.ui?.border }))
+        }, null, 2 /* CLASS */)),
+        ($setup.hasContent && $setup.props.position === 'center')
+          ? (_openBlock(), _tracer(61,4,_createElementBlock(_Fragment, { key: 1 }, [
+              _tracer(62,6,_createVNode($setup["ReuseContainer"])),
+              _tracer(64,6,_createElementVNode("div", {
+                "data-slot": "border",
+                class: _normalizeClass($setup.ui.border({ class: $setup.props.ui?.border }))
+              }, null, 2 /* CLASS */))
+            ], 64 /* STABLE_FRAGMENT */)))
+          : _createCommentVNode("v-if", true),
+        ($setup.hasContent && $setup.props.position === 'end')
+          ? (_openBlock(), _tracer(67,4,_createBlock($setup["ReuseContainer"], { key: 2 })))
+          : _createCommentVNode("v-if", true)
+      ]),
+      _: 1 /* STABLE */
+    }, 16 /* FULL_PROPS */, ["class"]))
+  ], 64 /* STABLE_FRAGMENT */))
+}
+
+
+
+_sfc_main.__hmrId = "4401ddbf"
+typeof __VUE_HMR_RUNTIME__ !== 'undefined' && __VUE_HMR_RUNTIME__.createRecord(_sfc_main.__hmrId, _sfc_main)
+import.meta.hot.on('file-changed', ({ file }) => {
+  __VUE_HMR_RUNTIME__.CHANGED_FILE = file
+})
+import.meta.hot.accept(mod => {
+  if (!mod) return
+  const { default: updated, _rerender_only } = mod
+  if (_rerender_only) {
+    __VUE_HMR_RUNTIME__.rerender(updated.__hmrId, updated.render)
+  } else {
+    __VUE_HMR_RUNTIME__.reload(updated.__hmrId, updated)
+  }
+})
+import _export_sfc from "/_nuxt/@id/__x00__plugin-vue:export-helper"
+export default /*#__PURE__*/_export_sfc(_sfc_main, [['render',_sfc_render],['__file',"D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/@nuxt/ui/dist/runtime/components/Separator.vue"]])
+function _tracer(line, column, vnode) { return _tracerRecordPosition("node_modules/@nuxt/ui/dist/runtime/components/Separator.vue", line, column, vnode) }
+
+//# sourceMappingURL=data:application/json;base64,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QUFFLFNBQUUsQ0FBQyxJQUFJLFdBQVcsWUFBSyxDQUFDLEVBQUUsRUFBRSxJQUFJLEVBQUUsWUFBSyxDQUFDLEtBQUs7O3dCQUNwSCxDQUFrRTtTQUE1QyxpQkFBVSxJQUFJLFlBQUssQ0FBQyxRQUFRO3dDQUFsRCxhQUFrRTs7cUJBRWxFLG9CQUEwRTtVQUFyRSxXQUFTLEVBQUMsUUFBUTtVQUFFLEtBQUssa0JBQUUsU0FBRSxDQUFDLE1BQU0sVUFBVSxZQUFLLENBQUMsRUFBRSxFQUFFLE1BQU07O1NBRW5ELGlCQUFVLElBQUksWUFBSyxDQUFDLFFBQVE7d0NBQTVDLG9CQUlXOzJCQUhULGFBQWtCOzJCQUVsQixvQkFBMEU7Z0JBQXJFLFdBQVMsRUFBQyxRQUFRO2dCQUFFLEtBQUssa0JBQUUsU0FBRSxDQUFDLE1BQU0sVUFBVSxZQUFLLENBQUMsRUFBRSxFQUFFLE1BQU07Ozs7U0FHL0MsaUJBQVUsSUFBSSxZQUFLLENBQUMsUUFBUTt3Q0FBbEQsYUFBZ0UiLCJuYW1lcyI6W10sImlnbm9yZUxpc3QiOltdLCJzb3VyY2VzIjpbIlNlcGFyYXRvci52dWUiXSwic291cmNlc0NvbnRlbnQiOlsiPHNjcmlwdD5cbmltcG9ydCB0aGVtZSBmcm9tIFwiI2J1aWxkL3VpL3NlcGFyYXRvclwiO1xuPC9zY3JpcHQ+XG5cbjxzY3JpcHQgc2V0dXA+XG5pbXBvcnQgeyBjb21wdXRlZCB9IGZyb20gXCJ2dWVcIjtcbmltcG9ydCB7IFNlcGFyYXRvciB9IGZyb20gXCJyZWthLXVpXCI7XG5pbXBvcnQgeyByZWFjdGl2ZVBpY2ssIGNyZWF0ZVJldXNhYmxlVGVtcGxhdGUgfSBmcm9tIFwiQHZ1ZXVzZS9jb3JlXCI7XG5pbXBvcnQgeyB1c2VBcHBDb25maWcgfSBmcm9tIFwiI2ltcG9ydHNcIjtcbmltcG9ydCB7IHVzZUNvbXBvbmVudFByb3BzIH0gZnJvbSBcIi4uL2NvbXBvc2FibGVzL3VzZUNvbXBvbmVudFByb3BzXCI7XG5pbXBvcnQgeyB1c2VGb3J3YXJkUHJvcHMgfSBmcm9tIFwiLi4vY29tcG9zYWJsZXMvdXNlRm9yd2FyZFByb3BzXCI7XG5pbXBvcnQgeyB0diB9IGZyb20gXCIuLi91dGlscy90dlwiO1xuaW1wb3J0IFVJY29uIGZyb20gXCIuL0ljb24udnVlXCI7XG5pbXBvcnQgVUF2YXRhciBmcm9tIFwiLi9BdmF0YXIudnVlXCI7XG5kZWZpbmVPcHRpb25zKHsgaW5oZXJpdEF0dHJzOiBmYWxzZSB9KTtcbmNvbnN0IF9wcm9wcyA9IGRlZmluZVByb3BzKHtcbiAgYXM6IHsgdHlwZTogbnVsbCwgcmVxdWlyZWQ6IGZhbHNlIH0sXG4gIGxhYmVsOiB7IHR5cGU6IFN0cmluZywgcmVxdWlyZWQ6IGZhbHNlIH0sXG4gIGljb246IHsgdHlwZTogbnVsbCwgcmVxdWlyZWQ6IGZhbHNlIH0sXG4gIGF2YXRhcjogeyB0eXBlOiBPYmplY3QsIHJlcXVpcmVkOiBmYWxzZSB9LFxuICBjb2xvcjogeyB0eXBlOiBudWxsLCByZXF1aXJlZDogZmFsc2UgfSxcbiAgc2l6ZTogeyB0eXBlOiBudWxsLCByZXF1aXJlZDogZmFsc2UgfSxcbiAgdHlwZTogeyB0eXBlOiBudWxsLCByZXF1aXJlZDogZmFsc2UgfSxcbiAgb3JpZW50YXRpb246IHsgdHlwZTogbnVsbCwgcmVxdWlyZWQ6IGZhbHNlLCBkZWZhdWx0OiBcImhvcml6b250YWxcIiB9LFxuICBwb3NpdGlvbjogeyB0eXBlOiBudWxsLCByZXF1aXJlZDogZmFsc2UsIGRlZmF1bHQ6IFwiY2VudGVyXCIgfSxcbiAgY2xhc3M6IHsgdHlwZTogbnVsbCwgcmVxdWlyZWQ6IGZhbHNlIH0sXG4gIHVpOiB7IHR5cGU6IG51bGwsIHJlcXVpcmVkOiBmYWxzZSB9LFxuICBkZWNvcmF0aXZlOiB7IHR5cGU6IEJvb2xlYW4sIHJlcXVpcmVkOiBmYWxzZSB9XG59KTtcbmNvbnN0IHNsb3RzID0gZGVmaW5lU2xvdHMoKTtcbmNvbnN0IHByb3BzID0gdXNlQ29tcG9uZW50UHJvcHMoXCJzZXBhcmF0b3JcIiwgX3Byb3BzKTtcbmNvbnN0IGFwcENvbmZpZyA9IHVzZUFwcENvbmZpZygpO1xuY29uc3Qgcm9vdFByb3BzID0gdXNlRm9yd2FyZFByb3BzKHJlYWN0aXZlUGljayhwcm9wcywgXCJhc1wiLCBcImRlY29yYXRpdmVcIiwgXCJvcmllbnRhdGlvblwiKSk7XG5jb25zdCBbRGVmaW5lQ29udGFpbmVyLCBSZXVzZUNvbnRhaW5lcl0gPSBjcmVhdGVSZXVzYWJsZVRlbXBsYXRlKCk7XG5jb25zdCBoYXNDb250ZW50ID0gY29tcHV0ZWQoKCkgPT4gISEocHJvcHMubGFiZWwgfHwgcHJvcHMuaWNvbiB8fCBwcm9wcy5hdmF0YXIgfHwgc2xvdHMuZGVmYXVsdCkpO1xuY29uc3QgdWkgPSBjb21wdXRlZCgoKSA9PiB0dih7IGV4dGVuZDogdGhlbWUsIC4uLmFwcENvbmZpZy51aT8uc2VwYXJhdG9yIHx8IHt9IH0pKHtcbiAgY29sb3I6IHByb3BzLmNvbG9yLFxuICBvcmllbnRhdGlvbjogcHJvcHMub3JpZW50YXRpb24sXG4gIHNpemU6IHByb3BzLnNpemUsXG4gIHBvc2l0aW9uOiBwcm9wcy5wb3NpdGlvbixcbiAgdHlwZTogcHJvcHMudHlwZVxufSkpO1xuPC9zY3JpcHQ+XG5cbjx0ZW1wbGF0ZT5cbiAgPERlZmluZUNvbnRhaW5lcj5cbiAgICA8ZGl2IGRhdGEtc2xvdD1cImNvbnRhaW5lclwiIDpjbGFzcz1cInVpLmNvbnRhaW5lcih7IGNsYXNzOiBwcm9wcy51aT8uY29udGFpbmVyIH0pXCI+XG4gICAgICA8c2xvdCA6dWk9XCJ1aVwiPlxuICAgICAgICA8c3BhbiB2LWlmPVwicHJvcHMubGFiZWxcIiBkYXRhLXNsb3Q9XCJsYWJlbFwiIDpjbGFzcz1cInVpLmxhYmVsKHsgY2xhc3M6IHByb3BzLnVpPy5sYWJlbCB9KVwiPnt7IHByb3BzLmxhYmVsIH19PC9zcGFuPlxuICAgICAgICA8VUljb24gdi1lbHNlLWlmPVwicHJvcHMuaWNvblwiIDpuYW1lPVwicHJvcHMuaWNvblwiIGRhdGEtc2xvdD1cImljb25cIiA6Y2xhc3M9XCJ1aS5pY29uKHsgY2xhc3M6IHByb3BzLnVpPy5pY29uIH0pXCIgLz5cbiAgICAgICAgPFVBdmF0YXIgdi1lbHNlLWlmPVwicHJvcHMuYXZhdGFyXCIgOnNpemU9XCJwcm9wcy51aT8uYXZhdGFyU2l6ZSB8fCB1aS5hdmF0YXJTaXplKClcIiB2LWJpbmQ9XCJwcm9wcy5hdmF0YXJcIiBkYXRhLXNsb3Q9XCJhdmF0YXJcIiA6Y2xhc3M9XCJ1aS5hdmF0YXIoeyBjbGFzczogcHJvcHMudWk/LmF2YXRhciB9KVwiIC8+XG4gICAgICA8L3Nsb3Q+XG4gICAgPC9kaXY+XG4gIDwvRGVmaW5lQ29udGFpbmVyPlxuXG4gIDxTZXBhcmF0b3IgZGF0YS1zbG90PVwicm9vdFwiIHYtYmluZD1cInsgLi4ucm9vdFByb3BzLCAuLi4kYXR0cnMgfVwiIDpjbGFzcz1cInVpLnJvb3QoeyBjbGFzczogW3Byb3BzLnVpPy5yb290LCBwcm9wcy5jbGFzc10gfSlcIj5cbiAgICA8UmV1c2VDb250YWluZXIgdi1pZj1cImhhc0NvbnRlbnQgJiYgcHJvcHMucG9zaXRpb24gPT09ICdzdGFydCdcIiAvPlxuXG4gICAgPGRpdiBkYXRhLXNsb3Q9XCJib3JkZXJcIiA6Y2xhc3M9XCJ1aS5ib3JkZXIoeyBjbGFzczogcHJvcHMudWk/LmJvcmRlciB9KVwiIC8+XG5cbiAgICA8dGVtcGxhdGUgdi1pZj1cImhhc0NvbnRlbnQgJiYgcHJvcHMucG9zaXRpb24gPT09ICdjZW50ZXInXCI+XG4gICAgICA8UmV1c2VDb250YWluZXIgLz5cblxuICAgICAgPGRpdiBkYXRhLXNsb3Q9XCJib3JkZXJcIiA6Y2xhc3M9XCJ1aS5ib3JkZXIoeyBjbGFzczogcHJvcHMudWk/LmJvcmRlciB9KVwiIC8+XG4gICAgPC90ZW1wbGF0ZT5cblxuICAgIDxSZXVzZUNvbnRhaW5lciB2LWlmPVwiaGFzQ29udGVudCAmJiBwcm9wcy5wb3NpdGlvbiA9PT0gJ2VuZCdcIiAvPlxuICA8L1NlcGFyYXRvcj5cbjwvdGVtcGxhdGU+XG4iXSwiZmlsZSI6IkQ6L0ZpbGUgS3VsaWFoL1NlbWVzdGVyIDcvTWFneWFzYWthX1dlYi9ub2RlX21vZHVsZXMvQG51eHQvdWkvZGlzdC9ydW50aW1lL2NvbXBvbmVudHMvU2VwYXJhdG9yLnZ1ZSIsInhfZ29vZ2xlX2lnbm9yZUxpc3QiOlswXX0=

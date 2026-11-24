@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useAnnouncements, useAssignments, useSchedules, useSemesters } from '~/composables/useData'
+import { useActiveSemester, useAnnouncements, useAssignments, useSchedules } from '~/composables/useData'
 import { parseDescription } from '~/utils/description'
+import { deadlineInfo, effectiveDate, formatDateTime } from '~/utils/date'
 // Fase 1: Beranda Angkatan
 const { data: announcements } = useAnnouncements()
 const { data: assignments } = useAssignments()
 const { data: schedules } = useSchedules()
-const { data: semesters } = useSemesters()
+const { activeSemester: currentSemester } = useActiveSemester()
 
 const pinnedAnnouncements = computed(() =>
   announcements.value?.filter((a: any) => a.is_pinned) || []
@@ -16,38 +17,24 @@ const latestAnnouncements = computed(() =>
   announcements.value?.slice(0, 5) || []
 )
 
-// Tanggal efektif tiap item: ujian -> hari pelaksanaan (tanggal_ujian),
-// tugas -> deadline. Setelah tanggal ini terlewati, item otomatis hilang
-// dari Beranda (tidak perlu checklist manual).
-function effectiveDate(a: any): string | null {
-  if (['uts', 'uas'].includes(a.tipe)) return a.tanggal_ujian || a.deadline || null
-  return a.deadline || a.tanggal_ujian || null
-}
-
-const upcomingAssignments = computed(() => {
-  const now = new Date()
-  return (assignments.value || [])
+// Tugas Mendatang: hanya yang belum selesai, urut tanggal efektif terdekat
+// (ujian memakai tanggal pelaksanaan, tugas memakai deadline). Setelah
+// tanggalnya terlewati item hilang sendiri dari Beranda.
+const upcomingAssignments = computed(() =>
+  (assignments.value || [])
     .filter((a: any) => {
       const d = effectiveDate(a)
-      return d && new Date(d) > now
+      return !a.is_completed && !!d && new Date(d) > new Date()
     })
+    .sort((a: any, b: any) =>
+      new Date(effectiveDate(a)!).getTime() - new Date(effectiveDate(b)!).getTime()
+    )
     .slice(0, 3)
-})
+)
 
-// Semester aktif = semester yang paling baru ditambahkan (created_at terbaru,
-// kemudian nomor terbesar). Beranda hanya menampilkan jadwal semester aktif,
-// sehingga jadwal semester lama tidak muncul meski harinya cocok. Bila semester
-// baru belum memiliki jadwal, "Jadwal Hari Ini" akan kosong.
-const sortedSemesters = computed(() => {
-  if (!semesters.value) return []
-  return [...semesters.value].sort((a: any, b: any) => {
-    const timeA = a.created_at ? new Date(a.created_at).getTime() : 0
-    const timeB = b.created_at ? new Date(b.created_at).getTime() : 0
-    if (timeA !== timeB) return timeB - timeA
-    return (b.nomor || 0) - (a.nomor || 0)
-  })
-})
-const currentSemester = computed(() => sortedSemesters.value[0] || null)
+// Beranda hanya menampilkan jadwal semester aktif, sehingga jadwal semester lama
+// tidak muncul meski harinya cocok. Bila semester baru belum punya jadwal,
+// "Jadwal Hari Ini" akan kosong.
 const currentSemesterId = computed(() => currentSemester.value?.id ?? null)
 
 const todaySchedule = computed(() => {
@@ -77,14 +64,9 @@ function formatDate(dateStr?: string | null) {
   })
 }
 
-function daysUntil(dateStr?: string | null) {
-  if (!dateStr) return 'Tanpa tenggat'
-  const diff = new Date(dateStr).getTime() - Date.now()
-  const days = Math.ceil(diff / 86400000)
-  if (days === 0) return 'Hari ini'
-  if (days === 1) return 'Besok'
-  return `${days} hari lagi`
-}
+// Badge tenggat: satu sumber dengan halaman Tugas.
+const dueLabel = (a: any) => deadlineInfo(effectiveDate(a)).label
+const dueTone = (a: any) => deadlineInfo(effectiveDate(a)).color
 
 const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = {
   penting: 'error',
@@ -96,6 +78,15 @@ const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = 
   Kegiatan: 'success',
   Umum: 'neutral'
 }
+
+// Sapaan mengikuti jam lokal: portal terasa ditulis untuk hari ini.
+const greeting = computed(() => {
+  const h = new Date().getHours()
+  if (h < 11) return 'Selamat pagi'
+  if (h < 15) return 'Selamat siang'
+  if (h < 19) return 'Selamat sore'
+  return 'Selamat malam'
+})
 </script>
 
 <template>
@@ -104,13 +95,13 @@ const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = 
     <section class="hero-plate relative isolate overflow-hidden">
       <UContainer class="relative py-16 md:py-24">
         <div class="grid gap-12 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
-          <div class="hero-enter">
+          <div class="hero-stagger">
             <h1 class="font-display text-[2.75rem] md:text-6xl lg:text-7xl font-extrabold tracking-[-0.035em] leading-[1.02] text-balance text-highlighted">
               Portal Kelas<br>
               <span class="text-azure-500 dark:text-azure-300">MAGYASAKA</span>
             </h1>
             <p class="mt-6 text-lg text-muted leading-relaxed max-w-[58ch]">
-              Akses informasi akademik, jadwal kuliah, tugas, dan semua yang kamu butuhkan dalam satu tempat.
+              {{ greeting }}! Akses informasi akademik, jadwal kuliah, tugas, dan semua yang kamu butuhkan dalam satu tempat.
             </p>
             <div class="mt-8 flex flex-wrap gap-3">
               <UButton
@@ -133,7 +124,7 @@ const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = 
             </div>
           </div>
 
-          <figure class="order-first lg:order-last flex flex-col items-center gap-4">
+          <figure class="hero-enter flex flex-col items-center gap-4" style="animation-delay: 160ms">
             <MagyasakaCrest :size="200" class="text-highlighted" />
             <figcaption class="text-xs uppercase tracking-[0.2em] text-muted text-center leading-relaxed max-w-60">
               MAHASISWA TEKNOLOGI REKAYASA KOMPUTER A<br>ANGKATAN 2023
@@ -273,8 +264,9 @@ const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = 
               <div class="flex-1 min-w-0">
                 <p class="font-semibold text-sm truncate">{{ task.judul }}</p>
                 <p class="text-xs text-muted">{{ task.mata_kuliah }}</p>
+                <p class="text-xs text-muted tabular-nums">{{ formatDateTime(effectiveDate(task)) }}</p>
               </div>
-              <UBadge :label="daysUntil(task.deadline)" color="warning" variant="outline" size="sm" />
+              <UBadge :label="dueLabel(task)" :color="dueTone(task)" variant="outline" size="sm" />
             </div>
           </div>
         </section>
@@ -286,7 +278,11 @@ const kategoriColor: Record<string, 'error' | 'info' | 'success' | 'neutral'> = 
           <UIcon name="i-lucide-megaphone" class="text-primary text-lg" />
           <h2 class="font-display text-xl md:text-2xl font-bold tracking-[-0.02em]">Pengumuman Terbaru</h2>
         </div>
-        <div class="divide-y divide-default">
+        <div v-if="latestAnnouncements.length === 0" class="text-center py-10 border-y border-default">
+          <UIcon name="i-lucide-megaphone" class="text-3xl text-muted mb-2" />
+          <p class="text-muted text-sm">Belum ada pengumuman terbaru.</p>
+        </div>
+        <div v-else class="divide-y divide-default">
           <article
             v-for="announcement in latestAnnouncements"
             :key="announcement.id"
