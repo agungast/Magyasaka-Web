@@ -5,9 +5,11 @@ import { CalendarDate } from '@internationalized/date'
 const props = withDefaults(defineProps<{
   modelValue?: string
   placeholder?: string
+  dateOnly?: boolean
 }>(), {
   modelValue: '',
-  placeholder: 'Pilih tanggal & waktu'
+  placeholder: 'Pilih tanggal & waktu',
+  dateOnly: false
 })
 
 const emit = defineEmits<{
@@ -34,35 +36,43 @@ function pad2(n: number) {
   return String(n).padStart(2, '0')
 }
 
+function reset() {
+  dateValue.value = undefined
+  hour.value = 0
+  minute.value = 0
+}
+
 function buildValue() {
-  if (!dateValue.value) return ''
-  return `${dateValue.value.toString()}T${pad2(hour.value ?? 0)}:${pad2(minute.value ?? 0)}`
+  const d = dateValue.value
+  if (!d) return ''
+  if (props.dateOnly) return d.toString()
+  // Kolomnya TIMESTAMPTZ: kirim instant UTC dari jam lokal browser, supaya
+  // "14:00" tersimpan sebagai 14:00 WIB, bukan 14:00 UTC.
+  return new Date(d.year, d.month - 1, d.day, hour.value ?? 0, minute.value ?? 0).toISOString()
 }
 
 function syncFromModel(v: string) {
-  if (!v) {
-    dateValue.value = undefined
+  const dateOnly = /^(\d{4})-(\d{2})-(\d{2})/.exec(v || '')
+  if (!dateOnly) {
+    reset()
+    return
+  }
+  if (props.dateOnly) {
+    // Kolom DATE tanpa zona waktu: baca tanggalnya apa adanya.
+    dateValue.value = new CalendarDate(Number(dateOnly[1]), Number(dateOnly[2]), Number(dateOnly[3]))
     hour.value = 0
     minute.value = 0
     return
   }
-  const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(v)
-  if (m) {
-    dateValue.value = new CalendarDate(Number(m[1]), Number(m[2]), Number(m[3]))
-    hour.value = Number(m[4])
-    minute.value = Number(m[5])
+  // Nilai instant (ISO UTC) → tampilkan sebagai jam lokal.
+  const d = new Date(v)
+  if (Number.isNaN(d.getTime())) {
+    reset()
     return
   }
-  const d = /^(\d{4})-(\d{2})-(\d{2})/.exec(v)
-  if (d) {
-    dateValue.value = new CalendarDate(Number(d[1]), Number(d[2]), Number(d[3]))
-    hour.value = 0
-    minute.value = 0
-  } else {
-    dateValue.value = undefined
-    hour.value = 0
-    minute.value = 0
-  }
+  dateValue.value = new CalendarDate(d.getFullYear(), d.getMonth() + 1, d.getDate())
+  hour.value = d.getHours()
+  minute.value = d.getMinutes()
 }
 
 // Initialise from the incoming modelValue once on setup.
@@ -76,13 +86,12 @@ const hasValue = computed(() => dateValue.value != null)
 const preview = computed(() => {
   const d = dateValue.value
   if (!d) return ''
-  return `${d.day} ${monthShort[d.month - 1]} ${d.year} · ${pad2(hour.value ?? 0)}:${pad2(minute.value ?? 0)}`
+  const date = `${d.day} ${monthShort[d.month - 1]} ${d.year}`
+  return props.dateOnly ? date : `${date} · ${pad2(hour.value ?? 0)}:${pad2(minute.value ?? 0)}`
 })
 
 function clear() {
-  dateValue.value = undefined
-  hour.value = 0
-  minute.value = 0
+  reset()
 }
 
 // UCalendar is generic over range/multiple; bind manually + narrow so the
@@ -126,23 +135,25 @@ watch(() => props.modelValue, (v) => {
           @update:model-value="onCalendarUpdate"
         />
 
-        <!-- Printed-rule divider, echoing the site's halftone/paper motif -->
-        <div class="border-t border-dashed border-default/40" />
+        <template v-if="!dateOnly">
+          <!-- Printed-rule divider, echoing the site's halftone/paper motif -->
+          <div class="border-t border-dashed border-default/40" />
 
-        <!-- Time selection -->
-        <div>
-          <div class="text-[10px] font-semibold text-dimmed uppercase tracking-wider mb-1.5">Waktu</div>
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="block text-[10px] font-semibold text-dimmed uppercase tracking-wider mb-1">Jam</label>
-              <USelect v-model="hour" :items="hourOptions" size="sm" class="w-full" />
-            </div>
-            <div>
-              <label class="block text-[10px] font-semibold text-dimmed uppercase tracking-wider mb-1">Menit</label>
-              <USelect v-model="minute" :items="minuteOptions" size="sm" class="w-full" />
+          <!-- Time selection -->
+          <div>
+            <div class="text-[10px] font-semibold text-dimmed uppercase tracking-wider mb-1.5">Waktu</div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[10px] font-semibold text-dimmed uppercase tracking-wider mb-1">Jam</label>
+                <USelect v-model="hour" :items="hourOptions" size="sm" class="w-full" />
+              </div>
+              <div>
+                <label class="block text-[10px] font-semibold text-dimmed uppercase tracking-wider mb-1">Menit</label>
+                <USelect v-model="minute" :items="minuteOptions" size="sm" class="w-full" />
+              </div>
             </div>
           </div>
-        </div>
+        </template>
 
         <!-- Footer actions -->
         <div class="flex items-center justify-between pt-1">

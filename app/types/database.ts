@@ -89,6 +89,7 @@ export interface Database {
           nama: string
           email: string | null
           no_telepon?: string | null
+          foto_url?: string | null
           jurusan: string
           angkatan: number
           status: string
@@ -104,6 +105,7 @@ export interface Database {
           id: string
           member_id: string
           jabatan: string
+          mata_kuliah?: string | null
           periode: string
           urutan: number
           created_at?: string | null
@@ -157,7 +159,9 @@ export interface Database {
           deskripsi: string
           detail: string
           thumbnail_url?: string | null
+          screenshots?: string[] | null
           repo_url?: string | null
+          website_url?: string | null
           demo_url?: string | null
           teknologi: string[]
           anggota: string[]

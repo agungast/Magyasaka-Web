@@ -1,0 +1,263 @@
+import { createHotContext as __vite__createHotContext } from "/_nuxt/@vite/client";import.meta.hot = __vite__createHotContext("/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/@nuxt/ui/dist/runtime/components/Toast.vue");import { useAppConfig } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/nuxt/dist/app/config.js?v=0c9a12b5";
+import { recordPosition as _tracerRecordPosition } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/vite-plugin-vue-tracer/dist/client/record.mjs?v=0c9a12b5"
+import { useSlots as _useSlots } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/vue/dist/vue.runtime.esm-bundler.js?v=0c9a12b5"
+import { ref, computed, onMounted, useTemplateRef } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/vue/dist/vue.runtime.esm-bundler.js?v=0c9a12b5";
+import { ToastRoot, ToastTitle, ToastDescription, ToastAction, ToastClose } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/reka-ui/dist/index.js?v=0c9a12b5";
+import { useForwardProps } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/@nuxt/ui/dist/runtime/composables/useForwardProps.js?v=0c9a12b5";
+import { reactivePick } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/@vueuse/core/dist/index.js?v=0c9a12b5";
+
+import { useComponentProps } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/@nuxt/ui/dist/runtime/composables/useComponentProps.js?v=0c9a12b5";
+import { useLocale } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/@nuxt/ui/dist/runtime/composables/useLocale.js?v=0c9a12b5";
+import { tv } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/@nuxt/ui/dist/runtime/utils/tv.js?v=0c9a12b5";
+import UIcon from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/@nuxt/ui/dist/runtime/components/Icon.vue";
+import UAvatar from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/@nuxt/ui/dist/runtime/components/Avatar.vue";
+import UButton from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/@nuxt/ui/dist/runtime/components/Button.vue";
+import UProgress from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/@nuxt/ui/dist/runtime/components/Progress.vue";
+
+import theme from "/_nuxt/@id/virtual:nuxt:.nuxt%2Fui%2Ftoast.ts";
+
+const _sfc_main = {
+  __name: "UToast",
+  props: {
+  as: { type: null, required: false },
+  title: { type: [String, Object, Function], required: false },
+  description: { type: [String, Object, Function], required: false },
+  icon: { type: null, required: false },
+  avatar: { type: Object, required: false },
+  color: { type: null, required: false },
+  orientation: { type: null, required: false, default: "vertical" },
+  close: { type: [Boolean, Object], required: false, default: true },
+  closeIcon: { type: null, required: false },
+  actions: { type: Array, required: false },
+  duration: { type: Number, required: false },
+  progress: { type: [Boolean, Object], required: false, default: true },
+  class: { type: null, required: false },
+  ui: { type: Object, required: false },
+  defaultOpen: { type: Boolean, required: false },
+  open: { type: Boolean, required: false },
+  type: { type: String, required: false }
+},
+  emits: ["escapeKeyDown", "pause", "resume", "swipeStart", "swipeMove", "swipeCancel", "swipeEnd", "update:open"],
+  setup(__props, { expose: __expose, emit: __emit }) {
+
+const _props = __props;
+const emits = __emit;
+const slots = _useSlots();
+const props = useComponentProps("toast", _props);
+const { t } = useLocale();
+const appConfig = useAppConfig();
+const rootProps = useForwardProps(reactivePick(props, "as", "defaultOpen", "open", "duration", "type"), emits);
+const ui = computed(() => tv({ extend: theme, ...appConfig.ui?.toast || {} })({
+  color: props.color,
+  orientation: props.orientation,
+  title: !!props.title || !!slots.title
+}));
+const rootRef = useTemplateRef("rootRef");
+const height = ref(0);
+onMounted(() => {
+  if (!rootRef.value?.$el?.getBoundingClientRect) {
+    return;
+  }
+  height.value = rootRef.value.$el.getBoundingClientRect().height;
+});
+__expose({
+  height
+});
+
+const __returned__ = { _props, emits, slots, props, t, appConfig, rootProps, ui, rootRef, height, get theme() { return theme }, ref, computed, onMounted, useTemplateRef, get ToastRoot() { return ToastRoot }, get ToastTitle() { return ToastTitle }, get ToastDescription() { return ToastDescription }, get ToastAction() { return ToastAction }, get ToastClose() { return ToastClose }, get useForwardProps() { return useForwardProps }, get reactivePick() { return reactivePick }, get useAppConfig() { return useAppConfig }, get useComponentProps() { return useComponentProps }, get useLocale() { return useLocale }, get tv() { return tv }, UIcon, UAvatar, UButton, UProgress }
+Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true })
+return __returned__
+}
+
+}
+import { renderSlot as _renderSlot, mergeProps as _mergeProps, openBlock as _openBlock, createBlock as _createBlock, createCommentVNode as _createCommentVNode, normalizeClass as _normalizeClass, resolveDynamicComponent as _resolveDynamicComponent, toDisplayString as _toDisplayString, createTextVNode as _createTextVNode, Fragment as _Fragment, createElementBlock as _createElementBlock, withCtx as _withCtx, renderList as _renderList, createVNode as _createVNode, withModifiers as _withModifiers, createElementVNode as _createElementVNode } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/vue/dist/vue.runtime.esm-bundler.js?v=0c9a12b5"
+
+function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+  return (_openBlock(), _tracer(62,2,_createBlock($setup["ToastRoot"], _mergeProps({ ref: "rootRef" }, $setup.rootProps, {
+    "data-orientation": $setup.props.orientation,
+    "data-slot": "root",
+    class: $setup.ui.root({ class: [$setup.props.ui?.root, $setup.props.class] }),
+    style: { '--height': $setup.height }
+  }), {
+    default: _withCtx(({ remaining, duration: totalDuration, open }) => [
+      _renderSlot(_ctx.$slots, "leading", { ui: $setup.ui }, () => [
+        ($setup.props.avatar)
+          ? (_openBlock(), _tracer(72,6,_createBlock($setup["UAvatar"], _mergeProps({
+              key: 0,
+              size: $setup.props.ui?.avatarSize || $setup.ui.avatarSize()
+            }, $setup.props.avatar, {
+              "data-slot": "avatar",
+              class: $setup.ui.avatar({ class: $setup.props.ui?.avatar })
+            }), null, 16 /* FULL_PROPS */, ["size", "class"])))
+          : ($setup.props.icon)
+            ? (_openBlock(), _tracer(73,6,_createBlock($setup["UIcon"], {
+                key: 1,
+                name: $setup.props.icon,
+                "data-slot": "icon",
+                class: _normalizeClass($setup.ui.icon({ class: $setup.props.ui?.icon }))
+              }, null, 8 /* PROPS */, ["name", "class"])))
+            : _createCommentVNode("v-if", true)
+      ]),
+      _tracer(76,4,_createElementVNode("div", {
+        "data-slot": "wrapper",
+        class: _normalizeClass($setup.ui.wrapper({ class: $setup.props.ui?.wrapper }))
+      }, [
+        ($setup.props.title || !!$setup.slots.title)
+          ? (_openBlock(), _tracer(77,6,_createBlock($setup["ToastTitle"], {
+              key: 0,
+              "data-slot": "title",
+              class: _normalizeClass($setup.ui.title({ class: $setup.props.ui?.title }))
+            }, {
+              default: _withCtx(() => [
+                _renderSlot(_ctx.$slots, "title", {}, () => [
+                  (typeof $setup.props.title === 'function')
+                    ? (_openBlock(), _tracer(79,10,_createBlock(_resolveDynamicComponent($setup.props.title()), { key: 0 })))
+                    : (typeof $setup.props.title === 'object')
+                      ? (_openBlock(), _tracer(80,10,_createBlock(_resolveDynamicComponent($setup.props.title), { key: 1 })))
+                      : (_openBlock(), _tracer(81,10,_createElementBlock(_Fragment, { key: 2 }, [
+                          _createTextVNode(_toDisplayString($setup.props.title), 1 /* TEXT */)
+                        ], 64 /* STABLE_FRAGMENT */)))
+                ])
+              ]),
+              _: 3 /* FORWARDED */
+            }, 8 /* PROPS */, ["class"])))
+          : _createCommentVNode("v-if", true),
+        ($setup.props.description || !!$setup.slots.description)
+          ? (_openBlock(), _tracer(86,6,_createBlock($setup["ToastDescription"], {
+              key: 1,
+              "data-slot": "description",
+              class: _normalizeClass($setup.ui.description({ class: $setup.props.ui?.description }))
+            }, {
+              default: _withCtx(() => [
+                _renderSlot(_ctx.$slots, "description", {}, () => [
+                  (typeof $setup.props.description === 'function')
+                    ? (_openBlock(), _tracer(88,10,_createBlock(_resolveDynamicComponent($setup.props.description()), { key: 0 })))
+                    : (typeof $setup.props.description === 'object')
+                      ? (_openBlock(), _tracer(89,10,_createBlock(_resolveDynamicComponent($setup.props.description), { key: 1 })))
+                      : (_openBlock(), _tracer(90,10,_createElementBlock(_Fragment, { key: 2 }, [
+                          _createTextVNode(_toDisplayString($setup.props.description), 1 /* TEXT */)
+                        ], 64 /* STABLE_FRAGMENT */)))
+                ])
+              ]),
+              _: 3 /* FORWARDED */
+            }, 8 /* PROPS */, ["class"])))
+          : _createCommentVNode("v-if", true),
+        ($setup.props.orientation === 'vertical' && ($setup.props.actions?.length || !!$setup.slots.actions))
+          ? (_openBlock(), _tracer(96,6,_createElementBlock("div", {
+              key: 2,
+              "data-slot": "actions",
+              class: _normalizeClass($setup.ui.actions({ class: $setup.props.ui?.actions }))
+            }, [
+              _renderSlot(_ctx.$slots, "actions", {}, () => [
+                (_openBlock(true), _tracer(98,10,_createElementBlock(_Fragment, null, _renderList($setup.props.actions, ({ closeOnClick, ...action }, index) => {
+                  return (_openBlock(), _tracer(98,10,_createBlock($setup["ToastAction"], {
+                    key: index,
+                    "alt-text": action.label || 'Action',
+                    "close-on-click": closeOnClick,
+                    "as-child": "",
+                    onClick: _cache[0] || (_cache[0] = _withModifiers(() => {}, ["stop"]))
+                  }, {
+                    default: _withCtx(() => [
+                      _tracer(106,12,_createVNode($setup["UButton"], _mergeProps({
+                        size: "xs",
+                        color: $setup.props.color
+                      }, { ref_for: true }, action), null, 16 /* FULL_PROPS */, ["color"]))
+                    ]),
+                    _: 2 /* DYNAMIC */
+                  }, 1032 /* PROPS, DYNAMIC_SLOTS */, ["alt-text", "close-on-click"])))
+                }), 128 /* KEYED_FRAGMENT */)))
+              ])
+            ], 2 /* CLASS */)))
+          : _createCommentVNode("v-if", true)
+      ], 2 /* CLASS */)),
+      ($setup.props.orientation === 'horizontal' && ($setup.props.actions?.length || !!$setup.slots.actions) || $setup.props.close)
+        ? (_openBlock(), _tracer(112,4,_createElementBlock("div", {
+            key: 0,
+            "data-slot": "actions",
+            class: _normalizeClass($setup.ui.actions({ class: $setup.props.ui?.actions, orientation: 'horizontal' }))
+          }, [
+            ($setup.props.orientation === 'horizontal' && ($setup.props.actions?.length || !!$setup.slots.actions))
+              ? _renderSlot(_ctx.$slots, "actions", {}, () => [
+                  (_openBlock(true), _tracer(115,10,_createElementBlock(_Fragment, null, _renderList($setup.props.actions, ({ closeOnClick, ...action }, index) => {
+                    return (_openBlock(), _tracer(115,10,_createBlock($setup["ToastAction"], {
+                      key: index,
+                      "alt-text": action.label || 'Action',
+                      "close-on-click": closeOnClick,
+                      "as-child": "",
+                      onClick: _cache[1] || (_cache[1] = _withModifiers(() => {}, ["stop"]))
+                    }, {
+                      default: _withCtx(() => [
+                        _tracer(123,12,_createVNode($setup["UButton"], _mergeProps({
+                          size: "xs",
+                          color: $setup.props.color
+                        }, { ref_for: true }, action), null, 16 /* FULL_PROPS */, ["color"]))
+                      ]),
+                      _: 2 /* DYNAMIC */
+                    }, 1032 /* PROPS, DYNAMIC_SLOTS */, ["alt-text", "close-on-click"])))
+                  }), 128 /* KEYED_FRAGMENT */)))
+                ], undefined, 0)
+              : _createCommentVNode("v-if", true),
+            ($setup.props.close || !!$setup.slots.close)
+              ? (_openBlock(), _tracer(128,6,_createBlock($setup["ToastClose"], {
+                  key: 1,
+                  "as-child": ""
+                }, {
+                  default: _withCtx(() => [
+                    _renderSlot(_ctx.$slots, "close", { ui: $setup.ui }, () => [
+                      ($setup.props.close)
+                        ? (_openBlock(), _tracer(130,10,_createBlock($setup["UButton"], _mergeProps({
+                            key: 0,
+                            icon: $setup.props.closeIcon || $setup.appConfig.ui.icons.close,
+                            color: "neutral",
+                            variant: "link",
+                            "aria-label": $setup.t('toast.close')
+                          }, typeof $setup.props.close === 'object' ? $setup.props.close : {}, {
+                            "data-slot": "close",
+                            class: $setup.ui.close({ class: $setup.props.ui?.close }),
+                            onClick: _cache[2] || (_cache[2] = _withModifiers(() => {}, ["stop"]))
+                          }), null, 16 /* FULL_PROPS */, ["icon", "aria-label", "class"])))
+                        : _createCommentVNode("v-if", true)
+                    ])
+                  ]),
+                  _: 3 /* FORWARDED */
+                })))
+              : _createCommentVNode("v-if", true)
+          ], 2 /* CLASS */)))
+        : _createCommentVNode("v-if", true),
+      ($setup.props.progress && open && remaining > 0 && totalDuration)
+        ? (_openBlock(), _tracer(145,4,_createBlock($setup["UProgress"], _mergeProps({
+            key: 1,
+            "model-value": remaining / totalDuration * 100,
+            color: $setup.props.color
+          }, typeof $setup.props.progress === 'object' ? $setup.props.progress : {}, {
+            size: "sm",
+            "data-slot": "progress",
+            class: $setup.ui.progress({ class: $setup.props.ui?.progress })
+          }), null, 16 /* FULL_PROPS */, ["model-value", "color", "class"])))
+        : _createCommentVNode("v-if", true)
+    ]),
+    _: 3 /* FORWARDED */
+  }, 16 /* FULL_PROPS */, ["data-orientation", "class", "style"])))
+}
+
+
+
+_sfc_main.__hmrId = "8176f7c0"
+typeof __VUE_HMR_RUNTIME__ !== 'undefined' && __VUE_HMR_RUNTIME__.createRecord(_sfc_main.__hmrId, _sfc_main)
+import.meta.hot.on('file-changed', ({ file }) => {
+  __VUE_HMR_RUNTIME__.CHANGED_FILE = file
+})
+import.meta.hot.accept(mod => {
+  if (!mod) return
+  const { default: updated, _rerender_only } = mod
+  if (_rerender_only) {
+    __VUE_HMR_RUNTIME__.rerender(updated.__hmrId, updated.render)
+  } else {
+    __VUE_HMR_RUNTIME__.reload(updated.__hmrId, updated)
+  }
+})
+import _export_sfc from "/_nuxt/@id/__x00__plugin-vue:export-helper"
+export default /*#__PURE__*/_export_sfc(_sfc_main, [['render',_sfc_render],['__file',"D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/@nuxt/ui/dist/runtime/components/Toast.vue"]])
+function _tracer(line, column, vnode) { return _tracerRecordPosition("node_modules/@nuxt/ui/dist/runtime/components/Toast.vue", line, column, vnode) }
+
+//# sourceMappingURL=data:application/json;base64,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UUFBQztvQ0FDQyxZQUFLLENBQUMsS0FBSyxnQkFBZ0IsWUFBSyxDQUFDLEtBQUs7NEJBQ3JELFdBQVMsRUFBQyxPQUFPOzRCQUNoQixLQUFLLEVBQUUsU0FBRSxDQUFDLEtBQUssVUFBVSxZQUFLLENBQUMsRUFBRSxFQUFFLEtBQUs7NEJBQ3hDLE9BQUssMkNBQU4sUUFBVzs7Ozs7Ozs7OztPQU9YLFlBQUssQ0FBQyxRQUFRLElBQUksSUFBSSxJQUFJLFNBQVMsUUFBUSxhQUFhO3VDQURoRSxhQVFFLHFCQVJGLFlBUUU7O1lBTkMsYUFBVyxFQUFFLFNBQVMsR0FBRyxhQUFhO1lBQ3RDLEtBQUssRUFBRSxZQUFLLENBQUM7b0JBQ0MsWUFBSyxDQUFDLFFBQVEsZ0JBQWdCLFlBQUssQ0FBQyxRQUFRO1lBQzNELElBQUksRUFBQyxJQUFJO1lBQ1QsV0FBUyxFQUFDLFVBQVU7WUFDbkIsS0FBSyxFQUFFLFNBQUUsQ0FBQyxRQUFRLFVBQVUsWUFBSyxDQUFDLEVBQUUsRUFBRSxRQUFRIiwibmFtZXMiOltdLCJpZ25vcmVMaXN0IjpbXSwic291cmNlcyI6WyJUb2FzdC52dWUiXSwic291cmNlc0NvbnRlbnQiOlsiPHNjcmlwdD5cbmltcG9ydCB0aGVtZSBmcm9tIFwiI2J1aWxkL3VpL3RvYXN0XCI7XG48L3NjcmlwdD5cblxuPHNjcmlwdCBzZXR1cD5cbmltcG9ydCB7IHJlZiwgY29tcHV0ZWQsIG9uTW91bnRlZCwgdXNlVGVtcGxhdGVSZWYgfSBmcm9tIFwidnVlXCI7XG5pbXBvcnQgeyBUb2FzdFJvb3QsIFRvYXN0VGl0bGUsIFRvYXN0RGVzY3JpcHRpb24sIFRvYXN0QWN0aW9uLCBUb2FzdENsb3NlIH0gZnJvbSBcInJla2EtdWlcIjtcbmltcG9ydCB7IHVzZUZvcndhcmRQcm9wcyB9IGZyb20gXCIuLi9jb21wb3NhYmxlcy91c2VGb3J3YXJkUHJvcHNcIjtcbmltcG9ydCB7IHJlYWN0aXZlUGljayB9IGZyb20gXCJAdnVldXNlL2NvcmVcIjtcbmltcG9ydCB7IHVzZUFwcENvbmZpZyB9IGZyb20gXCIjaW1wb3J0c1wiO1xuaW1wb3J0IHsgdXNlQ29tcG9uZW50UHJvcHMgfSBmcm9tIFwiLi4vY29tcG9zYWJsZXMvdXNlQ29tcG9uZW50UHJvcHNcIjtcbmltcG9ydCB7IHVzZUxvY2FsZSB9IGZyb20gXCIuLi9jb21wb3NhYmxlcy91c2VMb2NhbGVcIjtcbmltcG9ydCB7IHR2IH0gZnJvbSBcIi4uL3V0aWxzL3R2XCI7XG5pbXBvcnQgVUljb24gZnJvbSBcIi4vSWNvbi52dWVcIjtcbmltcG9ydCBVQXZhdGFyIGZyb20gXCIuL0F2YXRhci52dWVcIjtcbmltcG9ydCBVQnV0dG9uIGZyb20gXCIuL0J1dHRvbi52dWVcIjtcbmltcG9ydCBVUHJvZ3Jlc3MgZnJvbSBcIi4vUHJvZ3Jlc3MudnVlXCI7XG5jb25zdCBfcHJvcHMgPSBkZWZpbmVQcm9wcyh7XG4gIGFzOiB7IHR5cGU6IG51bGwsIHJlcXVpcmVkOiBmYWxzZSB9LFxuICB0aXRsZTogeyB0eXBlOiBbU3RyaW5nLCBPYmplY3QsIEZ1bmN0aW9uXSwgcmVxdWlyZWQ6IGZhbHNlIH0sXG4gIGRlc2NyaXB0aW9uOiB7IHR5cGU6IFtTdHJpbmcsIE9iamVjdCwgRnVuY3Rpb25dLCByZXF1aXJlZDogZmFsc2UgfSxcbiAgaWNvbjogeyB0eXBlOiBudWxsLCByZXF1aXJlZDogZmFsc2UgfSxcbiAgYXZhdGFyOiB7IHR5cGU6IE9iamVjdCwgcmVxdWlyZWQ6IGZhbHNlIH0sXG4gIGNvbG9yOiB7IHR5cGU6IG51bGwsIHJlcXVpcmVkOiBmYWxzZSB9LFxuICBvcmllbnRhdGlvbjogeyB0eXBlOiBudWxsLCByZXF1aXJlZDogZmFsc2UsIGRlZmF1bHQ6IFwidmVydGljYWxcIiB9LFxuICBjbG9zZTogeyB0eXBlOiBbQm9vbGVhbiwgT2JqZWN0XSwgcmVxdWlyZWQ6IGZhbHNlLCBkZWZhdWx0OiB0cnVlIH0sXG4gIGNsb3NlSWNvbjogeyB0eXBlOiBudWxsLCByZXF1aXJlZDogZmFsc2UgfSxcbiAgYWN0aW9uczogeyB0eXBlOiBBcnJheSwgcmVxdWlyZWQ6IGZhbHNlIH0sXG4gIGR1cmF0aW9uOiB7IHR5cGU6IE51bWJlciwgcmVxdWlyZWQ6IGZhbHNlIH0sXG4gIHByb2dyZXNzOiB7IHR5cGU6IFtCb29sZWFuLCBPYmplY3RdLCByZXF1aXJlZDogZmFsc2UsIGRlZmF1bHQ6IHRydWUgfSxcbiAgY2xhc3M6IHsgdHlwZTogbnVsbCwgcmVxdWlyZWQ6IGZhbHNlIH0sXG4gIHVpOiB7IHR5cGU6IE9iamVjdCwgcmVxdWlyZWQ6IGZhbHNlIH0sXG4gIGRlZmF1bHRPcGVuOiB7IHR5cGU6IEJvb2xlYW4sIHJlcXVpcmVkOiBmYWxzZSB9LFxuICBvcGVuOiB7IHR5cGU6IEJvb2xlYW4sIHJlcXVpcmVkOiBmYWxzZSB9LFxuICB0eXBlOiB7IHR5cGU6IFN0cmluZywgcmVxdWlyZWQ6IGZhbHNlIH1cbn0pO1xuY29uc3QgZW1pdHMgPSBkZWZpbmVFbWl0cyhbXCJlc2NhcGVLZXlEb3duXCIsIFwicGF1c2VcIiwgXCJyZXN1bWVcIiwgXCJzd2lwZVN0YXJ0XCIsIFwic3dpcGVNb3ZlXCIsIFwic3dpcGVDYW5jZWxcIiwgXCJzd2lwZUVuZFwiLCBcInVwZGF0ZTpvcGVuXCJdKTtcbmNvbnN0IHNsb3RzID0gZGVmaW5lU2xvdHMoKTtcbmNvbnN0IHByb3BzID0gdXNlQ29tcG9uZW50UHJvcHMoXCJ0b2FzdFwiLCBfcHJvcHMpO1xuY29uc3QgeyB0IH0gPSB1c2VMb2NhbGUoKTtcbmNvbnN0IGFwcENvbmZpZyA9IHVzZUFwcENvbmZpZygpO1xuY29uc3Qgcm9vdFByb3BzID0gdXNlRm9yd2FyZFByb3BzKHJlYWN0aXZlUGljayhwcm9wcywgXCJhc1wiLCBcImRlZmF1bHRPcGVuXCIsIFwib3BlblwiLCBcImR1cmF0aW9uXCIsIFwidHlwZVwiKSwgZW1pdHMpO1xuY29uc3QgdWkgPSBjb21wdXRlZCgoKSA9PiB0dih7IGV4dGVuZDogdGhlbWUsIC4uLmFwcENvbmZpZy51aT8udG9hc3QgfHwge30gfSkoe1xuICBjb2xvcjogcHJvcHMuY29sb3IsXG4gIG9yaWVudGF0aW9uOiBwcm9wcy5vcmllbnRhdGlvbixcbiAgdGl0bGU6ICEhcHJvcHMudGl0bGUgfHwgISFzbG90cy50aXRsZVxufSkpO1xuY29uc3Qgcm9vdFJlZiA9IHVzZVRlbXBsYXRlUmVmKFwicm9vdFJlZlwiKTtcbmNvbnN0IGhlaWdodCA9IHJlZigwKTtcbm9uTW91bnRlZCgoKSA9PiB7XG4gIGlmICghcm9vdFJlZi52YWx1ZT8uJGVsPy5nZXRCb3VuZGluZ0NsaWVudFJlY3QpIHtcbiAgICByZXR1cm47XG4gIH1cbiAgaGVpZ2h0LnZhbHVlID0gcm9vdFJlZi52YWx1ZS4kZWwuZ2V0Qm91bmRpbmdDbGllbnRSZWN0KCkuaGVpZ2h0O1xufSk7XG5kZWZpbmVFeHBvc2Uoe1xuICBoZWlnaHRcbn0pO1xuPC9zY3JpcHQ+XG5cbjx0ZW1wbGF0ZT5cbiAgPFRvYXN0Um9vdFxuICAgIHJlZj1cInJvb3RSZWZcIlxuICAgIHYtc2xvdD1cInsgcmVtYWluaW5nLCBkdXJhdGlvbjogdG90YWxEdXJhdGlvbiwgb3BlbiB9XCJcbiAgICB2LWJpbmQ9XCJyb290UHJvcHNcIlxuICAgIDpkYXRhLW9yaWVudGF0aW9uPVwicHJvcHMub3JpZW50YXRpb25cIlxuICAgIGRhdGEtc2xvdD1cInJvb3RcIlxuICAgIDpjbGFzcz1cInVpLnJvb3QoeyBjbGFzczogW3Byb3BzLnVpPy5yb290LCBwcm9wcy5jbGFzc10gfSlcIlxuICAgIDpzdHlsZT1cInsgJy0taGVpZ2h0JzogaGVpZ2h0IH1cIlxuICA+XG4gICAgPHNsb3QgbmFtZT1cImxlYWRpbmdcIiA6dWk9XCJ1aVwiPlxuICAgICAgPFVBdmF0YXIgdi1pZj1cInByb3BzLmF2YXRhclwiIDpzaXplPVwicHJvcHMudWk/LmF2YXRhclNpemUgfHwgdWkuYXZhdGFyU2l6ZSgpXCIgdi1iaW5kPVwicHJvcHMuYXZhdGFyXCIgZGF0YS1zbG90PVwiYXZhdGFyXCIgOmNsYXNzPVwidWkuYXZhdGFyKHsgY2xhc3M6IHByb3BzLnVpPy5hdmF0YXIgfSlcIiAvPlxuICAgICAgPFVJY29uIHYtZWxzZS1pZj1cInByb3BzLmljb25cIiA6bmFtZT1cInByb3BzLmljb25cIiBkYXRhLXNsb3Q9XCJpY29uXCIgOmNsYXNzPVwidWkuaWNvbih7IGNsYXNzOiBwcm9wcy51aT8uaWNvbiB9KVwiIC8+XG4gICAgPC9zbG90PlxuXG4gICAgPGRpdiBkYXRhLXNsb3Q9XCJ3cmFwcGVyXCIgOmNsYXNzPVwidWkud3JhcHBlcih7IGNsYXNzOiBwcm9wcy51aT8ud3JhcHBlciB9KVwiPlxuICAgICAgPFRvYXN0VGl0bGUgdi1pZj1cInByb3BzLnRpdGxlIHx8ICEhc2xvdHMudGl0bGVcIiBkYXRhLXNsb3Q9XCJ0aXRsZVwiIDpjbGFzcz1cInVpLnRpdGxlKHsgY2xhc3M6IHByb3BzLnVpPy50aXRsZSB9KVwiPlxuICAgICAgICA8c2xvdCBuYW1lPVwidGl0bGVcIj5cbiAgICAgICAgICA8Y29tcG9uZW50IDppcz1cInByb3BzLnRpdGxlKClcIiB2LWlmPVwidHlwZW9mIHByb3BzLnRpdGxlID09PSAnZnVuY3Rpb24nXCIgLz5cbiAgICAgICAgICA8Y29tcG9uZW50IDppcz1cInByb3BzLnRpdGxlXCIgdi1lbHNlLWlmPVwidHlwZW9mIHByb3BzLnRpdGxlID09PSAnb2JqZWN0J1wiIC8+XG4gICAgICAgICAgPHRlbXBsYXRlIHYtZWxzZT5cbiAgICAgICAgICAgIHt7IHByb3BzLnRpdGxlIH19XG4gICAgICAgICAgPC90ZW1wbGF0ZT5cbiAgICAgICAgPC9zbG90PlxuICAgICAgPC9Ub2FzdFRpdGxlPlxuICAgICAgPFRvYXN0RGVzY3JpcHRpb24gdi1pZj1cInByb3BzLmRlc2NyaXB0aW9uIHx8ICEhc2xvdHMuZGVzY3JpcHRpb25cIiBkYXRhLXNsb3Q9XCJkZXNjcmlwdGlvblwiIDpjbGFzcz1cInVpLmRlc2NyaXB0aW9uKHsgY2xhc3M6IHByb3BzLnVpPy5kZXNjcmlwdGlvbiB9KVwiPlxuICAgICAgICA8c2xvdCBuYW1lPVwiZGVzY3JpcHRpb25cIj5cbiAgICAgICAgICA8Y29tcG9uZW50IDppcz1cInByb3BzLmRlc2NyaXB0aW9uKClcIiB2LWlmPVwidHlwZW9mIHByb3BzLmRlc2NyaXB0aW9uID09PSAnZnVuY3Rpb24nXCIgLz5cbiAgICAgICAgICA8Y29tcG9uZW50IDppcz1cInByb3BzLmRlc2NyaXB0aW9uXCIgdi1lbHNlLWlmPVwidHlwZW9mIHByb3BzLmRlc2NyaXB0aW9uID09PSAnb2JqZWN0J1wiIC8+XG4gICAgICAgICAgPHRlbXBsYXRlIHYtZWxzZT5cbiAgICAgICAgICAgIHt7IHByb3BzLmRlc2NyaXB0aW9uIH19XG4gICAgICAgICAgPC90ZW1wbGF0ZT5cbiAgICAgICAgPC9zbG90PlxuICAgICAgPC9Ub2FzdERlc2NyaXB0aW9uPlxuXG4gICAgICA8ZGl2IHYtaWY9XCJwcm9wcy5vcmllbnRhdGlvbiA9PT0gJ3ZlcnRpY2FsJyAmJiAocHJvcHMuYWN0aW9ucz8ubGVuZ3RoIHx8ICEhc2xvdHMuYWN0aW9ucylcIiBkYXRhLXNsb3Q9XCJhY3Rpb25zXCIgOmNsYXNzPVwidWkuYWN0aW9ucyh7IGNsYXNzOiBwcm9wcy51aT8uYWN0aW9ucyB9KVwiPlxuICAgICAgICA8c2xvdCBuYW1lPVwiYWN0aW9uc1wiPlxuICAgICAgICAgIDxUb2FzdEFjdGlvblxuICAgICAgICAgICAgdi1mb3I9XCIoeyBjbG9zZU9uQ2xpY2ssIC4uLmFjdGlvbiB9LCBpbmRleCkgaW4gcHJvcHMuYWN0aW9uc1wiXG4gICAgICAgICAgICA6a2V5PVwiaW5kZXhcIlxuICAgICAgICAgICAgOmFsdC10ZXh0PVwiYWN0aW9uLmxhYmVsIHx8ICdBY3Rpb24nXCJcbiAgICAgICAgICAgIDpjbG9zZS1vbi1jbGljaz1cImNsb3NlT25DbGlja1wiXG4gICAgICAgICAgICBhcy1jaGlsZFxuICAgICAgICAgICAgQGNsaWNrLnN0b3BcbiAgICAgICAgICA+XG4gICAgICAgICAgICA8VUJ1dHRvbiBzaXplPVwieHNcIiA6Y29sb3I9XCJwcm9wcy5jb2xvclwiIHYtYmluZD1cImFjdGlvblwiIC8+XG4gICAgICAgICAgPC9Ub2FzdEFjdGlvbj5cbiAgICAgICAgPC9zbG90PlxuICAgICAgPC9kaXY+XG4gICAgPC9kaXY+XG5cbiAgICA8ZGl2IHYtaWY9XCJwcm9wcy5vcmllbnRhdGlvbiA9PT0gJ2hvcml6b250YWwnICYmIChwcm9wcy5hY3Rpb25zPy5sZW5ndGggfHwgISFzbG90cy5hY3Rpb25zKSB8fCBwcm9wcy5jbG9zZVwiIGRhdGEtc2xvdD1cImFjdGlvbnNcIiA6Y2xhc3M9XCJ1aS5hY3Rpb25zKHsgY2xhc3M6IHByb3BzLnVpPy5hY3Rpb25zLCBvcmllbnRhdGlvbjogJ2hvcml6b250YWwnIH0pXCI+XG4gICAgICA8dGVtcGxhdGUgdi1pZj1cInByb3BzLm9yaWVudGF0aW9uID09PSAnaG9yaXpvbnRhbCcgJiYgKHByb3BzLmFjdGlvbnM/Lmxlbmd0aCB8fCAhIXNsb3RzLmFjdGlvbnMpXCI+XG4gICAgICAgIDxzbG90IG5hbWU9XCJhY3Rpb25zXCI+XG4gICAgICAgICAgPFRvYXN0QWN0aW9uXG4gICAgICAgICAgICB2LWZvcj1cIih7IGNsb3NlT25DbGljaywgLi4uYWN0aW9uIH0sIGluZGV4KSBpbiBwcm9wcy5hY3Rpb25zXCJcbiAgICAgICAgICAgIDprZXk9XCJpbmRleFwiXG4gICAgICAgICAgICA6YWx0LXRleHQ9XCJhY3Rpb24ubGFiZWwgfHwgJ0FjdGlvbidcIlxuICAgICAgICAgICAgOmNsb3NlLW9uLWNsaWNrPVwiY2xvc2VPbkNsaWNrXCJcbiAgICAgICAgICAgIGFzLWNoaWxkXG4gICAgICAgICAgICBAY2xpY2suc3RvcFxuICAgICAgICAgID5cbiAgICAgICAgICAgIDxVQnV0dG9uIHNpemU9XCJ4c1wiIDpjb2xvcj1cInByb3BzLmNvbG9yXCIgdi1iaW5kPVwiYWN0aW9uXCIgLz5cbiAgICAgICAgICA8L1RvYXN0QWN0aW9uPlxuICAgICAgICA8L3Nsb3Q+XG4gICAgICA8L3RlbXBsYXRlPlxuXG4gICAgICA8VG9hc3RDbG9zZSB2LWlmPVwicHJvcHMuY2xvc2UgfHwgISFzbG90cy5jbG9zZVwiIGFzLWNoaWxkPlxuICAgICAgICA8c2xvdCBuYW1lPVwiY2xvc2VcIiA6dWk9XCJ1aVwiPlxuICAgICAgICAgIDxVQnV0dG9uXG4gICAgICAgICAgICB2LWlmPVwicHJvcHMuY2xvc2VcIlxuICAgICAgICAgICAgOmljb249XCJwcm9wcy5jbG9zZUljb24gfHwgYXBwQ29uZmlnLnVpLmljb25zLmNsb3NlXCJcbiAgICAgICAgICAgIGNvbG9yPVwibmV1dHJhbFwiXG4gICAgICAgICAgICB2YXJpYW50PVwibGlua1wiXG4gICAgICAgICAgICA6YXJpYS1sYWJlbD1cInQoJ3RvYXN0LmNsb3NlJylcIlxuICAgICAgICAgICAgdi1iaW5kPVwidHlwZW9mIHByb3BzLmNsb3NlID09PSAnb2JqZWN0JyA/IHByb3BzLmNsb3NlIDoge31cIlxuICAgICAgICAgICAgZGF0YS1zbG90PVwiY2xvc2VcIlxuICAgICAgICAgICAgOmNsYXNzPVwidWkuY2xvc2UoeyBjbGFzczogcHJvcHMudWk/LmNsb3NlIH0pXCJcbiAgICAgICAgICAgIEBjbGljay5zdG9wXG4gICAgICAgICAgLz5cbiAgICAgICAgPC9zbG90PlxuICAgICAgPC9Ub2FzdENsb3NlPlxuICAgIDwvZGl2PlxuXG4gICAgPFVQcm9ncmVzc1xuICAgICAgdi1pZj1cInByb3BzLnByb2dyZXNzICYmIG9wZW4gJiYgcmVtYWluaW5nID4gMCAmJiB0b3RhbER1cmF0aW9uXCJcbiAgICAgIDptb2RlbC12YWx1ZT1cInJlbWFpbmluZyAvIHRvdGFsRHVyYXRpb24gKiAxMDBcIlxuICAgICAgOmNvbG9yPVwicHJvcHMuY29sb3JcIlxuICAgICAgdi1iaW5kPVwidHlwZW9mIHByb3BzLnByb2dyZXNzID09PSAnb2JqZWN0JyA/IHByb3BzLnByb2dyZXNzIDoge31cIlxuICAgICAgc2l6ZT1cInNtXCJcbiAgICAgIGRhdGEtc2xvdD1cInByb2dyZXNzXCJcbiAgICAgIDpjbGFzcz1cInVpLnByb2dyZXNzKHsgY2xhc3M6IHByb3BzLnVpPy5wcm9ncmVzcyB9KVwiXG4gICAgLz5cbiAgPC9Ub2FzdFJvb3Q+XG48L3RlbXBsYXRlPlxuIl0sImZpbGUiOiJEOi9GaWxlIEt1bGlhaC9TZW1lc3RlciA3L01hZ3lhc2FrYV9XZWIvbm9kZV9tb2R1bGVzL0BudXh0L3VpL2Rpc3QvcnVudGltZS9jb21wb25lbnRzL1RvYXN0LnZ1ZSIsInhfZ29vZ2xlX2lnbm9yZUxpc3QiOlswXX0=

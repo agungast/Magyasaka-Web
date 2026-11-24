@@ -3,23 +3,23 @@
 Portal akademik kelas: pengumuman, jadwal, tugas/ujian, pengurus, galeri, dan proyek.
 
 ## Prasyarat
-- Node.js 20+
-- Akun Supabase (project `vwfwnsrplkfolmgehxbb` atau ganti `.env`)
+- Node.js 22.22+ (CI memakai 24)
+- Akun Supabase (isi `.env` dari `.env.example`)
 
 ## Setup
 ```bash
 npm install
 ```
 
-Isi `.env` (salin dari `.env.example` jika ada; sudah berisi `SUPABASE_URL` dan `SUPABASE_KEY` default):
+Isi `.env` (salin dari `.env.example`):
 ```
-SUPABASE_URL=https://vwfwnsrplkfolmgehxbb.supabase.co
-SUPABASE_KEY=eyJ...
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_KEY=your-anon-key-here
 ```
 
 ## Migrasi
 ```bash
-npx supabase db push --project-id vwfwnsrplkfolmgehxbb
+npx supabase db push
 ```
 Lalu matikan **Allow new users to sign up** di dashboard Supabase (`Authentication → Providers`).
 

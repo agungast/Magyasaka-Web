@@ -1,0 +1,219 @@
+import { createHotContext as __vite__createHotContext } from "/_nuxt/@vite/client";import.meta.hot = __vite__createHotContext("/pages/login.vue");import { default as __nuxt_component_0 } from "/_nuxt/components/MagyasakaCrest.vue";
+import { default as __nuxt_component_1 } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/@nuxt/ui/dist/runtime/components/Alert.vue";
+import { default as __nuxt_component_2 } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/@nuxt/ui/dist/runtime/components/Input.vue";
+import { default as __nuxt_component_3 } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/@nuxt/ui/dist/runtime/components/Button.vue";
+import { default as __nuxt_component_4 } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/@nuxt/ui/dist/runtime/components/Separator.vue";
+import { default as __nuxt_component_5 } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/@nuxt/ui/dist/runtime/components/Card.vue";
+import { useSupabaseClient } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/@nuxtjs/supabase/dist/runtime/composables/useSupabaseClient.js?v=0c9a12b5";
+import { useSupabaseUser } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/@nuxtjs/supabase/dist/runtime/composables/useSupabaseUser.js?v=0c9a12b5";
+import { recordPosition as _tracerRecordPosition } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/vite-plugin-vue-tracer/dist/client/record.mjs?v=0c9a12b5"
+import { defineComponent as _defineComponent } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/vue/dist/vue.runtime.esm-bundler.js?v=0c9a12b5";
+import { useSeoMeta } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/nuxt/dist/app/index.js?v=0c9a12b5";
+import { ref, watch } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/vue/dist/vue.runtime.esm-bundler.js?v=0c9a12b5";
+import { useRouter } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/nuxt/node_modules/vue-router/dist/vue-router.js?v=0c9a12b5";
+
+// Fase 4: Login Pengurus
+const _sfc_main = /*@__PURE__*/ _defineComponent({
+	__name: "login",
+	setup(__props, { expose: __expose }) {
+		__expose();
+		useSeoMeta({ title: "Login Pengurus - Magyasaka" });
+		const supabase = useSupabaseClient();
+		const user = useSupabaseUser();
+		const router = useRouter();
+		const email = ref("");
+		const password = ref("");
+		const showPassword = ref(false);
+		const loading = ref(false);
+		const errorMsg = ref("");
+		// Redirect if already logged in
+		watch(user, (val) => {
+			if (val) {
+				router.push("/admin");
+			}
+		}, { immediate: true });
+		async function handleLogin() {
+			loading.value = true;
+			errorMsg.value = "";
+			try {
+				const { error } = await supabase.auth.signInWithPassword({
+					email: email.value,
+					password: password.value
+				});
+				if (error) {
+					errorMsg.value = error.message === "Invalid login credentials" ? "Email atau password salah. Pastikan akun sudah terdaftar dengan menghubungi admin." : error.message;
+				} else {
+					router.push("/admin");
+				}
+			} catch {
+				errorMsg.value = "Terjadi kesalahan. Pastikan koneksi ke Supabase sudah dikonfigurasi.";
+			} finally {
+				loading.value = false;
+			}
+		}
+		const __returned__ = {
+			supabase,
+			user,
+			router,
+			email,
+			password,
+			showPassword,
+			loading,
+			errorMsg,
+			handleLogin
+		};
+		Object.defineProperty(__returned__, "__isScriptSetup", {
+			enumerable: false,
+			value: true
+		});
+		return __returned__;
+	}
+});
+import { createCommentVNode as _createCommentVNode, resolveComponent as _resolveComponent, createVNode as _createVNode, createElementVNode as _createElementVNode, openBlock as _openBlock, createBlock as _createBlock, withCtx as _withCtx, withModifiers as _withModifiers, createTextVNode as _createTextVNode, createElementBlock as _createElementBlock } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/vue/dist/vue.runtime.esm-bundler.js?v=0c9a12b5";
+const _hoisted_1 = { class: "min-h-[80vh] flex items-center justify-center px-4" };
+const _hoisted_2 = { class: "w-full max-w-md" };
+const _hoisted_3 = { class: "text-center mb-6" };
+function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+	const _component_MagyasakaCrest = __nuxt_component_0;
+	const _component_UAlert = __nuxt_component_1;
+	const _component_UInput = __nuxt_component_2;
+	const _component_UButton = __nuxt_component_3;
+	const _component_USeparator = __nuxt_component_4;
+	const _component_UCard = __nuxt_component_5;
+	return _openBlock(), _tracer(52,2,_createElementBlock("div", _hoisted_1, [_tracer(53,4,_createElementVNode("div", _hoisted_2, [_tracer(54,6,_createVNode(_component_UCard, { class: "shadow-lg" }, {
+		default: _withCtx(() => [
+			_createCommentVNode(" Header "),
+			_tracer(56,8,_createElementVNode("div", _hoisted_3, [
+				_tracer(57,10,_createVNode(_component_MagyasakaCrest, {
+					size: 72,
+					class: "mx-auto mb-5 text-highlighted"
+				})),
+				_cache[3] || (_cache[3] = _tracer(58,10,_createElementVNode(
+					"h1",
+					{ class: "font-display text-2xl font-bold tracking-[-0.02em]" },
+					"Login Pengurus",
+					-1
+					/* CACHED */
+				))),
+				_cache[4] || (_cache[4] = _tracer(59,10,_createElementVNode(
+					"p",
+					{ class: "text-sm text-muted mt-1" },
+					"Masuk ke panel admin Magyasaka",
+					-1
+					/* CACHED */
+				)))
+			])),
+			_createCommentVNode(" Error "),
+			$setup.errorMsg ? (_openBlock(), _tracer(63,8,_createBlock(_component_UAlert, {
+				key: 0,
+				description: $setup.errorMsg,
+				color: "error",
+				icon: "i-lucide-alert-circle",
+				class: "mb-4"
+			}, null, 8, ["description"]))) : _createCommentVNode("v-if", true),
+			_createCommentVNode(" Form "),
+			_tracer(72,8,_createElementVNode(
+				"form",
+				{
+					onSubmit: _withModifiers($setup.handleLogin, ["prevent"]),
+					class: "space-y-4"
+				},
+				[
+					_tracer(73,10,_createElementVNode("div", null, [_cache[5] || (_cache[5] = _tracer(74,12,_createElementVNode(
+						"label",
+						{ class: "text-sm font-medium mb-1.5 block" },
+						"Email",
+						-1
+						/* CACHED */
+					))), _tracer(75,12,_createVNode(_component_UInput, {
+						modelValue: $setup.email,
+						"onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $setup.email = $event),
+						type: "email",
+						placeholder: "pengurus@example.com",
+						icon: "i-lucide-mail",
+						required: "",
+						size: "md",
+						class: "w-full"
+					}, null, 8, ["modelValue"]))])),
+					_tracer(85,10,_createElementVNode("div", null, [_cache[6] || (_cache[6] = _tracer(86,12,_createElementVNode(
+						"label",
+						{ class: "text-sm font-medium mb-1.5 block" },
+						"Password",
+						-1
+						/* CACHED */
+					))), _tracer(87,12,_createVNode(_component_UInput, {
+						modelValue: $setup.password,
+						"onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => $setup.password = $event),
+						type: $setup.showPassword ? "text" : "password",
+						placeholder: "••••••••",
+						icon: "i-lucide-lock",
+						required: "",
+						size: "md",
+						class: "w-full"
+					}, {
+						trailing: _withCtx(() => [_tracer(97,16,_createVNode(_component_UButton, {
+							color: "neutral",
+							variant: "link",
+							size: "sm",
+							icon: $setup.showPassword ? "i-lucide-eye-off" : "i-lucide-eye",
+							"aria-label": $setup.showPassword ? "Sembunyikan password" : "Tampilkan password",
+							"aria-pressed": $setup.showPassword,
+							onClick: _cache[1] || (_cache[1] = ($event) => $setup.showPassword = !$setup.showPassword)
+						}, null, 8, [
+							"icon",
+							"aria-label",
+							"aria-pressed"
+						]))]),
+						_: 1
+					}, 8, ["modelValue", "type"]))])),
+					_tracer(109,10,_createVNode(_component_UButton, {
+						type: "submit",
+						label: "Masuk",
+						icon: "i-lucide-log-in",
+						loading: $setup.loading,
+						block: "",
+						size: "lg"
+					}, null, 8, ["loading"]))
+				],
+				32
+				/* NEED_HYDRATION */
+			)),
+			_tracer(119,8,_createVNode(_component_USeparator, {
+				class: "my-6",
+				label: "Info"
+			})),
+			_cache[7] || (_cache[7] = _tracer(121,8,_createElementVNode(
+				"div",
+				{ class: "text-center" },
+				[_tracer(122,10,_createElementVNode("p", { class: "text-xs text-muted" }, [
+					_createTextVNode(" Hanya pengurus kelas yang memiliki akun bisa login. "),
+					_tracer(124,12,_createElementVNode("br")),
+					_createTextVNode("Hubungi admin jika butuh akses. ")
+				]))],
+				-1
+				/* CACHED */
+			)))
+		]),
+		_: 1
+	}))]))]));
+}
+_sfc_main.__hmrId = "e8ce220f";
+typeof __VUE_HMR_RUNTIME__ !== "undefined" && __VUE_HMR_RUNTIME__.createRecord(_sfc_main.__hmrId, _sfc_main);
+import.meta.hot.on("file-changed", ({ file }) => {
+	__VUE_HMR_RUNTIME__.CHANGED_FILE = file;
+});
+import.meta.hot.accept((mod) => {
+	if (!mod) return;
+	const { default: updated, _rerender_only } = mod;
+	if (_rerender_only) {
+		__VUE_HMR_RUNTIME__.rerender(updated.__hmrId, updated.render);
+	} else {
+		__VUE_HMR_RUNTIME__.reload(updated.__hmrId, updated);
+	}
+});
+import _export_sfc from "/_nuxt/@id/__x00__plugin-vue:export-helper";
+export default /*#__PURE__*/ _export_sfc(_sfc_main, [["render", _sfc_render], ["__file", "D:/File Kuliah/Semester 7/Magyasaka_Web/app/pages/login.vue"]]);
+
+function _tracer(line, column, vnode) { return _tracerRecordPosition("app/pages/login.vue", line, column, vnode) }
+
+//# sourceMappingURL=data:application/json;base64,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QjtvQkFBQSxvQkFBTTtLQUFBLG1EQUNSIiwibmFtZXMiOltdLCJpZ25vcmVMaXN0IjpbXSwic291cmNlcyI6WyJsb2dpbi52dWUiXSwic291cmNlc0NvbnRlbnQiOlsiPHNjcmlwdCBzZXR1cCBsYW5nPVwidHNcIj5cclxuaW1wb3J0IHsgdXNlU2VvTWV0YSB9IGZyb20gJyNhcHAnXHJcbmltcG9ydCB7IHJlZiwgd2F0Y2ggfSBmcm9tICd2dWUnXHJcbmltcG9ydCB7IHVzZVJvdXRlciB9IGZyb20gJ3Z1ZS1yb3V0ZXInXHJcbmltcG9ydCB7IHVzZVN1cGFiYXNlQ2xpZW50LCB1c2VTdXBhYmFzZVVzZXIgfSBmcm9tICcjaW1wb3J0cydcclxuLy8gRmFzZSA0OiBMb2dpbiBQZW5ndXJ1c1xyXG51c2VTZW9NZXRhKHsgdGl0bGU6ICdMb2dpbiBQZW5ndXJ1cyAtIE1hZ3lhc2FrYScgfSlcclxuXHJcbmNvbnN0IHN1cGFiYXNlID0gdXNlU3VwYWJhc2VDbGllbnQoKVxyXG5jb25zdCB1c2VyID0gdXNlU3VwYWJhc2VVc2VyKClcclxuY29uc3Qgcm91dGVyID0gdXNlUm91dGVyKClcclxuXHJcbmNvbnN0IGVtYWlsID0gcmVmKCcnKVxyXG5jb25zdCBwYXNzd29yZCA9IHJlZignJylcclxuY29uc3Qgc2hvd1Bhc3N3b3JkID0gcmVmKGZhbHNlKVxyXG5jb25zdCBsb2FkaW5nID0gcmVmKGZhbHNlKVxyXG5jb25zdCBlcnJvck1zZyA9IHJlZignJylcclxuXHJcbi8vIFJlZGlyZWN0IGlmIGFscmVhZHkgbG9nZ2VkIGluXHJcbndhdGNoKHVzZXIsICh2YWw6IGFueSkgPT4ge1xyXG4gIGlmICh2YWwpIHtcclxuICAgIHJvdXRlci5wdXNoKCcvYWRtaW4nKVxyXG4gIH1cclxufSwgeyBpbW1lZGlhdGU6IHRydWUgfSlcclxuXHJcbmFzeW5jIGZ1bmN0aW9uIGhhbmRsZUxvZ2luKCkge1xyXG4gIGxvYWRpbmcudmFsdWUgPSB0cnVlXHJcbiAgZXJyb3JNc2cudmFsdWUgPSAnJ1xyXG5cclxuICB0cnkge1xyXG4gICAgY29uc3QgeyBlcnJvciB9ID0gYXdhaXQgc3VwYWJhc2UuYXV0aC5zaWduSW5XaXRoUGFzc3dvcmQoe1xyXG4gICAgICBlbWFpbDogZW1haWwudmFsdWUsXHJcbiAgICAgIHBhc3N3b3JkOiBwYXNzd29yZC52YWx1ZVxyXG4gICAgfSlcclxuXHJcbiAgICBpZiAoZXJyb3IpIHtcclxuICAgICAgZXJyb3JNc2cudmFsdWUgPSBlcnJvci5tZXNzYWdlID09PSAnSW52YWxpZCBsb2dpbiBjcmVkZW50aWFscydcclxuICAgICAgICA/ICdFbWFpbCBhdGF1IHBhc3N3b3JkIHNhbGFoLiBQYXN0aWthbiBha3VuIHN1ZGFoIHRlcmRhZnRhciBkZW5nYW4gbWVuZ2h1YnVuZ2kgYWRtaW4uJ1xyXG4gICAgICAgIDogZXJyb3IubWVzc2FnZVxyXG4gICAgfSBlbHNlIHtcclxuICAgICAgcm91dGVyLnB1c2goJy9hZG1pbicpXHJcbiAgICB9XHJcbiAgfSBjYXRjaCB7XHJcbiAgICBlcnJvck1zZy52YWx1ZSA9ICdUZXJqYWRpIGtlc2FsYWhhbi4gUGFzdGlrYW4ga29uZWtzaSBrZSBTdXBhYmFzZSBzdWRhaCBkaWtvbmZpZ3VyYXNpLidcclxuICB9IGZpbmFsbHkge1xyXG4gICAgbG9hZGluZy52YWx1ZSA9IGZhbHNlXHJcbiAgfVxyXG59XHJcbjwvc2NyaXB0PlxyXG5cclxuPHRlbXBsYXRlPlxyXG4gIDxkaXYgY2xhc3M9XCJtaW4taC1bODB2aF0gZmxleCBpdGVtcy1jZW50ZXIganVzdGlmeS1jZW50ZXIgcHgtNFwiPlxyXG4gICAgPGRpdiBjbGFzcz1cInctZnVsbCBtYXgtdy1tZFwiPlxyXG4gICAgICA8VUNhcmQgY2xhc3M9XCJzaGFkb3ctbGdcIj5cclxuICAgICAgICA8IS0tIEhlYWRlciAtLT5cclxuICAgICAgICA8ZGl2IGNsYXNzPVwidGV4dC1jZW50ZXIgbWItNlwiPlxyXG4gICAgICAgICAgPE1hZ3lhc2FrYUNyZXN0IDpzaXplPVwiNzJcIiBjbGFzcz1cIm14LWF1dG8gbWItNSB0ZXh0LWhpZ2hsaWdodGVkXCIgLz5cclxuICAgICAgICAgIDxoMSBjbGFzcz1cImZvbnQtZGlzcGxheSB0ZXh0LTJ4bCBmb250LWJvbGQgdHJhY2tpbmctWy0wLjAyZW1dXCI+TG9naW4gUGVuZ3VydXM8L2gxPlxyXG4gICAgICAgICAgPHAgY2xhc3M9XCJ0ZXh0LXNtIHRleHQtbXV0ZWQgbXQtMVwiPk1hc3VrIGtlIHBhbmVsIGFkbWluIE1hZ3lhc2FrYTwvcD5cclxuICAgICAgICA8L2Rpdj5cclxuXHJcbiAgICAgICAgPCEtLSBFcnJvciAtLT5cclxuICAgICAgICA8VUFsZXJ0XHJcbiAgICAgICAgICB2LWlmPVwiZXJyb3JNc2dcIlxyXG4gICAgICAgICAgOmRlc2NyaXB0aW9uPVwiZXJyb3JNc2dcIlxyXG4gICAgICAgICAgY29sb3I9XCJlcnJvclwiXHJcbiAgICAgICAgICBpY29uPVwiaS1sdWNpZGUtYWxlcnQtY2lyY2xlXCJcclxuICAgICAgICAgIGNsYXNzPVwibWItNFwiXHJcbiAgICAgICAgLz5cclxuXHJcbiAgICAgICAgPCEtLSBGb3JtIC0tPlxyXG4gICAgICAgIDxmb3JtIEBzdWJtaXQucHJldmVudD1cImhhbmRsZUxvZ2luXCIgY2xhc3M9XCJzcGFjZS15LTRcIj5cclxuICAgICAgICAgIDxkaXY+XHJcbiAgICAgICAgICAgIDxsYWJlbCBjbGFzcz1cInRleHQtc20gZm9udC1tZWRpdW0gbWItMS41IGJsb2NrXCI+RW1haWw8L2xhYmVsPlxyXG4gICAgICAgICAgICA8VUlucHV0XHJcbiAgICAgICAgICAgICAgdi1tb2RlbD1cImVtYWlsXCJcclxuICAgICAgICAgICAgICB0eXBlPVwiZW1haWxcIlxyXG4gICAgICAgICAgICAgIHBsYWNlaG9sZGVyPVwicGVuZ3VydXNAZXhhbXBsZS5jb21cIlxyXG4gICAgICAgICAgICAgIGljb249XCJpLWx1Y2lkZS1tYWlsXCJcclxuICAgICAgICAgICAgICByZXF1aXJlZFxyXG4gICAgICAgICAgICAgIHNpemU9XCJtZFwiXHJcbiAgICAgICAgICAgICAgY2xhc3M9XCJ3LWZ1bGxcIlxyXG4gICAgICAgICAgICAvPlxyXG4gICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICA8ZGl2PlxyXG4gICAgICAgICAgICA8bGFiZWwgY2xhc3M9XCJ0ZXh0LXNtIGZvbnQtbWVkaXVtIG1iLTEuNSBibG9ja1wiPlBhc3N3b3JkPC9sYWJlbD5cclxuICAgICAgICAgICAgPFVJbnB1dFxyXG4gICAgICAgICAgICAgIHYtbW9kZWw9XCJwYXNzd29yZFwiXHJcbiAgICAgICAgICAgICAgOnR5cGU9XCJzaG93UGFzc3dvcmQgPyAndGV4dCcgOiAncGFzc3dvcmQnXCJcclxuICAgICAgICAgICAgICBwbGFjZWhvbGRlcj1cIuKAouKAouKAouKAouKAouKAouKAouKAolwiXHJcbiAgICAgICAgICAgICAgaWNvbj1cImktbHVjaWRlLWxvY2tcIlxyXG4gICAgICAgICAgICAgIHJlcXVpcmVkXHJcbiAgICAgICAgICAgICAgc2l6ZT1cIm1kXCJcclxuICAgICAgICAgICAgICBjbGFzcz1cInctZnVsbFwiXHJcbiAgICAgICAgICAgID5cclxuICAgICAgICAgICAgICA8dGVtcGxhdGUgI3RyYWlsaW5nPlxyXG4gICAgICAgICAgICAgICAgPFVCdXR0b25cclxuICAgICAgICAgICAgICAgICAgY29sb3I9XCJuZXV0cmFsXCJcclxuICAgICAgICAgICAgICAgICAgdmFyaWFudD1cImxpbmtcIlxyXG4gICAgICAgICAgICAgICAgICBzaXplPVwic21cIlxyXG4gICAgICAgICAgICAgICAgICA6aWNvbj1cInNob3dQYXNzd29yZCA/ICdpLWx1Y2lkZS1leWUtb2ZmJyA6ICdpLWx1Y2lkZS1leWUnXCJcclxuICAgICAgICAgICAgICAgICAgOmFyaWEtbGFiZWw9XCJzaG93UGFzc3dvcmQgPyAnU2VtYnVueWlrYW4gcGFzc3dvcmQnIDogJ1RhbXBpbGthbiBwYXNzd29yZCdcIlxyXG4gICAgICAgICAgICAgICAgICA6YXJpYS1wcmVzc2VkPVwic2hvd1Bhc3N3b3JkXCJcclxuICAgICAgICAgICAgICAgICAgQGNsaWNrPVwic2hvd1Bhc3N3b3JkID0gIXNob3dQYXNzd29yZFwiXHJcbiAgICAgICAgICAgICAgICAvPlxyXG4gICAgICAgICAgICAgIDwvdGVtcGxhdGU+XHJcbiAgICAgICAgICAgIDwvVUlucHV0PlxyXG4gICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICA8VUJ1dHRvblxyXG4gICAgICAgICAgICB0eXBlPVwic3VibWl0XCJcclxuICAgICAgICAgICAgbGFiZWw9XCJNYXN1a1wiXHJcbiAgICAgICAgICAgIGljb249XCJpLWx1Y2lkZS1sb2ctaW5cIlxyXG4gICAgICAgICAgICA6bG9hZGluZz1cImxvYWRpbmdcIlxyXG4gICAgICAgICAgICBibG9ja1xyXG4gICAgICAgICAgICBzaXplPVwibGdcIlxyXG4gICAgICAgICAgLz5cclxuICAgICAgICA8L2Zvcm0+XHJcblxyXG4gICAgICAgIDxVU2VwYXJhdG9yIGNsYXNzPVwibXktNlwiIGxhYmVsPVwiSW5mb1wiIC8+XHJcblxyXG4gICAgICAgIDxkaXYgY2xhc3M9XCJ0ZXh0LWNlbnRlclwiPlxyXG4gICAgICAgICAgPHAgY2xhc3M9XCJ0ZXh0LXhzIHRleHQtbXV0ZWRcIj5cclxuICAgICAgICAgICAgSGFueWEgcGVuZ3VydXMga2VsYXMgeWFuZyBtZW1pbGlraSBha3VuIGJpc2EgbG9naW4uXHJcbiAgICAgICAgICAgIDxiciAvPkh1YnVuZ2kgYWRtaW4gamlrYSBidXR1aCBha3Nlcy5cclxuICAgICAgICAgIDwvcD5cclxuICAgICAgICA8L2Rpdj5cclxuICAgICAgPC9VQ2FyZD5cclxuICAgIDwvZGl2PlxyXG4gIDwvZGl2PlxyXG48L3RlbXBsYXRlPlxyXG4iXSwiZmlsZSI6IkQ6L0ZpbGUgS3VsaWFoL1NlbWVzdGVyIDcvTWFneWFzYWthX1dlYi9hcHAvcGFnZXMvbG9naW4udnVlIn0=

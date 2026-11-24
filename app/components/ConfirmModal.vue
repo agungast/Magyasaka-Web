@@ -1,6 +1,5 @@
 <script setup lang="ts">
-const props = withDefaults(defineProps<{
-  open: boolean
+withDefaults(defineProps<{  open: boolean
   title?: string
   description?: string
   confirmText?: string

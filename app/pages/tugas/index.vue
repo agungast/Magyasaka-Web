@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useSeoMeta } from '#app'
-import { useState } from '#imports'
 import { useAssignments } from '~/composables/useData'
 import { parseDescription } from '~/utils/description'
+import { deadlineInfo, effectiveDate, formatDateTime, isPastDue } from '~/utils/date'
 // Fase 2: Daftar Tugas & Ujian
 useSeoMeta({ title: 'Tugas & Ujian - Magyasaka' })
 
 const { data: assignments } = useAssignments()
 
 const filterType = ref('semua')
+const showHistory = ref(false)
 // Stored `tipe` values are lowercase (tugas/uts/uas/tubes/praktikum), so the
 // filter compares against lowercase values. Labels are cased for display only.
 const filterOptions = [
@@ -26,31 +27,17 @@ function tipeLabel(tipe: string | null | undefined) {
     ?? (tipe ? tipe.charAt(0).toUpperCase() + tipe.slice(1) : 'Tugas')
 }
 
-// Local completion tracking (stored in browser)
-const completedTasks = useState<Set<string>>('completedTasks', () => new Set())
-
-if (import.meta.client) {
-  const stored = localStorage.getItem('trk2023_completed_tasks')
-  if (stored) {
-    completedTasks.value = new Set(JSON.parse(stored))
-  }
-}
-
-function toggleComplete(id: string) {
-  const newSet = new Set(completedTasks.value)
-  if (newSet.has(id)) {
-    newSet.delete(id)
-  } else {
-    newSet.add(id)
-  }
-  completedTasks.value = newSet
-  if (import.meta.client) {
-    localStorage.setItem('trk2023_completed_tasks', JSON.stringify([...newSet]))
-  }
-}
+// Sama seperti Beranda: yang sudah lewat disembunyikan, tetapi masih bisa
+// dibuka lewat toggle riwayat tanpa menghapus datanya.
+const archivedCount = computed(() =>
+  (assignments.value || []).filter((a) => isPastDue(a)).length
+)
 
 const filteredAssignments = computed(() => {
   let items = (assignments.value || []) as any[]
+  if (!showHistory.value) {
+    items = items.filter((a) => !isPastDue(a))
+  }
   if (filterType.value !== 'semua') {
     items = items.filter((a: any) => a.tipe === filterType.value)
   }
@@ -58,44 +45,20 @@ const filteredAssignments = computed(() => {
 })
 
 const upcomingExams = computed(() =>
-  assignments.value?.filter((a: any) => ['uts', 'uas'].includes(a.tipe) && (a.deadline || a.tanggal_ujian) && new Date(a.deadline || a.tanggal_ujian) > new Date()) || []
+  (assignments.value || []).filter((a: any) =>
+    ['uts', 'uas'].includes(a.tipe) && !!effectiveDate(a) && !isPastDue(a)
+  )
 )
 
-function formatDate(dateStr: string) {
-  if (!dateStr) return '-'
-  return new Date(dateStr).toLocaleDateString('id-ID', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
-  })
-}
-
-function daysUntil(dateStr: string) {
-  if (!dateStr) return ''
-  const diff = new Date(dateStr).getTime() - Date.now()
-  const days = Math.ceil(diff / 86400000)
-  if (days < 0) return 'Terlewat'
-  if (days === 0) return 'Hari ini!'
-  if (days === 1) return 'Besok'
-  return `${days} hari lagi`
-}
-
-function deadlineColor(dateStr: string) {
-  if (!dateStr) return 'neutral'
-  const diff = new Date(dateStr).getTime() - Date.now()
-  const days = Math.ceil(diff / 86400000)
-  if (days < 0) return 'error'
-  if (days <= 2) return 'error'
-  if (days <= 7) return 'warning'
-  return 'success'
-}
+// Satu sumber label/warna badge tenggat, dibandingkan per hari kalender.
+const deadlineLabel = (a: any) => deadlineInfo(effectiveDate(a)).label
+const deadlineColor = (a: any) => deadlineInfo(effectiveDate(a)).color
 
 const tipeIcon: Record<string, string> = {
   tugas: 'i-lucide-file-text',
   uts: 'i-lucide-file-warning',
   uas: 'i-lucide-file-warning',
-  tubes: 'i-lucide-help-circle',
+  tubes: 'i-lucide-file-text',
   praktikum: 'i-lucide-flask-conical'
 }
 
@@ -118,7 +81,6 @@ const tipeColor: Record<string, string> = {
         </h1>
         <p class="text-muted mt-1">
           {{ filteredAssignments.length }} item
-          <span v-if="completedTasks.size > 0"> • {{ completedTasks.size }} selesai</span>
         </p>
       </div>
     </div>
@@ -143,8 +105,8 @@ const tipeColor: Record<string, string> = {
               <p class="font-bold text-sm">{{ exam.judul }}</p>
               <p class="text-xs text-muted">{{ exam.mata_kuliah }}</p>
               <div class="flex items-center gap-2 mt-1">
-                <UBadge :label="daysUntil((exam.deadline || exam.tanggal_ujian) ?? '')" :color="deadlineColor((exam.deadline || exam.tanggal_ujian) ?? '')" variant="subtle" size="xs" />
-                <span class="text-xs text-muted">{{ formatDate((exam.deadline || exam.tanggal_ujian) ?? '') }}</span>
+                <UBadge :label="deadlineLabel(exam)" :color="deadlineColor(exam)" variant="subtle" size="xs" />
+                <span class="text-xs text-muted">{{ formatDateTime(effectiveDate(exam)) }}</span>
               </div>
             </div>
           </div>
@@ -153,7 +115,7 @@ const tipeColor: Record<string, string> = {
     </div>
 
     <!-- Filter -->
-    <div class="flex gap-1 flex-wrap mb-6">
+    <div class="flex gap-2 flex-wrap mb-6">
       <UButton
         v-for="opt in filterOptions"
         :key="opt.value"
@@ -163,6 +125,15 @@ const tipeColor: Record<string, string> = {
         size="sm"
         @click="filterType = opt.value"
       />
+      <UButton
+        :label="showHistory ? 'Sembunyikan riwayat' : `Tampilkan riwayat (${archivedCount})`"
+        :icon="showHistory ? 'i-lucide-eye-off' : 'i-lucide-history'"
+        color="neutral"
+        variant="outline"
+        size="sm"
+        class="ml-auto"
+        @click="showHistory = !showHistory"
+      />
     </div>
 
     <!-- Daftar Tugas -->
@@ -170,22 +141,9 @@ const tipeColor: Record<string, string> = {
       <UCard
         v-for="task in filteredAssignments"
         :key="task.id"
-        :class="['card-hover transition-all', completedTasks.has(task.id) ? 'opacity-60' : '']"
+        class="card-hover transition-all"
       >
         <div class="flex items-start gap-3">
-          <!-- Checkbox -->
-          <button
-            :class="[
-              'w-6 h-6 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all',
-              completedTasks.has(task.id)
-                ? 'bg-success border-success text-inverted'
-                : 'border-default hover:border-primary'
-            ]"
-            @click="toggleComplete(task.id)"
-          >
-            <UIcon v-if="completedTasks.has(task.id)" name="i-lucide-check" class="text-sm" />
-          </button>
-
           <!-- Icon -->
           <div
             class="accent w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
@@ -196,7 +154,7 @@ const tipeColor: Record<string, string> = {
 
           <!-- Content -->
           <div class="flex-1 min-w-0">
-            <h2 :class="['font-semibold text-sm', completedTasks.has(task.id) ? 'line-through' : '']">
+            <h2 class="font-semibold text-sm">
               {{ task.judul }}
             </h2>
             <p class="text-xs text-muted mt-0.5">{{ task.mata_kuliah }}</p>
@@ -212,27 +170,22 @@ const tipeColor: Record<string, string> = {
               </template>
             </div>
             <div class="flex items-center gap-2 mt-2">
-              <UBadge :label="tipeLabel(task.tipe)" variant="subtle" size="xs" />
-              <span v-if="task.deadline" class="text-xs text-muted flex items-center gap-1">
+              <span
+                class="accent inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium"
+                :style="{ '--accent': tipeColor[task.tipe || 'tugas'] || '#6366f1' }"
+              >{{ tipeLabel(task.tipe) }}</span>
+              <span v-if="effectiveDate(task)" class="text-xs text-muted flex items-center gap-1">
                 <UIcon name="i-lucide-clock" />
-                {{ formatDate(task.deadline) }}
+                {{ formatDateTime(effectiveDate(task)) }}
               </span>
             </div>
           </div>
 
           <!-- Deadline badge -->
           <UBadge
-            v-if="task.deadline && !completedTasks.has(task.id)"
-            :label="daysUntil(task.deadline)"
-            :color="deadlineColor(task.deadline)"
-            variant="subtle"
-            size="xs"
-            class="shrink-0"
-          />
-          <UBadge
-            v-else-if="completedTasks.has(task.id)"
-            label="Selesai ✓"
-            color="success"
+            v-if="effectiveDate(task)"
+            :label="deadlineLabel(task)"
+            :color="deadlineColor(task)"
             variant="subtle"
             size="xs"
             class="shrink-0"

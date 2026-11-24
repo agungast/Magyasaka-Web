@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useSeoMeta } from '#app'
 import { useRoute } from 'vue-router'
 import { useProject } from '~/composables/useData'
+import { isVideoUrl } from '~/composables/useGalleryUpload'
 // Fase 3: Detail Proyek
 const route = useRoute()
 const projectId = route.params.id as string
@@ -61,6 +62,35 @@ const kategoriColors: Record<string, string> = {
         <img :src="project.thumbnail_url" :alt="project.nama" class="w-full rounded-xl shadow-lg" />
       </div>
 
+      <!-- Screenshot -->
+      <div v-if="project.screenshots?.length" class="mb-8">
+        <h3 class="flex items-center gap-2 text-base font-semibold mb-3">
+          <UIcon name="i-lucide-images" class="text-primary" />
+          Screenshot Proyek
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <a
+            v-for="shot in project.screenshots"
+            :key="shot"
+            :href="shot"
+            target="_blank"
+            rel="noopener"
+            class="rounded-xl overflow-hidden border border-default/50 shadow-sm hover:shadow-md transition-shadow"
+          >
+            <img :src="shot" :alt="`Screenshot ${project.nama}`" class="w-full h-48 object-cover" />
+          </a>
+        </div>
+      </div>
+
+      <!-- Demo Video -->
+      <div v-if="project.demo_url && isVideoUrl(project.demo_url)" class="mb-8">
+        <h3 class="flex items-center gap-2 text-base font-semibold mb-3">
+          <UIcon name="i-lucide-video" class="text-primary" />
+          Video Demo
+        </h3>
+        <video :src="project.demo_url" controls class="w-full rounded-xl shadow-lg bg-black" />
+      </div>
+
       <!-- Detail -->
       <UCard class="mb-8">
         <div class="max-w-none">
@@ -111,21 +141,29 @@ const kategoriColors: Record<string, string> = {
 
       <!-- Links -->
       <!-- @ts-ignore -->
-      <div v-if="project.repo_url || project.demo_url" class="flex gap-3">
+      <div v-if="project.repo_url || project.website_url || (project.demo_url && !isVideoUrl(project.demo_url))" class="flex flex-wrap gap-3">
         <UButton
-          v-if="project.repo_url"
-          :to="project.repo_url"
+          v-if="project.website_url"
+          :to="project.website_url"
           target="_blank"
-          label="Source Code"
-          icon="i-simple-icons-github"
+          label="Website"
+          icon="i-lucide-globe"
           variant="outline"
         />
         <UButton
-          v-if="project.demo_url"
+          v-if="project.demo_url && !isVideoUrl(project.demo_url)"
           :to="project.demo_url"
           target="_blank"
           label="Live Demo"
           icon="i-lucide-external-link"
+        />
+        <UButton
+          v-if="project.repo_url"
+          :to="project.repo_url"
+          target="_blank"
+          :label="project.repo_url.includes('github.com') ? 'Source Code' : 'Link Karya'"
+          :icon="project.repo_url.includes('github.com') ? 'i-simple-icons-github' : 'i-lucide-link'"
+          variant="outline"
         />
       </div>
     </div>

@@ -1,0 +1,255 @@
+import { createHotContext as __vite__createHotContext } from "/_nuxt/@vite/client";import.meta.hot = __vite__createHotContext("/pages/anggota/pengurus.vue");import { default as __nuxt_component_0 } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/@nuxt/ui/dist/runtime/components/Button.vue";
+import { default as __nuxt_component_1 } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/@nuxt/ui/dist/runtime/components/Icon.vue";
+import { default as __nuxt_component_2 } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/@nuxt/ui/dist/runtime/components/Card.vue";
+import { default as __nuxt_component_3 } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/@nuxt/ui/dist/runtime/components/Container.vue";
+import { recordPosition as _tracerRecordPosition } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/vite-plugin-vue-tracer/dist/client/record.mjs?v=0c9a12b5"
+import { defineComponent as _defineComponent } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/vue/dist/vue.runtime.esm-bundler.js?v=0c9a12b5";
+import { useSeoMeta } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/nuxt/dist/app/index.js?v=0c9a12b5";
+import { useOfficers } from "/_nuxt/composables/useData.ts";
+// Fase 2: Struktur Pengurus Kelas
+const _sfc_main = /*@__PURE__*/ _defineComponent({
+	__name: "pengurus",
+	setup(__props, { expose: __expose }) {
+		__expose();
+		useSeoMeta({ title: "Pengurus Kelas - Magyasaka" });
+		const { data: officers } = useOfficers();
+		function getInitials(name) {
+			return name.split(" ").map((n) => n[0]).join("").substring(0, 2).toUpperCase();
+		}
+		const jabatanIcon = {
+			"Ketua Kelas": "i-lucide-crown",
+			"Wakil Ketua": "i-lucide-award",
+			"Sekretaris": "i-lucide-pen-tool",
+			"Bendahara": "i-lucide-wallet",
+			"Koordinator Akademik": "i-lucide-book-open",
+			"PJ": "i-lucide-book-open"
+		};
+		const jabatanColor = {
+			"Ketua Kelas": "#f59e0b",
+			"Wakil Ketua": "#6366f1",
+			"Sekretaris": "#ec4899",
+			"Bendahara": "#10b981",
+			"Koordinator Akademik": "#0ea5e9",
+			"PJ": "#a855f7"
+		};
+		const __returned__ = {
+			officers,
+			getInitials,
+			jabatanIcon,
+			jabatanColor
+		};
+		Object.defineProperty(__returned__, "__isScriptSetup", {
+			enumerable: false,
+			value: true
+		});
+		return __returned__;
+	}
+});
+import { resolveComponent as _resolveComponent, createVNode as _createVNode, createTextVNode as _createTextVNode, createElementVNode as _createElementVNode, createCommentVNode as _createCommentVNode, openBlock as _openBlock, createElementBlock as _createElementBlock, toDisplayString as _toDisplayString, normalizeStyle as _normalizeStyle, withCtx as _withCtx, renderList as _renderList, Fragment as _Fragment, createBlock as _createBlock } from "/_nuxt/@fs/D:/File Kuliah/Semester 7/Magyasaka_Web/node_modules/vue/dist/vue.runtime.esm-bundler.js?v=0c9a12b5";
+const _hoisted_1 = { class: "mb-8" };
+const _hoisted_2 = { class: "text-2xl md:text-3xl font-bold flex items-center gap-2" };
+const _hoisted_3 = { class: "max-w-4xl mx-auto" };
+const _hoisted_4 = {
+	key: 0,
+	class: "flex justify-center mb-8"
+};
+const _hoisted_5 = { class: "flex flex-col items-center" };
+const _hoisted_6 = ["src", "alt"];
+const _hoisted_7 = { class: "font-bold text-base" };
+const _hoisted_8 = { class: "text-sm text-muted" };
+const _hoisted_9 = { class: "text-xs text-muted mt-1" };
+const _hoisted_10 = { class: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" };
+const _hoisted_11 = { class: "flex flex-col items-center" };
+const _hoisted_12 = ["src", "alt"];
+const _hoisted_13 = { class: "font-semibold text-sm" };
+const _hoisted_14 = { class: "text-xs text-muted" };
+const _hoisted_15 = {
+	key: 2,
+	class: "text-xs text-muted mt-0.5 inline-flex items-center gap-1"
+};
+const _hoisted_16 = { class: "text-xs text-muted mt-1" };
+function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+	const _component_UButton = __nuxt_component_0;
+	const _component_UIcon = __nuxt_component_1;
+	const _component_UCard = __nuxt_component_2;
+	const _component_UContainer = __nuxt_component_3;
+	return _openBlock(), _tracer(34,2,_createBlock(_component_UContainer, { class: "py-8" }, {
+		default: _withCtx(() => [
+			_tracer(35,4,_createElementVNode("div", _hoisted_1, [
+				_tracer(36,6,_createVNode(_component_UButton, {
+					to: "/anggota",
+					label: "Kembali ke Daftar Anggota",
+					icon: "i-lucide-arrow-left",
+					variant: "link",
+					size: "sm",
+					class: "mb-4"
+				})),
+				_tracer(44,6,_createElementVNode("h1", _hoisted_2, [_tracer(45,8,_createVNode(_component_UIcon, {
+					name: "i-lucide-shield",
+					class: "text-primary"
+				})), _cache[0] || (_cache[0] = _createTextVNode(
+					" Struktur Pengurus Kelas ",
+					-1
+					/* CACHED */
+				))])),
+				_cache[1] || (_cache[1] = _tracer(48,6,_createElementVNode(
+					"p",
+					{ class: "text-muted mt-1" },
+					"Kelompok Pengurus Magyasaka",
+					-1
+					/* CACHED */
+				)))
+			])),
+			_createCommentVNode(" Organization Chart "),
+			_tracer(52,4,_createElementVNode("div", _hoisted_3, [
+				_createCommentVNode(" Ketua "),
+				$setup.officers?.[0] ? (_openBlock(), _tracer(54,6,_createElementBlock("div", _hoisted_4, [_tracer(55,8,_createVNode(_component_UCard, { class: "card-hover w-full max-w-sm text-center border-2 border-amber-500/30" }, {
+					default: _withCtx(() => [_tracer(56,10,_createElementVNode("div", _hoisted_5, [
+						$setup.officers[0].member?.foto_url ? (_openBlock(), _tracer(57,12,_createElementBlock("img", {
+							key: 0,
+							src: $setup.officers[0].member.foto_url,
+							alt: $setup.officers[0].member?.nama || $setup.officers[0].jabatan,
+							class: "w-20 h-20 rounded-full object-cover border-2 border-default/40 mb-3"
+						}, null, 8, _hoisted_6))) : (_openBlock(), _tracer(63,12,_createElementBlock(
+							"div",
+							{
+								key: 1,
+								style: _normalizeStyle({
+									backgroundColor: $setup.jabatanColor[$setup.officers[0].jabatan] + "20",
+									color: $setup.jabatanColor[$setup.officers[0].jabatan]
+								}),
+								class: "w-20 h-20 rounded-full flex items-center justify-center font-bold text-xl mb-3"
+							},
+							_toDisplayString($setup.getInitials($setup.officers[0].member?.nama || $setup.officers[0].jabatan)),
+							5
+							/* TEXT, STYLE */
+						))),
+						_tracer(70,12,_createVNode(_component_UIcon, {
+							name: $setup.jabatanIcon[$setup.officers[0].jabatan] || "i-lucide-user",
+							style: _normalizeStyle({ color: $setup.jabatanColor[$setup.officers[0].jabatan] }),
+							class: "text-2xl mb-1"
+						}, null, 8, ["name", "style"])),
+						_tracer(71,12,_createElementVNode(
+							"h2",
+							_hoisted_7,
+							_toDisplayString($setup.officers[0].member?.nama || "-"),
+							1
+							/* TEXT */
+						)),
+						_tracer(72,12,_createElementVNode(
+							"p",
+							_hoisted_8,
+							_toDisplayString($setup.officers[0].jabatan),
+							1
+							/* TEXT */
+						)),
+						_tracer(73,12,_createElementVNode(
+							"p",
+							_hoisted_9,
+							"NIM: " + _toDisplayString($setup.officers[0].member?.nim || "-"),
+							1
+							/* TEXT */
+						))
+					]))]),
+					_: 1
+				}))]))) : _createCommentVNode("v-if", true),
+				_createCommentVNode(" Connector line "),
+				_cache[2] || (_cache[2] = _tracer(79,6,_createElementVNode(
+					"div",
+					{ class: "flex justify-center mb-8" },
+					[_tracer(80,8,_createElementVNode("div", { class: "w-0.5 h-8 bg-default/30" }))],
+					-1
+					/* CACHED */
+				))),
+				_createCommentVNode(" Other officers "),
+				_tracer(84,6,_createElementVNode("div", _hoisted_10, [(_openBlock(true), _tracer(85,8,_createElementBlock(
+					_Fragment,
+					null,
+					_renderList($setup.officers?.slice(1), (officer) => {
+						return _openBlock(), _tracer(85,8,_createBlock(_component_UCard, {
+							key: officer.id,
+							class: "card-hover text-center border-2",
+							style: _normalizeStyle({ borderColor: ($setup.jabatanColor[officer.jabatan] || "#6366f1") + "4D" })
+						}, {
+							default: _withCtx(() => [_tracer(91,10,_createElementVNode("div", _hoisted_11, [
+								officer.member?.foto_url ? (_openBlock(), _tracer(92,12,_createElementBlock("img", {
+									key: 0,
+									src: officer.member.foto_url,
+									alt: officer.member?.nama || officer.jabatan,
+									class: "w-16 h-16 rounded-full object-cover border-2 border-default/40 mb-3"
+								}, null, 8, _hoisted_12))) : (_openBlock(), _tracer(98,12,_createElementBlock(
+									"div",
+									{
+										key: 1,
+										class: "accent w-16 h-16 rounded-full flex items-center justify-center font-bold text-lg mb-3",
+										style: _normalizeStyle({ "--accent": $setup.jabatanColor[officer.jabatan] || "#6366f1" })
+									},
+									_toDisplayString($setup.getInitials(officer.member?.nama || officer.jabatan)),
+									5
+									/* TEXT, STYLE */
+								))),
+								_tracer(105,12,_createVNode(_component_UIcon, {
+									name: $setup.jabatanIcon[officer.jabatan] || "i-lucide-user",
+									class: "text-xl mb-1 text-muted"
+								}, null, 8, ["name"])),
+								_tracer(106,12,_createElementVNode(
+									"h2",
+									_hoisted_13,
+									_toDisplayString(officer.member?.nama || "-"),
+									1
+									/* TEXT */
+								)),
+								_tracer(107,12,_createElementVNode(
+									"p",
+									_hoisted_14,
+									_toDisplayString(officer.jabatan),
+									1
+									/* TEXT */
+								)),
+								officer.mata_kuliah ? (_openBlock(), _tracer(108,12,_createElementBlock("p", _hoisted_15, [_tracer(109,14,_createVNode(_component_UIcon, {
+									name: "i-lucide-book-open",
+									class: "text-[11px]"
+								})), _createTextVNode(
+									" PJ " + _toDisplayString(officer.mata_kuliah),
+									1
+									/* TEXT */
+								)]))) : _createCommentVNode("v-if", true),
+								_tracer(112,12,_createElementVNode(
+									"p",
+									_hoisted_16,
+									"NIM: " + _toDisplayString(officer.member?.nim || "-"),
+									1
+									/* TEXT */
+								))
+							]))]),
+							_: 2
+						}, 1032, ["style"]));
+					}),
+					128
+					/* KEYED_FRAGMENT */
+				)))]))
+			]))
+		]),
+		_: 1
+	}));
+}
+_sfc_main.__hmrId = "8e8664b9";
+typeof __VUE_HMR_RUNTIME__ !== "undefined" && __VUE_HMR_RUNTIME__.createRecord(_sfc_main.__hmrId, _sfc_main);
+import.meta.hot.on("file-changed", ({ file }) => {
+	__VUE_HMR_RUNTIME__.CHANGED_FILE = file;
+});
+import.meta.hot.accept((mod) => {
+	if (!mod) return;
+	const { default: updated, _rerender_only } = mod;
+	if (_rerender_only) {
+		__VUE_HMR_RUNTIME__.rerender(updated.__hmrId, updated.render);
+	} else {
+		__VUE_HMR_RUNTIME__.reload(updated.__hmrId, updated);
+	}
+});
+import _export_sfc from "/_nuxt/@id/__x00__plugin-vue:export-helper";
+export default /*#__PURE__*/ _export_sfc(_sfc_main, [["render", _sfc_render], ["__file", "D:/File Kuliah/Semester 7/Magyasaka_Web/app/pages/anggota/pengurus.vue"]]);
+
+function _tracer(line, column, vnode) { return _tracerRecordPosition("app/pages/anggota/pengurus.vue", line, column, vnode) }
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJtYXBwaW5ncyI6Ijs7Ozs7O0FBQ0EsU0FBUyxrQkFBa0I7QUFDM0IsU0FBUyxtQkFBbUI7Ozs7OztFQUc1QixXQUFXLEVBQUUsT0FBTyw2QkFBNkIsQ0FBQztFQUVsRCxNQUFNLEVBQUUsTUFBTSxhQUFhLFlBQVk7RUFFdkMsU0FBUyxZQUFZLE1BQWM7R0FDakMsT0FBTyxLQUFLLE1BQU0sR0FBRyxDQUFDLENBQUMsS0FBSSxNQUFLLEVBQUUsRUFBRSxDQUFDLENBQUMsS0FBSyxFQUFFLENBQUMsQ0FBQyxVQUFVLEdBQUcsQ0FBQyxDQUFDLENBQUMsWUFBWTtFQUM3RTtFQUVBLE1BQU0sY0FBc0M7R0FDMUMsZUFBZTtHQUNmLGVBQWU7R0FDZixjQUFjO0dBQ2QsYUFBYTtHQUNiLHdCQUF3QjtHQUN4QixNQUFNO0VBQ1I7RUFFQSxNQUFNLGVBQXVDO0dBQzNDLGVBQWU7R0FDZixlQUFlO0dBQ2YsY0FBYztHQUNkLGFBQWE7R0FDYix3QkFBd0I7R0FDeEIsTUFBTTtFQUNSOzs7Ozs7Ozs7Ozs7Ozs7QUFLUyw0QkFBTSxPQUFNO0FBU1gsNEJBQU0seURBQXdEO0FBUS9ELDRCQUFNLG9CQUFtQjs7O0NBRUYsT0FBTTs7QUFFdkIsNEJBQU0sNkJBQTRCOztBQWVqQyw0QkFBTSxzQkFBcUI7QUFDNUIsNEJBQU0scUJBQW9CO0FBQzFCLDRCQUFNLDBCQUF5QjtBQVduQyw2QkFBTSx1REFBc0Q7QUFPeEQsNkJBQU0sNkJBQTRCOztBQWVqQyw2QkFBTSx3QkFBdUI7QUFDOUIsNkJBQU0scUJBQW9COzs7Q0FDQyxPQUFNOztBQUlqQyw2QkFBTSwwQkFBeUI7Ozs7OztDQTlFNUMsK0NBbUZhLHlCQW5GRCxPQUFNLE9BQU07RUFDdEIsd0JBY007Z0JBZE4sb0JBY00sT0FkTixZQWNNO2lCQWJKLGFBT0U7S0FOQSxJQUFHO0tBQ0gsT0FBTTtLQUNOLE1BQUs7S0FDTCxTQUFRO0tBQ1IsTUFBSztLQUNMLE9BQU07O2lCQUVSLG9CQUdLLE1BSEwsWUFHSyxjQUZILGFBQXFEO0tBQTlDLE1BQUs7S0FBa0IsT0FBTTtTQUFpQjtLQUFBO0tBRXZEOztJQUFBLEU7SUFDQTtLQUEwRDtLQUFBLEVBQXZELE9BQU0sa0JBQWlCO0tBQUM7S0FBMkI7O0lBQUE7O0dBR3hEO2dCQUNBLG9CQWdFTSxPQWhFTixZQWdFTTtJQS9ESjtJQUNXLGtCQUFRLE1BQW5CLCtDQXNCTSxPQXRCTixZQXNCTSxjQXJCSixhQW9CUSxvQkFwQkQsT0FBTSxzRUFBcUU7S0FDaEYsd0JBa0JNLGVBbEJOLG9CQWtCTSxPQWxCTixZQWtCTTtNQWhCSSxnQkFBUSxHQUFJLFFBQVEsWUFENUIsZ0RBS0U7O09BSEMsS0FBSyxnQkFBUSxHQUFJLE9BQU87T0FDeEIsS0FBSyxnQkFBUSxHQUFJLFFBQVEsUUFBUSxnQkFBUSxHQUFJO09BQzlDLE9BQU07bUNBRVI7T0FNTTtPQUFBOztRQUpILE9BQUs7U0FBQSxpQkFBcUIsb0JBQWEsZ0JBQVEsR0FBSSxXQUFPO1NBQUEsT0FBaUIsb0JBQWEsZ0JBQVEsR0FBSTtRQUFPO1FBQzVHLE9BQU07T0FFSDtPQUFBLG9DQUFZLGdCQUFRLEdBQUksUUFBUSxRQUFRLGdCQUFRLEdBQUksT0FBTztPQUFBOztNQUFBO29CQUVoRSxhQUFpSjtPQUF6SSxNQUFNLG1CQUFZLGdCQUFRLEdBQUksWUFBTztPQUF1QixPQUFLLHlCQUFXLG9CQUFhLGdCQUFRLEdBQUksU0FBTztPQUFLLE9BQU07O29CQUMvSDtPQUEwRTtPQUExRTtPQUEwRSxpQkFBdkMsZ0JBQVEsR0FBSSxRQUFRLFFBQUk7T0FBQTs7TUFBQTtvQkFDM0Q7T0FBMkQ7T0FBM0Q7T0FBMkQsaUJBQTFCLGdCQUFRLEdBQUksT0FBTztPQUFBOztNQUFBO29CQUNwRDtPQUFnRjtPQUFoRjtPQUFtQyxVQUFLLGlCQUFHLGdCQUFRLEdBQUksUUFBUSxPQUFHO09BQUE7O01BQUE7Ozs7SUFLeEU7SUFDQTtLQUVNO0tBQUEsRUFGRCxPQUFNLDJCQUEwQjtLQUFBLGNBQ25DLG9CQUF1QyxTQUFsQyxPQUFNLDBCQUF5QixHOzs7O0lBR3RDO2lCQUNBLG9CQStCTSxPQS9CTixhQStCTSxFQTlCSjtLQTZCUTtLQUFBO0tBQUEsWUE1QlksaUJBQVUsTUFBSyxLQUExQixZQUFPO01BRGhCLCtDQTZCUTtPQTNCTCxLQUFLLFFBQVE7T0FDZCxPQUFNO09BQ0wsT0FBSyxnQ0FBa0Isb0JBQWEsUUFBUSxZQUFPOztPQUVwRCx3QkFzQk0sZUF0Qk4sb0JBc0JNLE9BdEJOLGFBc0JNO1FBcEJJLFFBQVEsUUFBUSxZQUR4QixnREFLRTs7U0FIQyxLQUFLLFFBQVEsT0FBTztTQUNwQixLQUFLLFFBQVEsUUFBUSxRQUFRLFFBQVE7U0FDdEMsT0FBTTtzQ0FFUjtTQU1NO1NBQUE7O1VBSkosT0FBTTtVQUNMLE9BQUssOEJBQWdCLG9CQUFhLFFBQVEsWUFBTztTQUUvQztTQUFBLG9DQUFZLFFBQVEsUUFBUSxRQUFRLFFBQVEsT0FBTztTQUFBOztRQUFBO3VCQUV4RCxhQUFpRztTQUF6RixNQUFNLG1CQUFZLFFBQVEsWUFBTztTQUFzQixPQUFNOzt1QkFDckU7U0FBd0U7U0FBeEU7U0FBd0UsaUJBQW5DLFFBQVEsUUFBUSxRQUFJO1NBQUE7O1FBQUE7dUJBQ3pEO1NBQXVEO1NBQXZEO1NBQXVELGlCQUF0QixRQUFRLE9BQU87U0FBQTs7UUFBQTtRQUN2QyxRQUFRLGVBQWpCLGlEQUdJLEtBSEosYUFHSSxnQkFGRixhQUF1RDtTQUFoRCxNQUFLO1NBQXFCLE9BQU07YUFBZ0I7U0FBQSxTQUNwRCxpQkFBRyxRQUFRLFdBQVc7U0FBQTs7UUFBQSxDO3VCQUUzQjtTQUE0RTtTQUE1RTtTQUFtQyxVQUFLLGlCQUFHLFFBQVEsUUFBUSxPQUFHO1NBQUE7O1FBQUEiLCJuYW1lcyI6W10sImlnbm9yZUxpc3QiOltdLCJzb3VyY2VzIjpbInBlbmd1cnVzLnZ1ZSJdLCJzb3VyY2VzQ29udGVudCI6WyI8c2NyaXB0IHNldHVwIGxhbmc9XCJ0c1wiPlxyXG5pbXBvcnQgeyB1c2VTZW9NZXRhIH0gZnJvbSAnI2FwcCdcclxuaW1wb3J0IHsgdXNlT2ZmaWNlcnMgfSBmcm9tICd+L2NvbXBvc2FibGVzL3VzZURhdGEnXHJcblxyXG4vLyBGYXNlIDI6IFN0cnVrdHVyIFBlbmd1cnVzIEtlbGFzXHJcbnVzZVNlb01ldGEoeyB0aXRsZTogJ1Blbmd1cnVzIEtlbGFzIC0gTWFneWFzYWthJyB9KVxyXG5cclxuY29uc3QgeyBkYXRhOiBvZmZpY2VycyB9ID0gdXNlT2ZmaWNlcnMoKVxyXG5cclxuZnVuY3Rpb24gZ2V0SW5pdGlhbHMobmFtZTogc3RyaW5nKSB7XHJcbiAgcmV0dXJuIG5hbWUuc3BsaXQoJyAnKS5tYXAobiA9PiBuWzBdKS5qb2luKCcnKS5zdWJzdHJpbmcoMCwgMikudG9VcHBlckNhc2UoKVxyXG59XHJcblxyXG5jb25zdCBqYWJhdGFuSWNvbjogUmVjb3JkPHN0cmluZywgc3RyaW5nPiA9IHtcclxuICAnS2V0dWEgS2VsYXMnOiAnaS1sdWNpZGUtY3Jvd24nLFxyXG4gICdXYWtpbCBLZXR1YSc6ICdpLWx1Y2lkZS1hd2FyZCcsXHJcbiAgJ1Nla3JldGFyaXMnOiAnaS1sdWNpZGUtcGVuLXRvb2wnLFxyXG4gICdCZW5kYWhhcmEnOiAnaS1sdWNpZGUtd2FsbGV0JyxcclxuICAnS29vcmRpbmF0b3IgQWthZGVtaWsnOiAnaS1sdWNpZGUtYm9vay1vcGVuJyxcclxuICAnUEonOiAnaS1sdWNpZGUtYm9vay1vcGVuJ1xyXG59XHJcblxyXG5jb25zdCBqYWJhdGFuQ29sb3I6IFJlY29yZDxzdHJpbmcsIHN0cmluZz4gPSB7XHJcbiAgJ0tldHVhIEtlbGFzJzogJyNmNTllMGInLFxyXG4gICdXYWtpbCBLZXR1YSc6ICcjNjM2NmYxJyxcclxuICAnU2VrcmV0YXJpcyc6ICcjZWM0ODk5JyxcclxuICAnQmVuZGFoYXJhJzogJyMxMGI5ODEnLFxyXG4gICdLb29yZGluYXRvciBBa2FkZW1payc6ICcjMGVhNWU5JyxcclxuICAnUEonOiAnI2E4NTVmNydcclxufVxyXG48L3NjcmlwdD5cclxuXHJcbjx0ZW1wbGF0ZT5cclxuICA8VUNvbnRhaW5lciBjbGFzcz1cInB5LThcIj5cclxuICAgIDxkaXYgY2xhc3M9XCJtYi04XCI+XHJcbiAgICAgIDxVQnV0dG9uXHJcbiAgICAgICAgdG89XCIvYW5nZ290YVwiXHJcbiAgICAgICAgbGFiZWw9XCJLZW1iYWxpIGtlIERhZnRhciBBbmdnb3RhXCJcclxuICAgICAgICBpY29uPVwiaS1sdWNpZGUtYXJyb3ctbGVmdFwiXHJcbiAgICAgICAgdmFyaWFudD1cImxpbmtcIlxyXG4gICAgICAgIHNpemU9XCJzbVwiXHJcbiAgICAgICAgY2xhc3M9XCJtYi00XCJcclxuICAgICAgLz5cclxuICAgICAgPGgxIGNsYXNzPVwidGV4dC0yeGwgbWQ6dGV4dC0zeGwgZm9udC1ib2xkIGZsZXggaXRlbXMtY2VudGVyIGdhcC0yXCI+XHJcbiAgICAgICAgPFVJY29uIG5hbWU9XCJpLWx1Y2lkZS1zaGllbGRcIiBjbGFzcz1cInRleHQtcHJpbWFyeVwiIC8+XHJcbiAgICAgICAgU3RydWt0dXIgUGVuZ3VydXMgS2VsYXNcclxuICAgICAgPC9oMT5cclxuICAgICAgPHAgY2xhc3M9XCJ0ZXh0LW11dGVkIG10LTFcIj5LZWxvbXBvayBQZW5ndXJ1cyBNYWd5YXNha2E8L3A+XHJcbiAgICA8L2Rpdj5cclxuXHJcbiAgICA8IS0tIE9yZ2FuaXphdGlvbiBDaGFydCAtLT5cclxuICAgIDxkaXYgY2xhc3M9XCJtYXgtdy00eGwgbXgtYXV0b1wiPlxyXG4gICAgICA8IS0tIEtldHVhIC0tPlxyXG4gICAgICA8ZGl2IHYtaWY9XCJvZmZpY2Vycz8uWzBdXCIgY2xhc3M9XCJmbGV4IGp1c3RpZnktY2VudGVyIG1iLThcIj5cclxuICAgICAgICA8VUNhcmQgY2xhc3M9XCJjYXJkLWhvdmVyIHctZnVsbCBtYXgtdy1zbSB0ZXh0LWNlbnRlciBib3JkZXItMiBib3JkZXItYW1iZXItNTAwLzMwXCI+XHJcbiAgICAgICAgICA8ZGl2IGNsYXNzPVwiZmxleCBmbGV4LWNvbCBpdGVtcy1jZW50ZXJcIj5cclxuICAgICAgICAgICAgPGltZ1xyXG4gICAgICAgICAgICAgIHYtaWY9XCJvZmZpY2Vyc1swXS5tZW1iZXI/LmZvdG9fdXJsXCJcclxuICAgICAgICAgICAgICA6c3JjPVwib2ZmaWNlcnNbMF0ubWVtYmVyLmZvdG9fdXJsXCJcclxuICAgICAgICAgICAgICA6YWx0PVwib2ZmaWNlcnNbMF0ubWVtYmVyPy5uYW1hIHx8IG9mZmljZXJzWzBdLmphYmF0YW5cIlxyXG4gICAgICAgICAgICAgIGNsYXNzPVwidy0yMCBoLTIwIHJvdW5kZWQtZnVsbCBvYmplY3QtY292ZXIgYm9yZGVyLTIgYm9yZGVyLWRlZmF1bHQvNDAgbWItM1wiXHJcbiAgICAgICAgICAgIC8+XHJcbiAgICAgICAgICAgIDxkaXZcclxuICAgICAgICAgICAgICB2LWVsc2VcclxuICAgICAgICAgICAgICA6c3R5bGU9XCJ7IGJhY2tncm91bmRDb2xvcjogamFiYXRhbkNvbG9yW29mZmljZXJzWzBdLmphYmF0YW5dICsgJzIwJywgY29sb3I6IGphYmF0YW5Db2xvcltvZmZpY2Vyc1swXS5qYWJhdGFuXSB9XCJcclxuICAgICAgICAgICAgICBjbGFzcz1cInctMjAgaC0yMCByb3VuZGVkLWZ1bGwgZmxleCBpdGVtcy1jZW50ZXIganVzdGlmeS1jZW50ZXIgZm9udC1ib2xkIHRleHQteGwgbWItM1wiXHJcbiAgICAgICAgICAgID5cclxuICAgICAgICAgICAgICB7eyBnZXRJbml0aWFscyhvZmZpY2Vyc1swXS5tZW1iZXI/Lm5hbWEgfHwgb2ZmaWNlcnNbMF0uamFiYXRhbikgfX1cclxuICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgIDxVSWNvbiA6bmFtZT1cImphYmF0YW5JY29uW29mZmljZXJzWzBdLmphYmF0YW5dIHx8ICdpLWx1Y2lkZS11c2VyJ1wiIDpzdHlsZT1cInsgY29sb3I6IGphYmF0YW5Db2xvcltvZmZpY2Vyc1swXS5qYWJhdGFuXSB9XCIgY2xhc3M9XCJ0ZXh0LTJ4bCBtYi0xXCIgLz5cclxuICAgICAgICAgICAgPGgyIGNsYXNzPVwiZm9udC1ib2xkIHRleHQtYmFzZVwiPnt7IG9mZmljZXJzWzBdLm1lbWJlcj8ubmFtYSB8fCAnLScgfX08L2gyPlxyXG4gICAgICAgICAgICA8cCBjbGFzcz1cInRleHQtc20gdGV4dC1tdXRlZFwiPnt7IG9mZmljZXJzWzBdLmphYmF0YW4gfX08L3A+XHJcbiAgICAgICAgICAgIDxwIGNsYXNzPVwidGV4dC14cyB0ZXh0LW11dGVkIG10LTFcIj5OSU06IHt7IG9mZmljZXJzWzBdLm1lbWJlcj8ubmltIHx8ICctJyB9fTwvcD5cclxuICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgIDwvVUNhcmQ+XHJcbiAgICAgIDwvZGl2PlxyXG5cclxuICAgICAgPCEtLSBDb25uZWN0b3IgbGluZSAtLT5cclxuICAgICAgPGRpdiBjbGFzcz1cImZsZXgganVzdGlmeS1jZW50ZXIgbWItOFwiPlxyXG4gICAgICAgIDxkaXYgY2xhc3M9XCJ3LTAuNSBoLTggYmctZGVmYXVsdC8zMFwiIC8+XHJcbiAgICAgIDwvZGl2PlxyXG5cclxuICAgICAgPCEtLSBPdGhlciBvZmZpY2VycyAtLT5cclxuICAgICAgPGRpdiBjbGFzcz1cImdyaWQgZ3JpZC1jb2xzLTEgc206Z3JpZC1jb2xzLTIgbGc6Z3JpZC1jb2xzLTQgZ2FwLTRcIj5cclxuICAgICAgICA8VUNhcmRcclxuICAgICAgICAgIHYtZm9yPVwib2ZmaWNlciBpbiBvZmZpY2Vycz8uc2xpY2UoMSlcIlxyXG4gICAgICAgICAgOmtleT1cIm9mZmljZXIuaWRcIlxyXG4gICAgICAgICAgY2xhc3M9XCJjYXJkLWhvdmVyIHRleHQtY2VudGVyIGJvcmRlci0yXCJcclxuICAgICAgICAgIDpzdHlsZT1cInsgYm9yZGVyQ29sb3I6IChqYWJhdGFuQ29sb3Jbb2ZmaWNlci5qYWJhdGFuXSB8fCAnIzYzNjZmMScpICsgJzREJyB9XCJcclxuICAgICAgICA+XHJcbiAgICAgICAgICA8ZGl2IGNsYXNzPVwiZmxleCBmbGV4LWNvbCBpdGVtcy1jZW50ZXJcIj5cclxuICAgICAgICAgICAgPGltZ1xyXG4gICAgICAgICAgICAgIHYtaWY9XCJvZmZpY2VyLm1lbWJlcj8uZm90b191cmxcIlxyXG4gICAgICAgICAgICAgIDpzcmM9XCJvZmZpY2VyLm1lbWJlci5mb3RvX3VybFwiXHJcbiAgICAgICAgICAgICAgOmFsdD1cIm9mZmljZXIubWVtYmVyPy5uYW1hIHx8IG9mZmljZXIuamFiYXRhblwiXHJcbiAgICAgICAgICAgICAgY2xhc3M9XCJ3LTE2IGgtMTYgcm91bmRlZC1mdWxsIG9iamVjdC1jb3ZlciBib3JkZXItMiBib3JkZXItZGVmYXVsdC80MCBtYi0zXCJcclxuICAgICAgICAgICAgLz5cclxuICAgICAgICAgICAgPGRpdlxyXG4gICAgICAgICAgICAgIHYtZWxzZVxyXG4gICAgICAgICAgICAgIGNsYXNzPVwiYWNjZW50IHctMTYgaC0xNiByb3VuZGVkLWZ1bGwgZmxleCBpdGVtcy1jZW50ZXIganVzdGlmeS1jZW50ZXIgZm9udC1ib2xkIHRleHQtbGcgbWItM1wiXHJcbiAgICAgICAgICAgICAgOnN0eWxlPVwieyAnLS1hY2NlbnQnOiBqYWJhdGFuQ29sb3Jbb2ZmaWNlci5qYWJhdGFuXSB8fCAnIzYzNjZmMScgfVwiXHJcbiAgICAgICAgICAgID5cclxuICAgICAgICAgICAgICB7eyBnZXRJbml0aWFscyhvZmZpY2VyLm1lbWJlcj8ubmFtYSB8fCBvZmZpY2VyLmphYmF0YW4pIH19XHJcbiAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICA8VUljb24gOm5hbWU9XCJqYWJhdGFuSWNvbltvZmZpY2VyLmphYmF0YW5dIHx8ICdpLWx1Y2lkZS11c2VyJ1wiIGNsYXNzPVwidGV4dC14bCBtYi0xIHRleHQtbXV0ZWRcIiAvPlxyXG4gICAgICAgICAgICA8aDIgY2xhc3M9XCJmb250LXNlbWlib2xkIHRleHQtc21cIj57eyBvZmZpY2VyLm1lbWJlcj8ubmFtYSB8fCAnLScgfX08L2gyPlxyXG4gICAgICAgICAgICA8cCBjbGFzcz1cInRleHQteHMgdGV4dC1tdXRlZFwiPnt7IG9mZmljZXIuamFiYXRhbiB9fTwvcD5cclxuICAgICAgICAgICAgPHAgdi1pZj1cIm9mZmljZXIubWF0YV9rdWxpYWhcIiBjbGFzcz1cInRleHQteHMgdGV4dC1tdXRlZCBtdC0wLjUgaW5saW5lLWZsZXggaXRlbXMtY2VudGVyIGdhcC0xXCI+XHJcbiAgICAgICAgICAgICAgPFVJY29uIG5hbWU9XCJpLWx1Y2lkZS1ib29rLW9wZW5cIiBjbGFzcz1cInRleHQtWzExcHhdXCIgLz5cclxuICAgICAgICAgICAgICBQSiB7eyBvZmZpY2VyLm1hdGFfa3VsaWFoIH19XHJcbiAgICAgICAgICAgIDwvcD5cclxuICAgICAgICAgICAgPHAgY2xhc3M9XCJ0ZXh0LXhzIHRleHQtbXV0ZWQgbXQtMVwiPk5JTToge3sgb2ZmaWNlci5tZW1iZXI/Lm5pbSB8fCAnLScgfX08L3A+XHJcbiAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICA8L1VDYXJkPlxyXG4gICAgICA8L2Rpdj5cclxuICAgIDwvZGl2PlxyXG4gIDwvVUNvbnRhaW5lcj5cclxuPC90ZW1wbGF0ZT5cclxuIl0sImZpbGUiOiJEOi9GaWxlIEt1bGlhaC9TZW1lc3RlciA3L01hZ3lhc2FrYV9XZWIvYXBwL3BhZ2VzL2FuZ2dvdGEvcGVuZ3VydXMudnVlIn0=

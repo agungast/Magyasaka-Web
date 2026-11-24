@@ -6,7 +6,7 @@ import { useAnnouncements, useSchedules, useAssignments, useMembers, useProjects
 interface SearchItem {
   title: string
   description: string
-  category: 'jadwal' | 'tugas' | 'anggota' | 'pengumuman' | 'proyek' | 'galeri'
+  category: 'jadwal' | 'tugas' | 'anggota' | 'pengumuman' | 'proyek'
   url: string
   icon: string
 }
@@ -16,17 +16,21 @@ export function useSearch() {
   const searchResults = ref<SearchItem[]>([])
   const isSearchOpen = ref(false)
 
-  const { data: announcements } = useAnnouncements()
-  const { data: schedules } = useSchedules()
-  const { data: assignments } = useAssignments()
-  const { data: members } = useMembers()
-  const { data: projects } = useProjects()
+  // Search dipakai di app.vue (semua halaman). Tunda request sampai modal dibuka;
+  // useAsyncData di-cache per key oleh Nuxt, jadi cukup sekali per sesi.
+  const announcements = useAnnouncements(false)
+  const schedules = useSchedules(false)
+  const assignments = useAssignments(false)
+  const members = useMembers(false)
+  const projects = useProjects(false)
+  const sources = [announcements, schedules, assignments, members, projects]
+  let loaded = false
 
   const allItems = computed<SearchItem[]>(() => {
     const items: SearchItem[] = []
 
     // Pengumuman
-    announcements.value?.forEach((a: any) => {
+    announcements.data.value?.forEach((a: any) => {
       items.push({
         title: a.judul,
         description: a.konten?.substring(0, 100) + '...',
@@ -37,7 +41,7 @@ export function useSearch() {
     })
 
     // Jadwal
-    schedules.value?.forEach((s: any) => {
+    schedules.data.value?.forEach((s: any) => {
       items.push({
         title: s.mata_kuliah,
         description: `${s.hari} ${s.jam_mulai}-${s.jam_selesai} • ${s.ruangan} • ${s.dosen}`,
@@ -48,7 +52,7 @@ export function useSearch() {
     })
 
     // Tugas
-    assignments.value?.forEach((t: any) => {
+    assignments.data.value?.forEach((t: any) => {
       items.push({
         title: t.judul,
         description: `${t.mata_kuliah} • ${t.tipe}`,
@@ -59,7 +63,7 @@ export function useSearch() {
     })
 
     // Anggota
-    members.value?.forEach((m: any) => {
+    members.data.value?.forEach((m: any) => {
       items.push({
         title: m.nama,
         description: `NIM: ${m.nim} • ${m.email || ''}`,
@@ -70,7 +74,7 @@ export function useSearch() {
     })
 
     // Proyek
-    projects.value?.forEach((p: any) => {
+    projects.data.value?.forEach((p: any) => {
       items.push({
         title: p.nama,
         description: p.deskripsi,
@@ -102,6 +106,12 @@ export function useSearch() {
   })
 
   function openSearch() {
+    if (!loaded) {
+      loaded = true
+      sources.forEach(source => {
+        if (source.status.value !== 'success') source.refresh()
+      })
+    }
     isSearchOpen.value = true
   }
 

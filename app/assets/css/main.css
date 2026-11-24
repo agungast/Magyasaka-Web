@@ -2,7 +2,7 @@
 @import "@nuxt/ui";
 
 @theme static {
-  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-sans: 'Schibsted Grotesk', system-ui, sans-serif;
   --font-display: 'Outfit', system-ui, sans-serif;
   --font-mono: 'Geist Mono', ui-monospace, monospace;
 
@@ -119,8 +119,8 @@
   z-index: -2;
   background-image: radial-gradient(var(--halftone-dot) 1.15px, transparent 1.25px);
   background-size: 9px 9px;
-  -webkit-mask-image: radial-gradient(76% 70% at 74% 32%, #000 0%, transparent 72%);
-  mask-image: radial-gradient(76% 70% at 74% 32%, #000 0%, transparent 72%);
+  -webkit-mask-image: radial-gradient(76% 70% at var(--hx, 74%) var(--hy, 32%), #000 0%, transparent 72%);
+  mask-image: radial-gradient(76% 70% at var(--hx, 74%) var(--hy, 32%), #000 0%, transparent 72%);
   animation: halftone-drift 24s linear infinite;
 }
 
@@ -181,19 +181,57 @@
 }
 
 .hero-enter {
-  animation: hero-enter 900ms cubic-bezier(0.16, 1, 0.3, 1);
+  animation: hero-enter 900ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+/* Entrance disusun: h1, lead, CTA masuk berurutan sekali saat load. */
+.hero-stagger > * {
+  animation: hero-enter 900ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+.hero-stagger > :nth-child(2) {
+  animation-delay: 110ms;
+}
+
+.hero-stagger > :nth-child(3) {
+  animation-delay: 220ms;
+}
+
+/* Underline tergambar saat hover: garis cetak, bukan fade. */
+.link-draw {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-size: 0% 1px;
+  background-position: 0 calc(100% - 4px);
+  transition: background-size 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.link-draw:hover,
+.link-draw:focus-visible {
+  background-size: 100% 1px;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .hero-plate::before,
-  .hero-enter {
+  .hero-enter,
+  .hero-stagger > * {
     animation: none;
+  }
+
+  .link-draw {
+    transition: none;
   }
 }
 
 /* The header is a printed rule, not a pane of glass. */
 header[data-slot="root"] {
   backdrop-filter: none;
+}
+
+/* Nuxt UI's default focus ring (primary at 25%) is too faint to see; full
+   primary clears 3:1 on both paper and ink. Unlayered so it beats utilities. */
+:focus-visible {
+  outline-color: var(--ui-primary);
 }
 
 /* Browser surfaces nobody designs but everybody sees. */
