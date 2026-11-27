@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { maskedNim } from '~/utils/nim'
 
 interface Member {
   id: string
@@ -23,14 +22,6 @@ const initials = computed(() =>
     .join('')
     .substring(0, 2)
     .toUpperCase()
-)
-
-// --- Masking NIM ---
-// Tampilkan NIM tersensor sebagian; klik untuk reveal 3 digit terakhir.
-const nimRevealed = ref(false)
-
-const displayNim = computed(() =>
-  nimRevealed.value ? (props.member.nim || '-') : maskedNim(props.member.nim)
 )
 
 // --- Copy email ke clipboard ---
@@ -76,19 +67,7 @@ const statusLabel = computed(() => (props.member.status || 'aktif').toLowerCase(
 
       <div class="flex-1 min-w-0">
         <h2 class="font-semibold text-sm line-clamp-2" :title="member.nama">{{ member.nama }}</h2>
-        <!-- NIM tersensor, klik untuk reveal -->
-        <button
-          type="button"
-          class="group/nim inline-flex items-center gap-1 text-xs text-muted hover:text-default transition-colors mt-0.5 cursor-pointer"
-          :title="nimRevealed ? 'Sembunyikan NIM' : 'Tampilkan NIM lengkap'"
-          @click="nimRevealed = !nimRevealed"
-        >
-          <span class="font-mono tracking-wide">{{ displayNim }}</span>
-          <UIcon
-            :name="nimRevealed ? 'i-lucide-eye-off' : 'i-lucide-eye'"
-            class="text-[11px] opacity-0 group-hover/nim:opacity-100 transition-opacity"
-          />
-        </button>
+        <p class="font-mono tracking-wide text-xs text-muted mt-0.5">{{ member.nim || '-' }}</p>
       </div>
     </div>
 

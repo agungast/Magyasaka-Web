@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useSeoMeta } from '#app'
 import { computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { useSupabaseClient, useSupabaseUser } from '#imports'
+import { useRoute } from 'vue-router'
+import { useSupabaseUser } from '#imports'
 import { namaPengurus } from '~/utils/pengurus'
 
 declare const definePageMeta: (meta: any) => void
@@ -14,8 +14,6 @@ definePageMeta({
 useSeoMeta({ title: 'Admin Dashboard - Magyasaka' })
 
 const user = useSupabaseUser()
-const supabase = useSupabaseClient()
-const router = useRouter()
 const route = useRoute()
 
 function isActive(to: string) {
@@ -23,11 +21,6 @@ function isActive(to: string) {
     return route.path === '/admin' || route.path === '/admin/'
   }
   return route.path === to || route.path.startsWith(to + '/')
-}
-
-async function logout() {
-  await supabase.auth.signOut()
-  router.push('/')
 }
 
 const namaLogin = computed(() => {
@@ -59,7 +52,6 @@ const menuItems = [
         <p class="text-muted mt-1">Kelola konten Portal Magyasaka</p>
         <p v-if="namaLogin" class="text-xs text-muted mt-1">Login sebagai {{ namaLogin }}</p>
       </div>
-      <UButton label="Keluar" icon="i-lucide-log-out" variant="outline" @click="logout" />
     </div>
 
     <!-- Mobile: grid 3 kolom (ikon di atas, label di bawah) supaya semua menu terlihat tanpa scroll -->

@@ -9,7 +9,31 @@ useSeoMeta({ title: 'Anggota Kelas - Magyasaka' })
 const { data: members, error, refresh } = useMembers()
 
 const searchQuery = ref('')
-const sortBy = ref('nim')
+const sortBy = ref<'nim' | 'nama'>('nim')
+const sortDirection = ref<'asc' | 'desc'>('asc')
+
+const sortOptions = [
+  { label: 'NIM (A–Z)', field: 'nim', direction: 'asc' },
+  { label: 'NIM (Z–A)', field: 'nim', direction: 'desc' },
+  { label: 'Nama (A–Z)', field: 'nama', direction: 'asc' },
+  { label: 'Nama (Z–A)', field: 'nama', direction: 'desc' }
+] as const
+
+const activeSort = computed(() =>
+  sortOptions.find(o => o.field === sortBy.value && o.direction === sortDirection.value) ?? sortOptions[0]
+)
+
+const sortItems = computed(() =>
+  sortOptions.map(o => ({
+    type: 'checkbox' as const,
+    label: o.label,
+    checked: o === activeSort.value,
+    onSelect: () => {
+      sortBy.value = o.field
+      sortDirection.value = o.direction
+    }
+  }))
+)
 
 const filteredMembers = computed(() => {
   let items = members.value || []
@@ -21,9 +45,10 @@ const filteredMembers = computed(() => {
       (m.email && m.email.toLowerCase().includes(q))
     )
   }
+  const dir = sortDirection.value === 'asc' ? 1 : -1
   return [...items].sort((a: any, b: any) => {
-    if (sortBy.value === 'nim') return a.nim.localeCompare(b.nim)
-    return a.nama.localeCompare(b.nama)
+    if (sortBy.value === 'nim') return a.nim.localeCompare(b.nim, undefined, { numeric: true }) * dir
+    return a.nama.localeCompare(b.nama) * dir
   })
 })
 
@@ -55,7 +80,7 @@ const totalMembers = computed(() => members.value?.length || 0)
 
     <template v-else>
     <!-- Search & Filter -->
-    <div class="flex flex-col sm:flex-row gap-3 mb-6">
+    <div class="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
       <div class="flex-1">
         <UInput
           v-model="searchQuery"
@@ -64,23 +89,18 @@ const totalMembers = computed(() => members.value?.length || 0)
           size="md"
         />
       </div>
-      <div class="flex gap-2">
-        <UButton
-          :color="sortBy === 'nim' ? 'primary' : 'neutral'"
-          :variant="sortBy === 'nim' ? 'solid' : 'outline'"
-          label="NIM"
-          icon="i-lucide-hash"
-          size="sm"
-          @click="sortBy = 'nim'"
-        />
-        <UButton
-          :color="sortBy === 'nama' ? 'primary' : 'neutral'"
-          :variant="sortBy === 'nama' ? 'solid' : 'outline'"
-          label="Nama"
-          icon="i-lucide-text"
-          size="sm"
-          @click="sortBy = 'nama'"
-        />
+      <div class="self-start">
+        <UDropdownMenu :items="sortItems" :content="{ align: 'end' }">
+          <UButton
+            :label="activeSort.label"
+            icon="i-lucide-arrow-up-down"
+            trailing-icon="i-lucide-chevron-down"
+            color="neutral"
+            variant="outline"
+            size="sm"
+            aria-label="Urutkan anggota"
+          />
+        </UDropdownMenu>
       </div>
     </div>
 

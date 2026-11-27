@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useSeoMeta } from '#app'
+import { useSupabaseClient, useSupabaseUser } from '#imports'
 import { useEventListener } from '@vueuse/core'
 import { useSearch } from '~/composables/useSearch'
 useSeoMeta({
@@ -11,6 +14,32 @@ useSeoMeta({
 })
 
 const { isSearchOpen, openSearch, closeSearch, searchQuery, searchResults } = useSearch()
+
+const user = useSupabaseUser()
+const supabase = useSupabaseClient()
+const router = useRouter()
+const isLoggedIn = computed(() => !!user.value)
+
+async function logout() {
+  await supabase.auth.signOut()
+  await router.push('/')
+}
+
+const accountItems = [
+  { type: 'label' as const, label: 'Pengurus' },
+  { label: 'Panel Admin', icon: 'i-lucide-layout-dashboard', to: '/admin' },
+  { type: 'separator' as const },
+  { label: 'Keluar', icon: 'i-lucide-log-out', color: 'error' as const, onSelect: logout }
+]
+
+// Saran hanya berisi kategori yang memang ada di sumber pencarian global.
+const searchSuggestions = [
+  { label: 'Tugas & Ujian', query: 'tugas', icon: 'i-lucide-clipboard-list' },
+  { label: 'UTS / UAS', query: 'uts', icon: 'i-lucide-file-warning' },
+  { label: 'Jadwal Kuliah', query: 'Senin', icon: 'i-lucide-calendar' },
+  { label: 'Anggota', query: 'NIM', icon: 'i-lucide-users' },
+  { label: 'Proyek', query: 'Web', icon: 'i-lucide-folder-code' }
+]
 
 const navItems = [
   { label: 'Beranda', to: '/', icon: 'i-lucide-home' },
@@ -100,7 +129,23 @@ if (import.meta.client) {
 
         <UColorModeButton />
 
+        <UDropdownMenu
+          v-if="isLoggedIn"
+          :items="accountItems"
+          :content="{ align: 'end' }"
+        >
+          <UButton
+            label="Pengurus"
+            icon="i-lucide-shield-check"
+            trailing-icon="i-lucide-chevron-down"
+            color="neutral"
+            variant="ghost"
+            class="hidden sm:inline-flex"
+            aria-label="Menu pengurus"
+          />
+        </UDropdownMenu>
         <UButton
+          v-else
           to="/login"
           icon="i-lucide-log-in"
           color="neutral"
@@ -125,7 +170,24 @@ if (import.meta.client) {
           </NuxtLink>
         </nav>
         <USeparator class="my-4" />
+        <UDropdownMenu
+          v-if="isLoggedIn"
+          :items="accountItems"
+          :content="{ align: 'end' }"
+          class="w-full"
+        >
+          <UButton
+            label="Akun Pengurus"
+            icon="i-lucide-shield-check"
+            trailing-icon="i-lucide-chevron-down"
+            color="neutral"
+            variant="ghost"
+            class="w-full justify-center"
+            aria-label="Menu pengurus"
+          />
+        </UDropdownMenu>
         <UButton
+          v-else
           to="/login"
           icon="i-lucide-log-in"
           color="neutral"
@@ -150,7 +212,7 @@ if (import.meta.client) {
             <input
               v-model="searchQuery"
               type="text"
-              placeholder="Cari jadwal, tugas, anggota, proyek..."
+              placeholder="Cari tugas, jadwal, anggota, atau proyek..."
               class="w-full bg-transparent border-none outline-none focus-visible:outline-2 text-lg placeholder:text-muted"
               autofocus
             >
@@ -158,16 +220,33 @@ if (import.meta.client) {
           </div>
           <USeparator />
           <div class="mt-4 max-h-96 overflow-y-auto">
-            <div v-if="searchResults.length === 0 && searchQuery.length >= 2" class="text-center py-8 text-muted">
+            <!-- Saran saat query belum cukup panjang -->
+            <div v-if="searchQuery.length < 2" class="px-1 py-2">
+              <p class="text-sm text-muted mb-4 flex items-center gap-2">
+                <UIcon :name="searchQuery.length === 0 ? 'i-lucide-sparkles' : 'i-lucide-search'" />
+                {{ searchQuery.length === 0 ? 'Mulai ketik untuk mencari...' : 'Ketik minimal 2 karakter untuk mencari...' }}
+              </p>
+              <p class="text-xs font-semibold text-muted uppercase tracking-wider mb-2">Saran pencarian</p>
+              <div class="flex flex-wrap gap-2">
+                <UButton
+                  v-for="suggestion in searchSuggestions"
+                  :key="suggestion.query"
+                  :label="suggestion.label"
+                  :icon="suggestion.icon"
+                  color="neutral"
+                  variant="soft"
+                  size="sm"
+                  @click="searchQuery = suggestion.query"
+                />
+              </div>
+              <p class="text-xs text-muted mt-4 flex items-center gap-1.5">
+                <UIcon name="i-lucide-keyboard" />
+                Tekan Ctrl + K kapan saja untuk membuka pencarian
+              </p>
+            </div>
+            <div v-else-if="searchResults.length === 0" class="text-center py-8 text-muted">
               <UIcon name="i-lucide-search-x" class="text-4xl mb-2" />
               <p>Tidak ditemukan hasil untuk "{{ searchQuery }}"</p>
-            </div>
-            <div v-else-if="searchQuery.length < 2 && searchQuery.length > 0" class="text-center py-8 text-muted">
-              <p class="text-sm">Ketik minimal 2 karakter untuk mencari...</p>
-            </div>
-            <div v-else-if="searchQuery.length === 0" class="text-center py-8 text-muted">
-              <UIcon name="i-lucide-sparkles" class="text-4xl mb-2" />
-              <p class="text-sm">Mulai ketik untuk mencari...</p>
             </div>
             <NuxtLink
               v-for="result in searchResults"
